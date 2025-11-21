@@ -44,8 +44,7 @@ struct RadiusComponent {
 
 /// 3D Mesh component for rendering
 struct MeshComponent {
-    std::vector<glm::vec3> positions;
-    std::vector<uint32_t> indices;
+    TriMesh mesh;
 };
 
 }  // namespace nc
