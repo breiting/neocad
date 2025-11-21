@@ -2,6 +2,7 @@
 #include <glm/vec3.hpp>
 #include <neocad/domain/Entity.hpp>
 #include <neocad/domain/Types.hpp>
+#include <string>
 #include <vector>
 
 namespace nc {

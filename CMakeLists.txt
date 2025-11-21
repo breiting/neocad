@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.1.1)
+cmake_minimum_required(VERSION 3.31.1)
 project(neocad VERSION 0.1 LANGUAGES CXX)
 
 # Produce json file for neovim clangd completion

@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <neocad/domain/Components.hpp>
 #include <neocad/domain/Registry.hpp>
 
