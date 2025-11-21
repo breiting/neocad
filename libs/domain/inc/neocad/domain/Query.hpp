@@ -1,0 +1,70 @@
+#pragma once
+
+#include <functional>
+#include <neocad/domain/Components.hpp>
+#include <neocad/domain/Registry.hpp>
+#include <vector>
+
+namespace nc {
+
+// Type: (Entity, Registry) → bool
+using QueryFilter = std::function<bool(Entity, const Registry&)>;
+
+class Query {
+   public:
+    // Chainable filters
+    Query& Where(QueryFilter filter) {
+        m_Filters.push_back(std::move(filter));
+        return *this;
+    }
+
+    /// Execute query, return matching entities
+    std::vector<Entity> Execute(const Registry& registry) const {
+        std::vector<Entity> result;
+
+        // use new method from Registry: GetAllEntities()
+        for (Entity e : registry.Entities()) {
+            bool matches = true;
+            for (const auto& filter : m_Filters) {
+                if (!filter(e, registry)) {
+                    matches = false;
+                    break;
+                }
+            }
+            if (matches) result.push_back(e);
+        }
+        return result;
+    }
+
+   private:
+    std::vector<QueryFilter> m_Filters;
+};
+
+/// --------------------------------------------------
+///  Convenience Helpers
+/// --------------------------------------------------
+
+template <typename T>
+inline Query HasComponentQuery() {
+    Query q;
+    q.Where([](Entity e, const Registry& r) { return r.HasComponent<T>(e); });
+    return q;
+}
+
+inline bool IsPoint(Entity e, const Registry& r) {
+    return r.HasComponent<PositionComponent>(e);
+}
+
+inline bool IsLine(Entity e, const Registry& r) {
+    return r.HasComponent<LineComponent>(e);
+}
+
+inline bool IsFace(Entity e, const Registry& r) {
+    return r.HasComponent<FaceComponent>(e);
+}
+
+inline bool IsBody(Entity e, const Registry& r) {
+    return r.HasComponent<BodyComponent>(e);
+}
+
+}  // namespace nc

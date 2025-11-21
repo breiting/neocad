@@ -1,0 +1,50 @@
+#pragma once
+#include <glm/vec3.hpp>
+#include <neocad/domain/Entity.hpp>
+#include <neocad/domain/Types.hpp>
+#include <vector>
+
+namespace nc {
+
+/// Name/tag
+struct NameComponent {
+    std::string name;
+};
+
+/// 3D position
+struct PositionComponent {
+    vec3 position;
+};
+
+/// Line between two point entities
+struct LineComponent {
+    Entity p0{INVALID_ENTITY};
+    Entity p1{INVALID_ENTITY};
+};
+
+/// Planar face defined by a sequence of line entities forming a closed loop.
+struct FaceComponent {
+    std::vector<Entity> edges;  ///< entities referring to LineComponent
+};
+
+/// Opaque handle to a backend shape (OCCT or other).
+using BackendShapeHandle = std::uint64_t;
+
+/// 3D body (solid) referencing a backend shape.
+struct BodyComponent {
+    BackendShapeHandle handle{0};
+    Entity sourceFace{INVALID_ENTITY};  ///< originating face entity (optional)
+};
+
+/// Component for defining a circle
+struct RadiusComponent {
+    double radius;
+};
+
+/// 3D Mesh component for rendering
+struct MeshComponent {
+    std::vector<glm::vec3> positions;
+    std::vector<uint32_t> indices;
+};
+
+}  // namespace nc
