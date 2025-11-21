@@ -7,7 +7,7 @@ namespace nc {
 /// Command to extrude a given face entity by a specified height.
 class ExtrudeCommand : public ICommand {
    public:
-    ExtrudeCommand(Entity face, double height);
+    explicit ExtrudeCommand(Entity face, double height);
 
     void Execute(Registry& registry, GeometrySystem& geom) override;
 
