@@ -1,0 +1,111 @@
+#include <algorithm>
+#include <neocad/domain/Components.hpp>
+#include <neocad/domain/Registry.hpp>
+
+namespace nc {
+
+Entity Registry::CreateEntity() {
+    return m_NextId++;
+}
+
+template <>
+void Registry::AddComponent<NameComponent>(Entity e, const NameComponent& tag) {
+    m_Names[e] = tag;
+}
+
+template <>
+NameComponent* Registry::GetComponent<NameComponent>(Entity e) {
+    auto it = m_Names.find(e);
+    return (it != m_Names.end()) ? &it->second : nullptr;
+}
+
+template <>
+bool Registry::HasComponent<NameComponent>(Entity e) const {
+    return m_Names.count(e) > 0;
+}
+
+template <>
+void Registry::AddComponent<PositionComponent>(Entity e, const PositionComponent& comp) {
+    m_Positions[e] = comp;
+}
+
+template <>
+PositionComponent* Registry::GetComponent<PositionComponent>(Entity e) {
+    auto it = m_Positions.find(e);
+    return (it != m_Positions.end()) ? &it->second : nullptr;
+}
+
+template <>
+bool Registry::HasComponent<PositionComponent>(Entity e) const {
+    return m_Positions.count(e) > 0;
+}
+
+template <>
+void Registry::AddComponent<LineComponent>(Entity e, const LineComponent& comp) {
+    m_Lines[e] = comp;
+}
+
+template <>
+LineComponent* Registry::GetComponent<LineComponent>(Entity e) {
+    auto it = m_Lines.find(e);
+    return (it != m_Lines.end()) ? &it->second : nullptr;
+}
+
+template <>
+bool Registry::HasComponent<LineComponent>(Entity e) const {
+    return m_Lines.count(e) > 0;
+}
+
+template <>
+void Registry::AddComponent<FaceComponent>(Entity e, const FaceComponent& comp) {
+    m_Faces[e] = comp;
+}
+
+template <>
+FaceComponent* Registry::GetComponent<FaceComponent>(Entity e) {
+    auto it = m_Faces.find(e);
+    return (it != m_Faces.end()) ? &it->second : nullptr;
+}
+
+template <>
+bool Registry::HasComponent<FaceComponent>(Entity e) const {
+    return m_Faces.count(e) > 0;
+}
+
+template <>
+void Registry::AddComponent<BodyComponent>(Entity e, const BodyComponent& comp) {
+    m_Bodies[e] = comp;
+}
+
+template <>
+BodyComponent* Registry::GetComponent<BodyComponent>(Entity e) {
+    auto it = m_Bodies.find(e);
+    return (it != m_Bodies.end()) ? &it->second : nullptr;
+}
+
+template <>
+bool Registry::HasComponent<BodyComponent>(Entity e) const {
+    return m_Bodies.count(e) > 0;
+}
+
+std::vector<Entity> Registry::Entities() const {
+    std::vector<Entity> result;
+
+    auto collect = [&](const auto& map) {
+        for (const auto& [e, _] : map) result.push_back(e);
+    };
+
+    collect(m_Names);
+    collect(m_Positions);
+    collect(m_Lines);
+    collect(m_Faces);
+    collect(m_Bodies);
+
+    // remove duplicate
+    std::sort(result.begin(), result.end());
+    result.erase(std::unique(result.begin(), result.end()), result.end());
+
+    return result;
+}
+
+}  // namespace nc
