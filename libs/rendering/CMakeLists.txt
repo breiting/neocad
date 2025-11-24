@@ -1,9 +1,12 @@
 add_library(neocad_rendering STATIC
-	src/CanvasRenderer2D.cpp
+# src/CanvasRenderer2D.cpp
 	src/FontLoaderSTB.cpp
 	src/GlyphAtlas.cpp
 	src/TextRenderer2D.cpp
 	src/FontSystem.cpp
+	src/Camera2D.cpp
+	src/Camera3D.cpp
+	src/ViewController.cpp
 )
 
 target_include_directories(neocad_rendering
