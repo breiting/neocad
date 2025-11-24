@@ -23,8 +23,8 @@ bool LuaEngine::Initialize(std::string* err) {
         BindConstruct(cad, m_API);
         BindIO(cad, m_API);
 
-        PrintRegisteredFunctions();
-        PrintTable("cad");
+        // PrintRegisteredFunctions();
+        // PrintTable("cad");
 
         m_Initialized = true;
         return true;

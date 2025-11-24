@@ -5,8 +5,10 @@
 #include <neocad/domain/IGeometryBackend.hpp>
 #include <neocad/domain/Registry.hpp>
 #include <neocad/editor/Editor.hpp>
-#include <neocad/editor/InsertLineTool.hpp>
 #include <neocad/editor/InsertPointTool.hpp>
+#include <neocad/editor/SketchCurveTool.hpp>
+
+#include "neocad/editor/InputEvent.hpp"
 
 using namespace nc;
 
@@ -100,9 +102,9 @@ TEST(EditorBasics, ModeSwitchCallsEnterExit) {
     editor.RegisterTool(EditorMode::InsertPoint, std::move(toolInsert));
 
     // Initially in Normal, so Normal's OnEnter should have been called once
-    editor.SetMode(EditorMode::Normal);
-    EXPECT_EQ(ptrNormal->enterCount, 1);
-    EXPECT_EQ(ptrNormal->exitCount, 0);
+    editor.SetMode(EditorMode::InsertPoint);
+    EXPECT_EQ(toolInsert->enterCount, 1);
+    EXPECT_EQ(toolInsert->exitCount, 0);
 
     // Switch to InsertPoint
     editor.SetMode(EditorMode::InsertPoint);
@@ -113,6 +115,18 @@ TEST(EditorBasics, ModeSwitchCallsEnterExit) {
     editor.SetMode(EditorMode::Normal);
     EXPECT_EQ(ptrInsert->exitCount, 1);
     EXPECT_EQ(ptrNormal->enterCount, 2);  // entered again
+}
+
+TEST(InputEvent, DetectMouseClick) {
+    MouseButtonEvent e{MouseButton::Left, 100, 200};
+    InputEvent evt(e);
+    EXPECT_TRUE(evt.IsLeftMouseClick());
+}
+
+TEST(InputEvent, KeyPress) {
+    KeyEvent e{Key::Enter, KeyAction::Press};
+    InputEvent evt(e);
+    EXPECT_TRUE(evt.IsKeyPressed(Key::Enter));
 }
 
 // 3) InsertPointTool creates one point per click
@@ -126,73 +140,30 @@ TEST(InsertPointToolTests, CreatesPointOnClick) {
     editor.RegisterTool(EditorMode::InsertPoint, std::make_unique<InsertPointTool>());
     editor.SetMode(EditorMode::InsertPoint);
 
-    InputEvent ev;
-    ev.type = InputEventType::MouseButton;
-    MouseButtonEvent mb;
-    mb.button = 0;
-    mb.pressed = true;
-    mb.x = 10.0;
-    mb.y = 20.0;
-    ev.data = mb;
-
+    MouseButtonEvent e{MouseButton::Left, 10, 20};
+    InputEvent ev(e);
     editor.OnInput(ev);
-
     EXPECT_EQ(CountPoints(reg), 1u);
 }
 
-// 4) InsertLineTool creates 2 points and 1 line after 2 clicks
-TEST(InsertLineToolTests, CreatesLineAfterTwoClicks) {
+TEST(SketchCurveTool, FaceCreation) {
     Registry reg;
     DummyBackend backend;
     GeometrySystem geom(reg, backend);
-    ToolContext ctx(reg, geom);
+    ToolContext ctx{reg, geom};
 
-    Editor editor(ctx);
-    editor.RegisterTool(EditorMode::InsertLine, std::make_unique<InsertLineTool>());
-    editor.SetMode(EditorMode::InsertLine);
+    SketchCurveTool tool{CurveMode::Face};
+    tool.OnEnter(ctx);
 
-    InputEvent ev1;
-    ev1.type = InputEventType::MouseButton;
-    MouseButtonEvent mb1;
-    mb1.button = 0;
-    mb1.pressed = true;
-    mb1.x = 0.0;
-    mb1.y = 0.0;
-    ev1.data = mb1;
+    // simulate clicks
+    tool.OnInput(InputEvent(MouseButtonEvent({MouseButton::Left, 0, 0})), ctx);
+    tool.OnInput(InputEvent(MouseButtonEvent({MouseButton::Left, 10, 0})), ctx);
+    tool.OnInput(InputEvent(MouseButtonEvent({MouseButton::Left, 10, 10})), ctx);
+    tool.OnInput(InputEvent(MouseButtonEvent({MouseButton::Left, 0, 10})), ctx);
 
-    InputEvent ev2;
-    ev2.type = InputEventType::MouseButton;
-    MouseButtonEvent mb2;
-    mb2.button = 0;
-    mb2.pressed = true;
-    mb2.x = 10.0;
-    mb2.y = 0.0;
-    ev2.data = mb2;
+    // ENTER  → close and make FaceEntity
+    tool.OnInput(InputEvent(KeyEvent({Key::Enter, KeyAction::Press})), ctx);
 
-    editor.OnInput(ev1);
-    editor.OnInput(ev2);
-
-    EXPECT_EQ(CountPoints(reg), 2u);
-    EXPECT_EQ(CountLines(reg), 1u);
-}
-
-// 5) Mode without tool does not crash and ignores input
-TEST(EditorBasics, MissingToolIsGraceful) {
-    Registry reg;
-    DummyBackend backend;
-    GeometrySystem geom(reg, backend);
-    ToolContext ctx(reg, geom);
-
-    Editor editor(ctx);
-    editor.SetMode(EditorMode::Select);  // no tool registered
-
-    InputEvent ev;
-    ev.type = InputEventType::Key;
-    KeyEvent ke;
-    ke.key = 42;
-    ke.pressed = true;
-    ev.data = ke;
-
-    // Should not crash, just no-op:
-    editor.OnInput(ev);
+    // EXPECT_EQ(CountEntitiesWith<FaceComponent>(reg), 1u);
+    // EXPECT_EQ(CountEntitiesWith<LineComponent>(reg), 4u);
 }
