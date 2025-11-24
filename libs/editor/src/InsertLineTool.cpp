@@ -26,7 +26,7 @@ void InsertLineTool::OnInput(const InputEvent& event, ToolContext& ctx) {
 
     // Create a point at click position
     PositionComponent pc;
-    pc.position = glm::dvec3(mb->x, mb->y, 0.0);
+    pc.position = vec3(mb->x, mb->y, 0.0);
     Entity pointEntity = reg.CreateEntity();
     reg.AddComponent(pointEntity, pc);
 

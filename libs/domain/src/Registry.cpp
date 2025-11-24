@@ -44,6 +44,24 @@ bool Registry::HasComponent<PositionComponent>(Entity e) const {
     return m_Positions.count(e) > 0;
 }
 
+// ---------- CIRCLES ----------
+
+template <>
+void Registry::AddComponent<RadiusComponent>(Entity e, const RadiusComponent& comp) {
+    m_Circles[e] = comp;
+}
+
+template <>
+RadiusComponent* Registry::GetComponent<RadiusComponent>(Entity e) {
+    auto it = m_Circles.find(e);
+    return (it != m_Circles.end()) ? &it->second : nullptr;
+}
+
+template <>
+bool Registry::HasComponent<RadiusComponent>(Entity e) const {
+    return m_Circles.count(e) > 0;
+}
+
 // ---------- LINE ----------
 
 template <>

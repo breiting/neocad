@@ -22,7 +22,7 @@ void InsertPointTool::OnInput(const InputEvent& event, ToolContext& ctx) {
     auto& reg = ctx.GetRegistry();
     Entity e = reg.CreateEntity();
     PositionComponent pc;
-    pc.position = glm::dvec3(wx, wy, wz);
+    pc.position = vec3(wx, wy, wz);
     reg.AddComponent(e, pc);
 }
 

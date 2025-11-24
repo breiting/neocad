@@ -24,6 +24,7 @@ class Registry {
     Entity m_NextId = 1;
     std::unordered_map<Entity, NameComponent> m_Names;
     std::unordered_map<Entity, PositionComponent> m_Positions;
+    std::unordered_map<Entity, RadiusComponent> m_Circles;
     std::unordered_map<Entity, LineComponent> m_Lines;
     std::unordered_map<Entity, FaceComponent> m_Faces;
     std::unordered_map<Entity, BodyComponent> m_Bodies;

@@ -12,7 +12,6 @@ class InsertLineTool : public ITool {
    public:
     void OnEnter(ToolContext&) override;
     void OnExit(ToolContext&) override;
-
     void OnInput(const InputEvent& event, ToolContext& ctx) override;
 
    private:
