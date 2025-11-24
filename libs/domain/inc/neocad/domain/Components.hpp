@@ -47,4 +47,13 @@ struct MeshComponent {
     TriMesh mesh;
 };
 
+/// SketchPlane component which acts as a proxy for 2D sketching
+struct SketchPlaneComponent {
+    vec3 origin{0, 0, 0};
+    vec3 normal{0, 0, 1};  // Z = Up
+    vec3 xdir{1, 0, 0};
+    vec3 ydir{0, 1, 0};
+    bool active = false;
+};
+
 }  // namespace nc

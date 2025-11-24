@@ -8,3 +8,4 @@ AllowShortLambdasOnASingleLine: false
 AllowShortFunctionsOnASingleLine: false
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
+AllowShortEnumsOnASingleLine: false

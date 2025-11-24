@@ -8,6 +8,8 @@ Entity Registry::CreateEntity() {
     return m_NextId++;
 }
 
+// ---------- NAME ----------
+
 template <>
 void Registry::AddComponent<NameComponent>(Entity e, const NameComponent& tag) {
     m_Names[e] = tag;
@@ -23,6 +25,8 @@ template <>
 bool Registry::HasComponent<NameComponent>(Entity e) const {
     return m_Names.count(e) > 0;
 }
+
+// ---------- POSITION ----------
 
 template <>
 void Registry::AddComponent<PositionComponent>(Entity e, const PositionComponent& comp) {
@@ -40,6 +44,8 @@ bool Registry::HasComponent<PositionComponent>(Entity e) const {
     return m_Positions.count(e) > 0;
 }
 
+// ---------- LINE ----------
+
 template <>
 void Registry::AddComponent<LineComponent>(Entity e, const LineComponent& comp) {
     m_Lines[e] = comp;
@@ -56,6 +62,7 @@ bool Registry::HasComponent<LineComponent>(Entity e) const {
     return m_Lines.count(e) > 0;
 }
 
+// ---------- FACE ----------
 template <>
 void Registry::AddComponent<FaceComponent>(Entity e, const FaceComponent& comp) {
     m_Faces[e] = comp;
@@ -72,6 +79,25 @@ bool Registry::HasComponent<FaceComponent>(Entity e) const {
     return m_Faces.count(e) > 0;
 }
 
+// ---------- SKETCHPLANE ----------
+template <>
+void Registry::AddComponent<SketchPlaneComponent>(Entity e, const SketchPlaneComponent& comp) {
+    m_SketchPlanes[e] = comp;
+}
+
+template <>
+
+SketchPlaneComponent* Registry::GetComponent<SketchPlaneComponent>(Entity e) {
+    auto it = m_SketchPlanes.find(e);
+    return (it != m_SketchPlanes.end()) ? &it->second : nullptr;
+}
+
+template <>
+bool Registry::HasComponent<SketchPlaneComponent>(Entity e) const {
+    return m_SketchPlanes.count(e) > 0;
+}
+
+// ---------- BODY ----------
 template <>
 void Registry::AddComponent<BodyComponent>(Entity e, const BodyComponent& comp) {
     m_Bodies[e] = comp;
@@ -88,11 +114,14 @@ bool Registry::HasComponent<BodyComponent>(Entity e) const {
     return m_Bodies.count(e) > 0;
 }
 
+// ---------- METHODS ----------
+//
 std::vector<Entity> Registry::Entities() const {
     std::vector<Entity> result;
 
     auto collect = [&](const auto& map) {
-        for (const auto& [e, _] : map) result.push_back(e);
+        for (const auto& [e, _] : map)
+            result.push_back(e);
     };
 
     collect(m_Names);
@@ -100,6 +129,7 @@ std::vector<Entity> Registry::Entities() const {
     collect(m_Lines);
     collect(m_Faces);
     collect(m_Bodies);
+    collect(m_SketchPlanes);
 
     // remove duplicate
     std::sort(result.begin(), result.end());
