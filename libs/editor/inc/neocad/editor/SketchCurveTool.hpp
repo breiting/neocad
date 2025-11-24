@@ -22,6 +22,9 @@ class SketchCurveTool : public ITool {
     void OnExit(ToolContext&) override;
     void OnInput(const InputEvent&, ToolContext&) override;
 
+    void Update(ToolContext& /*m_Ctx*/, double /*dt*/) override {
+    }
+
    private:
     CurveMode m_Mode;
     std::vector<Entity> m_Points;       // captured dynamic points

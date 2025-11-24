@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <cstddef>
 #include <neocad/domain/Components.hpp>
 #include <neocad/domain/GeometrySystem.hpp>
 #include <neocad/domain/IGeometryBackend.hpp>
@@ -83,6 +84,8 @@ class TestTool : public ITool {
     void OnInput(const InputEvent&, ToolContext&) override {
         ++inputCount;
     }
+    void Update(ToolContext&, double) override {
+    }
 };
 
 TEST(EditorBasics, ModeSwitchCallsEnterExit) {
@@ -118,15 +121,18 @@ TEST(EditorBasics, ModeSwitchCallsEnterExit) {
 }
 
 TEST(InputEvent, DetectMouseClick) {
-    MouseButtonEvent e{MouseButton::Left, 100, 200};
-    InputEvent evt(e);
-    EXPECT_TRUE(evt.IsLeftMouseClick());
+    MouseButtonEvent e{MouseButton::Left, true, {100, 200}};
+    InputEvent evt({InputEventType::MouseButton, e});
+    EXPECT_NE(AsMouseButton(evt), nullptr);
 }
 
 TEST(InputEvent, KeyPress) {
-    KeyEvent e{Key::Enter, KeyAction::Press};
-    InputEvent evt(e);
-    EXPECT_TRUE(evt.IsKeyPressed(Key::Enter));
+    KeyEvent e;
+    e.code = KeyCode::Enter;
+    e.pressed = true;
+    InputEvent evt({InputEventType::Key, e});
+    auto* k = AsKey(evt);
+    EXPECT_TRUE(k->code == KeyCode::Enter);
 }
 
 // 3) InsertPointTool creates one point per click
@@ -140,9 +146,9 @@ TEST(InsertPointToolTests, CreatesPointOnClick) {
     editor.RegisterTool(EditorMode::InsertPoint, std::make_unique<InsertPointTool>());
     editor.SetMode(EditorMode::InsertPoint);
 
-    MouseButtonEvent e{MouseButton::Left, 10, 20};
-    InputEvent ev(e);
-    editor.OnInput(ev);
+    MouseButtonEvent e{MouseButton::Left, true, {10, 20}};
+    InputEvent evt({InputEventType::MouseButton, e});
+    editor.OnInput(evt);
     EXPECT_EQ(CountPoints(reg), 1u);
 }
 
@@ -156,13 +162,23 @@ TEST(SketchCurveTool, FaceCreation) {
     tool.OnEnter(ctx);
 
     // simulate clicks
-    tool.OnInput(InputEvent(MouseButtonEvent({MouseButton::Left, 0, 0})), ctx);
-    tool.OnInput(InputEvent(MouseButtonEvent({MouseButton::Left, 10, 0})), ctx);
-    tool.OnInput(InputEvent(MouseButtonEvent({MouseButton::Left, 10, 10})), ctx);
-    tool.OnInput(InputEvent(MouseButtonEvent({MouseButton::Left, 0, 10})), ctx);
+    MouseButtonEvent mb1{MouseButton::Left, true, {0, 0}};
+    MouseButtonEvent mb2{MouseButton::Left, true, {10, 0}};
+    MouseButtonEvent mb3{MouseButton::Left, true, {10, 10}};
+    MouseButtonEvent mb4{MouseButton::Left, true, {0, 10}};
+
+    tool.OnInput({InputEventType::MouseButton, mb1}, ctx);
+    tool.OnInput({InputEventType::MouseButton, mb2}, ctx);
+    tool.OnInput({InputEventType::MouseButton, mb3}, ctx);
+    tool.OnInput({InputEventType::MouseButton, mb4}, ctx);
 
     // ENTER  → close and make FaceEntity
-    tool.OnInput(InputEvent(KeyEvent({Key::Enter, KeyAction::Press})), ctx);
+    //
+    KeyEvent e;
+    e.code = KeyCode::Enter;
+    e.pressed = true;
+    //
+    tool.OnInput(InputEvent({InputEventType::Key, e}), ctx);
 
     // EXPECT_EQ(CountEntitiesWith<FaceComponent>(reg), 1u);
     // EXPECT_EQ(CountEntitiesWith<LineComponent>(reg), 4u);

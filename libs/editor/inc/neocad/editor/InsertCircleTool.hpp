@@ -15,6 +15,9 @@ class InsertCircleTool : public ITool {
     }
     void OnInput(const InputEvent& event, ToolContext& ctx) override;
 
+    void Update(ToolContext& /*m_Ctx*/, double /*dt*/) override {
+    }
+
    private:
     std::optional<Entity> m_Center;  // first click stores center
 };

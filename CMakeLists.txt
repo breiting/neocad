@@ -101,6 +101,7 @@ set(GEN_INC_DIR    "${CMAKE_BINARY_DIR}/generated")
 
 add_subdirectory(libs)
 add_subdirectory(apps/headless)
+add_subdirectory(apps/neocad)
 
 enable_testing()
 add_subdirectory(tests)

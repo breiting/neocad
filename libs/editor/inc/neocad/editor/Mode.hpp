@@ -7,6 +7,8 @@ enum class EditorMode {
     Normal,
     InsertPoint,
     InsertLine,
+    InsertCircle,
+    InsertSketch,
     Select
 };
 

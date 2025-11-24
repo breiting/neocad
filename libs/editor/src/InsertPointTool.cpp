@@ -6,10 +6,11 @@
 namespace nc {
 
 void InsertPointTool::OnInput(const InputEvent& ev, ToolContext& ctx) {
-    if (ev.IsLeftMouseClick()) {
-        const auto& m = ev.AsMouseButton();
-        double wx = m.x;
-        double wy = m.y;
+    if (auto* m = AsMouseButton(ev)) {
+        if (!(m->button == MouseButton::Left))
+            return;
+        double wx = m->position.x;
+        double wy = m->position.y;
         double wz = 0.0;
 
         auto& reg = ctx.GetRegistry();

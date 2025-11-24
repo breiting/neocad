@@ -22,10 +22,12 @@ void SketchCurveTool::OnInput(const InputEvent& ev, ToolContext& ctx) {
     auto& reg = ctx.GetRegistry();
     auto& geom = ctx.GetGeometrySystem();
 
-    if (ev.IsLeftMouseClick()) {
-        const auto& m = ev.AsMouseButton();
+    if (auto* m = AsMouseButton(ev)) {
+        if (!(m->button == MouseButton::Left))
+            return;
+
         Entity p = reg.CreateEntity();
-        reg.AddComponent(p, PositionComponent{{m.x, m.y, 0.0}});
+        reg.AddComponent(p, PositionComponent{{m->position.x, m->position.y, 0.0}});
         m_Points.push_back(p);
 
         // --- MODE: LINE ---
@@ -40,22 +42,24 @@ void SketchCurveTool::OnInput(const InputEvent& ev, ToolContext& ctx) {
         return;
     }
 
-    if (ev.IsKeyPressed(Key::Escape)) {
-        // finish polyline WITHOUT closing
-        if (m_Mode == CurveMode::Polyline) {
-            FinalizePolyline(ctx);
+    if (auto* k = AsKey(ev)) {
+        if (k->code == KeyCode::Escape) {
+            // finish polyline WITHOUT closing
+            if (m_Mode == CurveMode::Polyline) {
+                FinalizePolyline(ctx);
+            }
+            OnExit(ctx);
+            return;
         }
-        OnExit(ctx);
-        return;
-    }
 
-    if (ev.IsKeyPressed(Key::Enter)) {
-        // finish face WITH closing loop
-        if (m_Mode == CurveMode::Face) {
-            FinalizeFace(ctx);
+        if (k->code == KeyCode::Enter) {
+            // finish face WITH closing loop
+            if (m_Mode == CurveMode::Face) {
+                FinalizeFace(ctx);
+            }
+            OnExit(ctx);
+            return;
         }
-        OnExit(ctx);
-        return;
     }
 }
 

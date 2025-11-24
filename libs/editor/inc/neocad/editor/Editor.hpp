@@ -4,36 +4,49 @@
 #include <neocad/editor/InputEvent.hpp>
 #include <neocad/editor/Mode.hpp>
 #include <neocad/editor/ToolContext.hpp>
+#include <string>
 #include <unordered_map>
 
 namespace nc {
 
-/// Central editor controller.
-/// - Holds current mode.
-/// - Dispatches input events to the active tool.
-/// - Owns tools mapped to modes.
 class Editor {
    public:
     explicit Editor(ToolContext& ctx);
 
-    /// Set the current mode, switching tools accordingly.
-    void SetMode(EditorMode mode);
+    /// Called once per frame (or simulation step)
+    void Update(double dt);
 
-    /// Get current mode.
+    /// Feed an input event into the editor (from UI layer).
+    void OnInput(const InputEvent& ev);
+
+    /// Register a tool for an editor mode.
+    void RegisterTool(EditorMode mode, std::unique_ptr<ITool> tool);
+
+    /// Explicit mode switch (can also be triggered by shortcuts).
+    void SetMode(EditorMode mode);
     EditorMode GetMode() const {
         return m_Mode;
     }
 
-    /// Register a tool for a given mode.
-    void RegisterTool(EditorMode mode, std::unique_ptr<ITool> tool);
-
-    /// Process one input event (key, mouse, ...).
-    void OnInput(const InputEvent& event);
+    ToolContext& GetContext() {
+        return m_Ctx;
+    }
+    const ToolContext& GetContext() const {
+        return m_Ctx;
+    }
 
    private:
     ToolContext& m_Ctx;
     EditorMode m_Mode{EditorMode::Normal};
+
     std::unordered_map<EditorMode, std::unique_ptr<ITool>> m_Tools;
+    ITool* m_ActiveTool{nullptr};
+
+    /// Command buffer for vim-like key sequences ("ip", "il", "ic", "if", ...)
+    std::string m_CommandBuffer;
+
+    void HandleKey(const KeyEvent& key);
+    void ProcessCommandBuffer();
 };
 
 }  // namespace nc
