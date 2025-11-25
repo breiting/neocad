@@ -1,7 +1,7 @@
 #pragma once
 #include <neocad/editor/InputEvent.hpp>
 
-namespace nc {
+namespace nc::editor {
 
 class ToolContext;
 

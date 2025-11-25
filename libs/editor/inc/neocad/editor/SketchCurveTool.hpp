@@ -5,7 +5,7 @@
 #include <neocad/editor/ITool.hpp>
 #include <vector>
 
-namespace nc {
+namespace nc::editor {
 
 enum class CurveMode {
     Line,      // 2 points, immediate line

@@ -7,7 +7,7 @@
 #include <string>
 #include <unordered_map>
 
-namespace nc {
+namespace nc::editor {
 
 class Editor {
    public:

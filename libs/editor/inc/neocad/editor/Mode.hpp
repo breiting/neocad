@@ -1,6 +1,6 @@
 #pragma once
 
-namespace nc {
+namespace nc::editor {
 
 /// High-level editor modes, similar to Vim's Normal/Insert/etc.
 enum class EditorMode {

@@ -3,7 +3,7 @@
 #include <neocad/domain/Types.hpp>
 #include <variant>
 
-namespace nc {
+namespace nc::editor {
 
 enum class InputEventType {
     Key,

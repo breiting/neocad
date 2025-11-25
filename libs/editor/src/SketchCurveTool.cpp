@@ -3,7 +3,7 @@
 #include <neocad/editor/SketchCurveTool.hpp>
 #include <neocad/editor/ToolContext.hpp>
 
-namespace nc {
+namespace nc::editor {
 
 // -------------------------------------------------
 void SketchCurveTool::OnEnter(ToolContext&) {

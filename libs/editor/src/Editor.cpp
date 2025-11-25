@@ -1,7 +1,7 @@
 #include <cctype>
 #include <neocad/editor/Editor.hpp>
 
-namespace nc {
+namespace nc::editor {
 
 Editor::Editor(ToolContext& ctx) : m_Ctx(ctx) {
 }

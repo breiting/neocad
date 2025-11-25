@@ -6,7 +6,7 @@
 #include <neocad/editor/InsertCircleTool.hpp>
 #include <neocad/editor/ToolContext.hpp>
 
-namespace nc {
+namespace nc::editor {
 
 void InsertCircleTool::OnInput(const InputEvent& ev, ToolContext& ctx) {
     if (auto* m = AsMouseButton(ev)) {

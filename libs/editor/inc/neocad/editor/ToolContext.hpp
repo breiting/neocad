@@ -2,7 +2,7 @@
 #include <neocad/domain/GeometrySystem.hpp>
 #include <neocad/domain/Registry.hpp>
 
-namespace nc {
+namespace nc::editor {
 
 /// Lightweight façade passed into tools so they can operate on the ECS
 /// and geometry services without knowing about UI or rendering.

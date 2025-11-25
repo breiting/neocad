@@ -3,7 +3,7 @@
 #include <neocad/editor/ITool.hpp>
 #include <optional>
 
-namespace nc {
+namespace nc::editor {
 
 class InsertCircleTool : public ITool {
    public:

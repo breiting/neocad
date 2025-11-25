@@ -1,7 +1,7 @@
 #pragma once
 #include <neocad/editor/ITool.hpp>
 
-namespace nc {
+namespace nc::editor {
 
 /// Simple tool: on mouse click, creates a point entity in the ECS.
 class InsertPointTool : public ITool {
