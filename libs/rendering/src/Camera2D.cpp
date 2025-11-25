@@ -3,24 +3,28 @@
 
 namespace nc {
 
-void Camera2D::Pan(double dx, double dy) {
-    m_Center += glm::dvec2(dx, dy) * m_Scale;
+void Camera2D::Pan(float dx, float dy) {
+    m_Center += glm::vec2(dx, dy) * m_Scale;
 }
 
-void Camera2D::Zoom(double factor) {
+void Camera2D::Zoom(float factor) {
     m_Scale /= factor;
 }
 
-glm::dmat4 Camera2D::GetViewMatrix() const {
-    glm::dvec3 eye = {m_Center.x, m_Center.y, +10.0};
-    glm::dvec3 at = {m_Center.x, m_Center.y, 0.0};
-    return glm::lookAt(eye, at, glm::dvec3(0, 1, 0));
+void Camera2D::SetAspect(float aspect) {
+    m_Aspect = aspect;
 }
 
-glm::dmat4 Camera2D::GetProjMatrix(double aspect) const {
-    double halfW = m_Scale;
-    double halfH = m_Scale / aspect;
+glm::mat4 Camera2D::View() const {
+    float halfW = m_Scale;
+    float halfH = m_Scale / m_Aspect;
     return glm::ortho(-halfW, halfW, -halfH, halfH, m_Near, m_Far);
+}
+
+glm::mat4 Camera2D::Projection() const {
+    glm::vec3 eye = {m_Center.x, m_Center.y, +10.0};
+    glm::vec3 at = {m_Center.x, m_Center.y, 0.0};
+    return glm::lookAt(eye, at, glm::vec3(0, 1, 0));
 }
 
 }  // namespace nc

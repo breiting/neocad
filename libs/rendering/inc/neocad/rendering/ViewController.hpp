@@ -4,7 +4,7 @@
 #include <neocad/rendering/Camera3D.hpp>
 #include <neocad/rendering/ViewMode.hpp>
 
-namespace nc::rendering {
+namespace nc {
 
 struct ViewState {
     ViewMode mode;
@@ -19,7 +19,7 @@ class ViewController {
     void Update(double dt);
     void OnInput(const nc::InputEvent& ev);
 
-    ViewState GetViewState() const;
+    ViewState GetViewState();
 
    private:
     Camera3D m_Cam3D;
@@ -43,4 +43,4 @@ class ViewController {
     void HandleMouseInput(const nc::MouseButtonEvent&, const nc::MouseMoveEvent&, const nc::ScrollEvent&);
 };
 
-}  // namespace nc::rendering
+}  // namespace nc

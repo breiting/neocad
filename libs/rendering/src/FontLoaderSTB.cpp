@@ -5,11 +5,12 @@
 
 #include "stb_truetype.h"
 
-namespace nc::rendering {
+namespace nc {
 
 bool FontLoaderSTB::LoadFromSTB(const uint8_t* data, float pixelHeight) {
     stbtt_fontinfo font{};
-    if (!stbtt_InitFont(&font, data, 0)) return false;
+    if (!stbtt_InitFont(&font, data, 0))
+        return false;
 
     float scale = stbtt_ScaleForPixelHeight(&font, pixelHeight);
 
@@ -27,11 +28,13 @@ bool FontLoaderSTB::LoadFromSTB(const uint8_t* data, float pixelHeight) {
 
         int w = x1 - x0;
         int h = y1 - y0;
-        if (w <= 0 || h <= 0) continue;
+        if (w <= 0 || h <= 0)
+            continue;
 
         int bw, bh;
         unsigned char* bmp = stbtt_GetCodepointBitmap(&font, 0.0f, scale, c, &bw, &bh, nullptr, nullptr);
-        if (!bmp) continue;
+        if (!bmp)
+            continue;
 
         // Sanity: w/h sollten mit bw/bh übereinstimmen
         if (bw != w || bh != h) {
@@ -82,4 +85,4 @@ const FontGlyph* FontLoaderSTB::GetGlyph(char c) const {
     return (it != m_Glyphs.end()) ? &it->second : nullptr;
 }
 
-}  // namespace nc::rendering
+}  // namespace nc

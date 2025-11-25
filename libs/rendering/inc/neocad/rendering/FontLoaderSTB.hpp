@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace nc::rendering {
+namespace nc {
 
 struct FontGlyph {
     glm::vec2 size;               // width/height in px
@@ -39,4 +39,4 @@ class FontLoaderSTB {
     float m_LineGap = 0.f;
 };
 
-}  // namespace nc::rendering
+}  // namespace nc

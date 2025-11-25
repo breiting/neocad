@@ -1,8 +1,7 @@
-#include "neocad/rendering/GlyphAtlas.hpp"
-
+#include <neocad/rendering/GlyphAtlas.hpp>
 #include <vector>
 
-namespace nc::rendering {
+namespace nc {
 
 bool GlyphAtlas::BuildFrom(const FontLoaderSTB& font) {
     const int atlasSize = 2048;
@@ -19,7 +18,8 @@ bool GlyphAtlas::BuildFrom(const FontLoaderSTB& font) {
 
     for (char c = 32; c < 127; ++c) {
         const FontGlyph* g = font.GetGlyph(c);
-        if (!g) continue;
+        if (!g)
+            continue;
 
         int gw = static_cast<int>(g->size.x);
         int gh = static_cast<int>(g->size.y);
@@ -54,7 +54,8 @@ bool GlyphAtlas::BuildFrom(const FontLoaderSTB& font) {
         m_Glyphs[c] = info;
 
         penX += gw + padding;
-        if (gh > rowHeight) rowHeight = gh;
+        if (gh > rowHeight)
+            rowHeight = gh;
     }
 
     if (m_Texture) {
@@ -78,4 +79,4 @@ const GlyphAtlas::GlyphUV* GlyphAtlas::GetGlyph(char c) const {
     return (it != m_Glyphs.end()) ? &it->second : nullptr;
 }
 
-}  // namespace nc::rendering
+}  // namespace nc

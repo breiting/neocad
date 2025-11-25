@@ -4,7 +4,7 @@
 
 #include "TriMesh.hpp"
 
-namespace stlviewer {
+namespace nc {
 
 /// \brief Loader for ASCII and binary STL files into a TriMesh.
 ///        Designed as a stateless, reusable component.
@@ -25,4 +25,4 @@ class StlReader final {
     [[nodiscard]] bool LoadFromFile(const std::string& filePath, TriMesh& outMesh) const;
 };
 
-}  // namespace stlviewer
+}  // namespace nc

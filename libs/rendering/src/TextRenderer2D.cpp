@@ -1,8 +1,7 @@
-#include "neocad/rendering/TextRenderer2D.hpp"
-
 #include <glm/gtc/type_ptr.hpp>
+#include <neocad/rendering/TextRenderer2D.hpp>
 
-namespace nc::rendering {
+namespace nc {
 
 static const char* kTextVS = R"(
 #version 410 core
@@ -105,7 +104,8 @@ void TextRenderer2D::BeginBatch() {
 }
 
 void TextRenderer2D::AddText(const std::string& text, float x, float y, float scale, const glm::vec3& color) {
-    if (!m_Atlas) return;
+    if (!m_Atlas)
+        return;
 
     m_StartX = x;
     float penX = x;
@@ -158,7 +158,8 @@ void TextRenderer2D::AddText(const std::string& text, float x, float y, float sc
 }
 
 void TextRenderer2D::Flush(const glm::mat4& proj) {
-    if (!m_Atlas || m_Vertices.empty()) return;
+    if (!m_Atlas || m_Vertices.empty())
+        return;
 
     glUseProgram(m_Shader);
     glUniformMatrix4fv(glGetUniformLocation(m_Shader, "uProj"), 1, GL_FALSE, glm::value_ptr(proj));
@@ -185,4 +186,4 @@ void TextRenderer2D::DrawText(const std::string& text, float x, float y, float s
     Flush(proj);
 }
 
-}  // namespace nc::rendering
+}  // namespace nc

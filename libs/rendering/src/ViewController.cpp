@@ -3,7 +3,7 @@
 #include <glm/gtx/matrix_interpolation.hpp>
 #include <neocad/rendering/ViewController.hpp>
 
-namespace nc::rendering {
+namespace nc {
 
 void ViewController::SetViewportSize(int w, int h) {
     m_W = w;
@@ -52,35 +52,37 @@ void ViewController::Update(double dt) {
     }
 }
 
-ViewState ViewController::GetViewState() const {
+ViewState ViewController::GetViewState() {
     double aspect = double(m_W) / double(m_H);
+    m_Cam2D.SetAspect(aspect);
+    m_Cam3D.SetAspect(aspect);
     ViewState vs;
 
     if (!m_Transition) {
         vs.mode = m_Mode;
         if (m_Mode == ViewMode::View3D) {
-            vs.view = m_Cam3D.GetViewMatrix();
-            vs.proj = m_Cam3D.GetProjMatrix(aspect);
+            vs.view = m_Cam3D.View();
+            vs.proj = m_Cam3D.Projection();
         } else {
-            vs.view = m_Cam2D.GetViewMatrix();
-            vs.proj = m_Cam2D.GetProjMatrix(aspect);
+            vs.view = m_Cam2D.View();
+            vs.proj = m_Cam2D.Projection();
         }
         return vs;
     }
 
     // During transition → interpolate view matrix
-    glm::dmat4 A = (m_Mode == ViewMode::View3D) ? m_Cam3D.GetViewMatrix() : m_Cam2D.GetViewMatrix();
-    glm::dmat4 B = (m_TargetMode == ViewMode::View3D) ? m_Cam3D.GetViewMatrix() : m_Cam2D.GetViewMatrix();
+    glm::dmat4 A = (m_Mode == ViewMode::View3D) ? m_Cam3D.View() : m_Cam2D.View();
+    glm::dmat4 B = (m_TargetMode == ViewMode::View3D) ? m_Cam3D.View() : m_Cam2D.View();
 
     vs.view = glm::interpolate(A, B, m_T);
 
     if (m_TargetMode == ViewMode::View3D)
-        vs.proj = m_Cam3D.GetProjMatrix(aspect);
+        vs.proj = m_Cam3D.Projection();
     else
-        vs.proj = m_Cam2D.GetProjMatrix(aspect);
+        vs.proj = m_Cam2D.Projection();
 
     vs.mode = m_Mode;
     return vs;
 }
 
-}  // namespace nc::rendering
+}  // namespace nc

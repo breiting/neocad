@@ -7,7 +7,7 @@
 
 #include "FontLoaderSTB.hpp"
 
-namespace nc::rendering {
+namespace nc {
 
 class GlyphAtlas {
    public:
@@ -34,4 +34,4 @@ class GlyphAtlas {
     float m_Ascent{0.0};
 };
 
-}  // namespace nc::rendering
+}  // namespace nc

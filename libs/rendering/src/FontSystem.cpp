@@ -1,11 +1,10 @@
-#include "neocad/rendering/FontSystem.hpp"
-
 #include <filesystem>
 #include <iostream>
+#include <neocad/rendering/FontSystem.hpp>
 
 #include "roboto_regular.h"
 
-namespace nc::rendering {
+namespace nc {
 
 bool FontSystem::LoadFromMemory(const uint8_t* data, float pixelHeight) {
     if (!m_Loader.LoadTTFMemory(data, pixelHeight)) {
@@ -23,7 +22,8 @@ std::string FontSystem::FindFont(const std::string& fileName) {
 
     for (const auto& dir : locations) {
         std::filesystem::path p = dir + fileName;
-        if (std::filesystem::exists(p)) return p.string();
+        if (std::filesystem::exists(p))
+            return p.string();
     }
     return "";
 }
@@ -46,4 +46,4 @@ bool FontSystem::LoadDefaultFont() {
     return LoadFromMemory(g_RobotoRegular, PIXEL_HEIGHT);
 }
 
-}  // namespace nc::rendering
+}  // namespace nc

@@ -1,25 +1,28 @@
 #pragma once
 #include <glm/mat4x4.hpp>
 #include <glm/vec2.hpp>
+#include <neocad/rendering/ICamera.hpp>
 
 namespace nc {
 
-class Camera2D {
+class Camera2D : public ICamera {
    public:
-    void SetCenter(const glm::dvec2& c) {
+    void SetCenter(const glm::vec2& c) {
         m_Center = c;
     }
-    void Pan(double dx, double dy);
-    void Zoom(double factor);  // >1 zoom in, <1 zoom out
-
-    glm::dmat4 GetViewMatrix() const;
-    glm::dmat4 GetProjMatrix(double aspect) const;
+    void Pan(float dx, float dy);
+    void Zoom(float factor);  // >1 zoom in, <1 zoom out
+                              //
+    void SetAspect(float aspect) override;
+    glm::mat4 View() const override;
+    glm::mat4 Projection() const override;
 
    private:
-    glm::dvec2 m_Center{0.0, 0.0};
-    double m_Scale{1.0};  // 1.0 = 1 Welt-Einheit == 1 NDC-Einheit (togglebar)
-    double m_Near{-1.0};
-    double m_Far{+1.0};
+    glm::vec2 m_Center{0.0, 0.0};
+    float m_Scale{1.0};  // 1.0 = 1 Welt-Einheit == 1 NDC-Einheit (togglebar)
+    float m_Near{-1.0};
+    float m_Far{+1.0};
+    float m_Aspect{1.0};
 };
 
 }  // namespace nc

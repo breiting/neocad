@@ -9,7 +9,7 @@
 
 #include "GlyphAtlas.hpp"
 
-namespace nc::rendering {
+namespace nc {
 
 class TextRenderer2D {
    public:
@@ -53,4 +53,4 @@ class TextRenderer2D {
     float m_StartX = 0.0f;
 };
 
-}  // namespace nc::rendering
+}  // namespace nc

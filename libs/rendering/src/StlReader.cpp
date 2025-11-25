@@ -8,7 +8,7 @@
 #include <sstream>
 #include <string>
 
-namespace stlviewer {
+namespace nc {
 
 namespace {
 
@@ -16,7 +16,10 @@ namespace {
 constexpr std::streamoff kStlBinaryHeaderSize = 80;
 constexpr std::streamoff kStlBinaryTriangleSize = 50;  // 12 bytes normal + 36 bytes verts + 2 bytes attribute
 
-enum class StlFormat { Binary, Ascii };
+enum class StlFormat {
+    Binary,
+    Ascii
+};
 
 [[nodiscard]] std::streamoff GetFileSize(std::ifstream& file) {
     const auto currentPos = file.tellg();
@@ -201,4 +204,4 @@ bool StlReader::LoadFromFile(const std::string& filePath, TriMesh& outMesh) cons
     }
 }
 
-}  // namespace stlviewer
+}  // namespace nc

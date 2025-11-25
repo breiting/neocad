@@ -2,7 +2,7 @@
 #include "FontLoaderSTB.hpp"
 #include "GlyphAtlas.hpp"
 
-namespace nc::rendering {
+namespace nc {
 
 class FontSystem {
    public:
@@ -31,4 +31,4 @@ class FontSystem {
     GlyphAtlas m_Atlas;
 };
 
-}  // namespace nc::rendering
+}  // namespace nc
