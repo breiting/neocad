@@ -4,6 +4,8 @@
 #include <glm/gtc/constants.hpp>
 #include <neocad/rendering/LineSet.hpp>
 
+using namespace nc::domain;
+
 namespace nc::vis {
 
 LineSet::LineSet() : BaseGeometry(), m_Vao(0), m_Vbo(0) {

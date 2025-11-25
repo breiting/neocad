@@ -1,6 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
-#include <neocad/rendering/Vertex.hpp>
+#include <neocad/domain/Vertex.hpp>
 #include <vector>
 
 namespace nc::vis {
@@ -13,12 +13,13 @@ class BaseGeometry {
     BaseGeometry();
     virtual ~BaseGeometry() = default;
 
-    void AddVertex(const Vertex& v);
+    void AddVertex(const domain::Vertex& v);
+    void SetVertices(const std::vector<domain::Vertex>& vertices);
     size_t VertexCount() const;
-    const std::vector<Vertex>& GetVertices() const;
+    const std::vector<domain::Vertex>& GetVertices() const;
 
    protected:
-    std::vector<Vertex> m_Vertices;
+    std::vector<domain::Vertex> m_Vertices;
     bool m_Dirty;
 };
 }  // namespace nc::vis

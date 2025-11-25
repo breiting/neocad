@@ -5,6 +5,8 @@
 #include <neocad/rendering/BaseGeometry.hpp>
 #include <neocad/rendering/Mesh.hpp>
 
+using namespace nc::domain;
+
 namespace nc::vis {
 
 Mesh::Mesh() : BaseGeometry(), m_Vao(0), m_Vbo(0), m_Ebo(0) {

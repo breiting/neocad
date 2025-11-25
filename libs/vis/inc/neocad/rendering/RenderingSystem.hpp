@@ -11,7 +11,7 @@ class RenderingSystem {
     RenderingSystem(Renderer& r) : m_Renderer(r) {
     }
 
-    void Update(const domain::Registry& ecs, const ICamera& cam);
+    void Update(domain::Registry& registry, const ICamera& cam);
 
    private:
     Renderer& m_Renderer;

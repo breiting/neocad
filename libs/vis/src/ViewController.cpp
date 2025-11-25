@@ -3,6 +3,8 @@
 #include <glm/gtx/matrix_interpolation.hpp>
 #include <neocad/rendering/ViewController.hpp>
 
+using namespace nc::editor;
+
 namespace nc::vis {
 
 void ViewController::SetViewportSize(int w, int h) {
@@ -10,10 +12,10 @@ void ViewController::SetViewportSize(int w, int h) {
     m_H = h;
 }
 
-void ViewController::OnInput(const nc::InputEvent& ev) {
+void ViewController::OnInput(const InputEvent& ev) {
     // 1) View-Mode-Switching
-    if (ev.type == nc::InputEventType::Key) {
-        const auto& k = std::get<nc::KeyEvent>(ev.data);
+    if (ev.type == InputEventType::Key) {
+        const auto& k = std::get<KeyEvent>(ev.data);
         if ((int)k.code == GLFW_KEY_KP_0)
             StartTransition(ViewMode::View3D);
         if ((int)k.code == GLFW_KEY_KP_1)
@@ -85,4 +87,4 @@ ViewState ViewController::GetViewState() {
     return vs;
 }
 
-}  // namespace nc
+}  // namespace nc::vis

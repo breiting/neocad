@@ -28,6 +28,7 @@ class Registry {
     std::unordered_map<Entity, LineComponent> m_Lines;
     std::unordered_map<Entity, FaceComponent> m_Faces;
     std::unordered_map<Entity, BodyComponent> m_Bodies;
+    std::unordered_map<Entity, MeshComponent> m_Meshes;
     std::unordered_map<Entity, SketchPlaneComponent> m_SketchPlanes;
 };
 }  // namespace nc::domain

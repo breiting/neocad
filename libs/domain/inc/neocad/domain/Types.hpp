@@ -1,5 +1,5 @@
 #pragma once
-#include <glm/glm.hpp>
+#include <neocad/domain/Vertex.hpp>
 #include <vector>
 
 namespace nc::domain {
@@ -10,12 +10,6 @@ using vec2 = glm::dvec2;
 /// Simple polygon in double precision in 3D space (used for face profiles).
 struct Polygon {
     std::vector<vec3> vertices;  ///< assumed ordered and planar
-};
-
-/// Simple vertex data structure
-struct Vertex {
-    glm::vec3 position{};
-    glm::vec3 normal{};
 };
 
 struct TriMesh {

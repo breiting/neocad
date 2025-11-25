@@ -97,6 +97,23 @@ bool Registry::HasComponent<FaceComponent>(Entity e) const {
     return m_Faces.count(e) > 0;
 }
 
+// ---------- MESH ----------
+template <>
+void Registry::AddComponent<MeshComponent>(Entity e, const MeshComponent& comp) {
+    m_Meshes[e] = comp;
+}
+
+template <>
+MeshComponent* Registry::GetComponent<MeshComponent>(Entity e) {
+    auto it = m_Meshes.find(e);
+    return (it != m_Meshes.end()) ? &it->second : nullptr;
+}
+
+template <>
+bool Registry::HasComponent<MeshComponent>(Entity e) const {
+    return m_Meshes.count(e) > 0;
+}
+
 // ---------- SKETCHPLANE ----------
 template <>
 void Registry::AddComponent<SketchPlaneComponent>(Entity e, const SketchPlaneComponent& comp) {
@@ -147,6 +164,7 @@ std::vector<Entity> Registry::Entities() const {
     collect(m_Lines);
     collect(m_Faces);
     collect(m_Bodies);
+    collect(m_Meshes);
     collect(m_SketchPlanes);
 
     // remove duplicate
@@ -156,4 +174,4 @@ std::vector<Entity> Registry::Entities() const {
     return result;
 }
 
-}  // namespace nc
+}  // namespace nc::domain

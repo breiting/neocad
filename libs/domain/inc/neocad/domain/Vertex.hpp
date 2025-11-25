@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-namespace nc::vis {
+namespace nc::domain {
 
 class Vertex {
    public:
@@ -58,4 +58,4 @@ class Vertex {
     glm::vec3 m_Color;
     glm::vec2 m_TexCoord;
 };
-}  // namespace nc::vis
+}  // namespace nc::domain

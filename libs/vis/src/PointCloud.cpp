@@ -4,6 +4,8 @@
 #include <glm/gtc/constants.hpp>
 #include <neocad/rendering/PointCloud.hpp>
 
+using namespace nc::domain;
+
 namespace nc::vis {
 
 PointCloud::PointCloud() : BaseGeometry(), m_Vao(0), m_Vbo(0) {

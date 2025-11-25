@@ -6,31 +6,38 @@
 using namespace nc::domain;
 
 namespace nc::vis {
-void RenderingSystem::Update(const Registry& registry, const ICamera& cam) {
+void RenderingSystem::Update(Registry& registry, const ICamera& cam) {
     m_Renderer.BeginFrame(cam);
 
-    // 1) RENDER MESHES
     {
-        auto entities = Query{}.Where(HasComponent<MeshComponent>()).Execute(registry);
+        auto entities = HasComponentQuery<MeshComponent>().Execute(registry);
         for (Entity e : entities) {
             auto* comp = registry.GetComponent<MeshComponent>(e);
             if (!comp)
                 continue;
 
-            auto& gpuMesh = m_GraphicCache[e];
-            if (!gpuMesh)
-                gpuMesh = std::make_shared<MeshGPU>();
+            auto& mesh = m_Meshes[e];
+            if (!mesh) {
+                mesh = std::make_shared<Mesh>();
 
-            gpuMesh->Upload(comp->mesh);
-            m_Renderer.DrawMesh(*gpuMesh, glm::mat4(1.0f));
+                mesh->SetVertices(comp->mesh.vertices);
+                for (size_t i = 0; i + 2 < comp->mesh.indices.size(); i += 3) {
+                    mesh->AddTriangle(comp->mesh.indices[i], comp->mesh.indices[i + 1], comp->mesh.indices[i + 2]);
+                }
+                mesh->RecalculateNormals();
+                mesh->Upload();
+            }
+
+            m_Renderer.DrawMesh(*mesh, glm::mat4(1.0f));
         }
     }
 
+#if 0
     // 2) RENDER LINE SETS
     {
-        auto entities = Query{}.Where(HasComponent<LineSetComponent>()).Execute(registry);
+        auto entities = HasComponentQuery<LineComponent>().Execute(registry);
         for (Entity e : entities) {
-            auto* comp = registry.GetComponent<LineSetComponent>(e);
+            auto* comp = registry.GetComponent<LineComponent>(e);
             if (!comp)
                 continue;
 
@@ -45,7 +52,7 @@ void RenderingSystem::Update(const Registry& registry, const ICamera& cam) {
 
     // 3) RENDER POINTS
     {
-        auto entities = Query{}.Where(HasComponent<PointComponent>()).Execute(registry);
+        auto entities = HasComponentQuery<PointComponent>().Execute(registry);
         for (Entity e : entities) {
             auto* comp = registry.GetComponent<PointComponent>(e);
             if (!comp)
@@ -59,6 +66,7 @@ void RenderingSystem::Update(const Registry& registry, const ICamera& cam) {
             m_Renderer.DrawPoints(*gpuPoints, glm::mat4(1.0f));
         }
     }
+#endif
 
     m_Renderer.EndFrame();
 }
