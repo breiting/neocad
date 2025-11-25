@@ -2,7 +2,7 @@
 #include <neocad/command/ICommand.hpp>
 #include <neocad/domain/Entity.hpp>
 
-namespace nc {
+namespace nc::cmd {
 
 /// Command to extrude a given face entity by a specified height.
 class ExtrudeCommand : public ICommand {

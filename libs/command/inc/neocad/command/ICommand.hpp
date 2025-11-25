@@ -1,6 +1,6 @@
 #pragma once
 
-namespace nc {
+namespace nc::cmd {
 
 class Registry;
 class GeometrySystem;

@@ -17,7 +17,7 @@
  */
 enum class LoggerLevels : uint16_t { NONE_ = 0x00, INFO_ = 0x01, DEBUG_ = 0x02, WARN_ = 0x04, ERROR_ = 0x08 };
 
-namespace nc {
+namespace nc::core {
 class LogSettings {
    public:
     /// Creates a global available instance (even creation is thread safe)

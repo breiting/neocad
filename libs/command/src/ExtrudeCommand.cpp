@@ -4,7 +4,7 @@
 #include <neocad/domain/GeometrySystem.hpp>
 #include <neocad/domain/Registry.hpp>
 
-namespace nc {
+namespace nc::cmd {
 
 ExtrudeCommand::ExtrudeCommand(Entity face, double height) : m_Face(face), m_Height(height) {
 }
