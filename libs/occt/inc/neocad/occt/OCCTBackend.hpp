@@ -5,7 +5,7 @@
 // Forward declare OCCT types
 class TopoDS_Shape;
 
-namespace nc {
+namespace nc::occt {
 
 /// OCCT-based geometry backend.
 /// Owns a collection of TopoDS_Shapes referenced by opaque handles.

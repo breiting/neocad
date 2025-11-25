@@ -12,7 +12,7 @@
 #include <gp_Vec.hxx>
 #include <neocad/occt/OCCTBackend.hpp>
 
-namespace nc {
+namespace nc::occt {
 
 OCCTBackend::OCCTBackend() = default;
 
