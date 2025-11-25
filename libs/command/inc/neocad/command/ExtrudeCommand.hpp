@@ -7,16 +7,16 @@ namespace nc::cmd {
 /// Command to extrude a given face entity by a specified height.
 class ExtrudeCommand : public ICommand {
    public:
-    explicit ExtrudeCommand(Entity face, double height);
+    explicit ExtrudeCommand(domain::Entity face, double height);
 
-    void Execute(Registry& registry, GeometrySystem& geom) override;
+    void Execute(domain::Registry& registry, domain::GeometrySystem& geom) override;
 
-    Entity GetFace() const;
+    domain::Entity GetFace() const;
     double GetHeight() const;
 
    private:
-    Entity m_Face{INVALID_ENTITY};
+    domain::Entity m_Face{domain::INVALID_ENTITY};
     double m_Height{0.0};
 };
 
-}  // namespace nc
+}  // namespace nc::cmd

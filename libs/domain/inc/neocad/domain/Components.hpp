@@ -56,4 +56,4 @@ struct SketchPlaneComponent {
     bool active = false;
 };
 
-}  // namespace nc
+}  // namespace nc::domain

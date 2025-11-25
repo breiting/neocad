@@ -1,8 +1,8 @@
 #include <iostream>
 #include <neocad/core/Logger.hpp>
-#include <neocad/scripting/Bindings.hpp>
-#include <neocad/scripting/LuaEngine.hpp>
-#include <neocad/scripting/PrettyLuaError.hpp>
+#include <neocad/lua/Bindings.hpp>
+#include <neocad/lua/LuaEngine.hpp>
+#include <neocad/lua/PrettyLuaError.hpp>
 
 namespace nc::lua {
 
@@ -128,4 +128,4 @@ void LuaEngine::Reset() {
     }
 }
 
-}  // namespace nc
+}  // namespace nc::lua

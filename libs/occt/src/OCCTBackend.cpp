@@ -12,6 +12,8 @@
 #include <gp_Vec.hxx>
 #include <neocad/occt/OCCTBackend.hpp>
 
+using namespace nc::domain;
+
 namespace nc::occt {
 
 OCCTBackend::OCCTBackend() = default;
@@ -31,12 +33,14 @@ BackendShapeHandle OCCTBackend::StoreShape(const TopoDS_Shape& shape) {
 
 TopoDS_Shape* OCCTBackend::GetShape(BackendShapeHandle handle) const {
     auto it = m_Shapes.find(handle);
-    if (it == m_Shapes.end()) return nullptr;
+    if (it == m_Shapes.end())
+        return nullptr;
     return it->second;
 }
 
 BackendShapeHandle OCCTBackend::CreateExtrudedBody(const Polygon& profile, double height) {
-    if (profile.vertices.size() < 3) return 0;
+    if (profile.vertices.size() < 3)
+        return 0;
 
     BRepBuilderAPI_MakeWire wireBuilder;
 
@@ -62,11 +66,13 @@ BackendShapeHandle OCCTBackend::CreateExtrudedBody(const Polygon& profile, doubl
 
 bool OCCTBackend::ExportShapeToSTEP(BackendShapeHandle handle, const std::string& filePath) const {
     TopoDS_Shape* shape = GetShape(handle);
-    if (!shape) return false;
+    if (!shape)
+        return false;
 
     STEPControl_Writer writer;
     IFSelect_ReturnStatus status = writer.Transfer(*shape, STEPControl_AsIs);
-    if (status != IFSelect_RetDone) return false;
+    if (status != IFSelect_RetDone)
+        return false;
 
     status = writer.Write(filePath.c_str());
     return status == IFSelect_RetDone;
@@ -74,7 +80,8 @@ bool OCCTBackend::ExportShapeToSTEP(BackendShapeHandle handle, const std::string
 
 bool OCCTBackend::ExportShapeToSTL(BackendShapeHandle handle, const std::string& filePath, double deflection) const {
     TopoDS_Shape* shape = GetShape(handle);
-    if (!shape) return false;
+    if (!shape)
+        return false;
 
     BRepMesh_IncrementalMesh mesher(*shape, deflection);
     StlAPI_Writer stlWriter;
@@ -82,4 +89,4 @@ bool OCCTBackend::ExportShapeToSTL(BackendShapeHandle handle, const std::string&
     return true;
 }
 
-}  // namespace nc
+}  // namespace nc::occt

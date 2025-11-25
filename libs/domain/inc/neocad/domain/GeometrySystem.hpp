@@ -34,4 +34,4 @@ class GeometrySystem {
     bool BuildPolygonFromFace(Entity faceEntity, Polygon& outPolygon) const;
 };
 
-}  // namespace nc
+}  // namespace nc::domain

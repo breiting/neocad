@@ -3,6 +3,8 @@
 #include <neocad/editor/SketchCurveTool.hpp>
 #include <neocad/editor/ToolContext.hpp>
 
+using namespace nc::domain;
+
 namespace nc::editor {
 
 // -------------------------------------------------
@@ -99,4 +101,4 @@ void SketchCurveTool::FinalizeFace(ToolContext& ctx) {
     reg.AddComponent(face, fc);
 }
 
-}  // namespace nc
+}  // namespace nc::editor

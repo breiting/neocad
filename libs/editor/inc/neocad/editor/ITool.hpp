@@ -25,4 +25,4 @@ class ITool {
     virtual void Update(ToolContext& m_Ctx, double dt) = 0;
 };
 
-}  // namespace nc
+}  // namespace nc::editor

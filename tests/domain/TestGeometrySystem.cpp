@@ -7,7 +7,7 @@
 
 #include "neocad/domain/Entity.hpp"
 
-using namespace nc;
+using namespace nc::domain;
 
 /// Simple fake backend for testing without OCCT.
 class FakeBackend : public IGeometryBackend {

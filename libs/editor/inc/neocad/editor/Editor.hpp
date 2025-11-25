@@ -49,4 +49,4 @@ class Editor {
     void ProcessCommandBuffer();
 };
 
-}  // namespace nc
+}  // namespace nc::editor

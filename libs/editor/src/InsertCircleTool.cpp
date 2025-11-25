@@ -6,6 +6,8 @@
 #include <neocad/editor/InsertCircleTool.hpp>
 #include <neocad/editor/ToolContext.hpp>
 
+using namespace nc::domain;
+
 namespace nc::editor {
 
 void InsertCircleTool::OnInput(const InputEvent& ev, ToolContext& ctx) {
@@ -46,4 +48,4 @@ void InsertCircleTool::OnInput(const InputEvent& ev, ToolContext& ctx) {
     }
 }
 
-}  // namespace nc
+}  // namespace nc::editor

@@ -36,15 +36,15 @@ struct KeyEvent {
 struct MouseButtonEvent {
     MouseButton button = MouseButton::Left;
     bool pressed = false;
-    vec2 position{0.0, 0.0};
+    domain::vec2 position{0.0, 0.0};
 };
 
 struct MouseMoveEvent {
-    vec2 position{0.0, 0.0};
+    domain::vec2 position{0.0, 0.0};
 };
 
 struct ScrollEvent {
-    vec2 offset{0.0, 0.0};
+    domain::vec2 offset{0.0, 0.0};
 };
 
 using InputEventData = std::variant<KeyEvent, MouseButtonEvent, MouseMoveEvent, ScrollEvent>;
@@ -80,4 +80,4 @@ inline const ScrollEvent* AsScroll(const InputEvent& ev) {
     return std::get_if<ScrollEvent>(&ev.data);
 }
 
-}  // namespace nc
+}  // namespace nc::editor

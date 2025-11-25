@@ -8,6 +8,9 @@
 #include <neocad/occt/OCCTBackend.hpp>
 
 using namespace nc;
+using namespace nc::domain;
+using namespace nc::occt;
+using namespace nc::cmd;
 
 int main() {
     LOG(INFO) << "================================";

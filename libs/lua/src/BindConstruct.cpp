@@ -1,5 +1,7 @@
 #include <neocad/domain/Entity.hpp>
-#include <neocad/scripting/Bindings.hpp>
+#include <neocad/lua/Bindings.hpp>
+
+using namespace nc::domain;
 
 namespace nc::lua {
 
@@ -9,4 +11,4 @@ void BindConstruct(sol::table &cad, CadAPI &api) {
     });
 }
 
-}  // namespace nc
+}  // namespace nc::lua

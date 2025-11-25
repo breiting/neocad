@@ -1,7 +1,9 @@
 #include <neocad/domain/Components.hpp>
 #include <neocad/domain/GeometrySystem.hpp>
 #include <neocad/domain/Registry.hpp>
-#include <neocad/scripting/CadAPI.hpp>
+#include <neocad/lua/CadAPI.hpp>
+
+using namespace nc::domain;
 
 namespace nc::lua {
 
@@ -38,4 +40,4 @@ bool CadAPI::ExportSTL(Entity body, const std::string& path, double deflection) 
     return m_GeometrySystem.ExportSTL(body, path, deflection);
 }
 
-}  // namespace nc
+}  // namespace nc::lua

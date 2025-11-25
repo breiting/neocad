@@ -34,4 +34,4 @@ struct TriMesh {
     }
 };
 
-}  // namespace nc
+}  // namespace nc::domain

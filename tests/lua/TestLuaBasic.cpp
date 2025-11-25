@@ -3,20 +3,22 @@
 #include <neocad/domain/Components.hpp>
 #include <neocad/domain/GeometrySystem.hpp>
 #include <neocad/domain/Registry.hpp>
+#include <neocad/lua/CadAPI.hpp>
+#include <neocad/lua/LuaEngine.hpp>
 #include <neocad/occt/OCCTBackend.hpp>
-#include <neocad/scripting/CadAPI.hpp>
-#include <neocad/scripting/LuaEngine.hpp>
 
-using namespace nc;
+using namespace nc::domain;
+using namespace nc::occt;
+using namespace nc::lua;
 
 TEST(LuaBasic, Simple) {
     Registry reg;
     OCCTBackend backend;
     GeometrySystem geom(reg, backend);
 
-    nc::CadAPI api(reg, geom);
+    CadAPI api(reg, geom);
 
-    nc::LuaEngine lua(api);
+    LuaEngine lua(api);
     std::string err;
 
     ASSERT_EQ(lua.Initialize(&err), true);

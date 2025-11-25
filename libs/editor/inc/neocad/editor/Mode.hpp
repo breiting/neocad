@@ -12,5 +12,4 @@ enum class EditorMode {
     Select
 };
 
-}  // namespace nc
-//
+}  // namespace nc::editor

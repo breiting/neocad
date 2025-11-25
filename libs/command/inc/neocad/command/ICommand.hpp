@@ -1,9 +1,9 @@
 #pragma once
 
-namespace nc::cmd {
+#include <neocad/domain/GeometrySystem.hpp>
+#include <neocad/domain/Registry.hpp>
 
-class Registry;
-class GeometrySystem;
+namespace nc::cmd {
 
 /**
  * \brief Command interface, which executed on Registry and GeometrySystem
@@ -11,7 +11,7 @@ class GeometrySystem;
 class ICommand {
    public:
     virtual ~ICommand() = default;
-    virtual void Execute(Registry& registry, GeometrySystem& geom) = 0;
+    virtual void Execute(domain::Registry& registry, domain::GeometrySystem& geom) = 0;
 };
 
-}  // namespace nc
+}  // namespace nc::cmd

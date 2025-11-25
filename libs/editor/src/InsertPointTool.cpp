@@ -3,6 +3,8 @@
 #include <neocad/editor/InsertPointTool.hpp>
 #include <neocad/editor/ToolContext.hpp>
 
+using namespace nc::domain;
+
 namespace nc::editor {
 
 void InsertPointTool::OnInput(const InputEvent& ev, ToolContext& ctx) {
@@ -21,4 +23,4 @@ void InsertPointTool::OnInput(const InputEvent& ev, ToolContext& ctx) {
     }
 }
 
-}  // namespace nc
+}  // namespace nc::editor

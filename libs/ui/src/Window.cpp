@@ -2,8 +2,7 @@
 
 #include <iostream>
 
-using namespace nc;
-
+namespace nc::ui {
 bool Window::Create(const CreateInfo& ci) {
     if (!glfwInit()) {
         std::cerr << "GLFW init failed.\n";
@@ -112,3 +111,4 @@ void Window::SetKeyPressedCallback(std::function<void(int, int)> cb) {
 void Window::SetScrollCallback(std::function<void(double, double)> cb) {
     m_ScrollCallback = std::move(cb);
 }
+}  // namespace nc::ui

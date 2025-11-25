@@ -20,4 +20,4 @@ class IGeometryBackend {
     virtual bool ExportShapeToSTL(BackendShapeHandle handle, const std::string& filePath, double deflection) const = 0;
 };
 
-}  // namespace nc
+}  // namespace nc::domain

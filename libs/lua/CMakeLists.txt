@@ -1,4 +1,4 @@
-add_library(neocad_scripting STATIC
+add_library(neocad_lua STATIC
 	src/BindConstruct.cpp
 	src/BindIO.cpp
 	src/BindPrimitives.cpp
@@ -7,13 +7,13 @@ add_library(neocad_scripting STATIC
 	src/PrettyLuaError.cpp
 )
 
-target_include_directories(neocad_scripting PUBLIC
+target_include_directories(neocad_lua PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/inc
 	${LUA_INCLUDE_DIR}
 	${sol2_SOURCE_DIR}/include
 )
 
-target_link_libraries(neocad_scripting
+target_link_libraries(neocad_lua
 PUBLIC
 	neocad_core
 	neocad_domain

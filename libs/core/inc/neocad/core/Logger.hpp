@@ -9,13 +9,19 @@
  * To create a Logentry which should be put out in two ore more cases use the follwing syntax:
  * Log((uint16_t)LoggerLevels::WARN_|(uint16_t)LoggerLevels::ERROR_)) << "LogMessage";
  */
-#define LOG(X) nc::Log((uint16_t)LoggerLevels::X##_) << " " << #X << " "
+#define LOG(X) nc::core::Log((uint16_t)LoggerLevels::X##_) << " " << #X << " "
 
 /** Definition of LogLevels
  * Loglevels are used as binary bitmask format an can be used together by using binary or
  * The set loglevel is binary and compared to the level required for the output
  */
-enum class LoggerLevels : uint16_t { NONE_ = 0x00, INFO_ = 0x01, DEBUG_ = 0x02, WARN_ = 0x04, ERROR_ = 0x08 };
+enum class LoggerLevels : uint16_t {
+    NONE_ = 0x00,
+    INFO_ = 0x01,
+    DEBUG_ = 0x02,
+    WARN_ = 0x04,
+    ERROR_ = 0x08
+};
 
 namespace nc::core {
 class LogSettings {
@@ -80,4 +86,4 @@ class Log {
     bool m_endlLast;
     std::mutex m_acquisitionLock;
 };
-}  // namespace nc
+}  // namespace nc::core

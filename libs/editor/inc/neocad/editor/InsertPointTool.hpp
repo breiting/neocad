@@ -17,4 +17,4 @@ class InsertPointTool : public ITool {
     }
 };
 
-}  // namespace nc
+}  // namespace nc::editor

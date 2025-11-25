@@ -1,5 +1,5 @@
 #pragma once
-#include <neocad/scripting/CadAPI.hpp>
+#include <neocad/lua/CadAPI.hpp>
 #include <sol/sol.hpp>
 
 namespace nc::lua {
@@ -27,4 +27,4 @@ class LuaEngine {
     CadAPI& m_API;
 };
 
-}  // namespace nc
+}  // namespace nc::lua

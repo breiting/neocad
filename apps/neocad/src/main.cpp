@@ -14,9 +14,13 @@
 #include <neocad/occt/OCCTBackend.hpp>
 #include <neocad/ui/Window.hpp>
 
-using namespace nc;
+using namespace nc::domain;
+using namespace nc::occt;
+using namespace nc::cmd;
+using namespace nc::editor;
+using namespace nc::ui;
 
-static nc::KeyEvent MakeKeyEventFromGLFW(int key, int action, int mods) {
+static KeyEvent MakeKeyEventFromGLFW(int key, int action, int mods) {
     using namespace nc;
     KeyEvent ev{};
     ev.pressed = true;

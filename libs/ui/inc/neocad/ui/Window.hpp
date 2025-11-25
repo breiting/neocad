@@ -56,4 +56,4 @@ class Window {
     std::function<void(double, double)> m_ScrollCallback;
 };
 
-}  // namespace nc
+}  // namespace nc::ui

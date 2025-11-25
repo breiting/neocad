@@ -19,7 +19,7 @@
 #include <neocad/core/Logger.hpp>
 
 using namespace std::chrono;
-using namespace nc;
+using namespace nc::core;
 
 namespace {
 std::atomic<LogSettings *> m_instance;

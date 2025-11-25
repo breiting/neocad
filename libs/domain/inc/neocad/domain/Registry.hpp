@@ -30,4 +30,4 @@ class Registry {
     std::unordered_map<Entity, BodyComponent> m_Bodies;
     std::unordered_map<Entity, SketchPlaneComponent> m_SketchPlanes;
 };
-}  // namespace nc
+}  // namespace nc::domain

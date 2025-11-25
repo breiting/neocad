@@ -19,7 +19,7 @@ class InsertCircleTool : public ITool {
     }
 
    private:
-    std::optional<Entity> m_Center;  // first click stores center
+    std::optional<domain::Entity> m_Center;  // first click stores center
 };
 
-}  // namespace nc
+}  // namespace nc::editor

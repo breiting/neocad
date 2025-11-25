@@ -31,7 +31,8 @@ class Query {
                     break;
                 }
             }
-            if (matches) result.push_back(e);
+            if (matches)
+                result.push_back(e);
         }
         return result;
     }
@@ -47,7 +48,9 @@ class Query {
 template <typename T>
 inline Query HasComponentQuery() {
     Query q;
-    q.Where([](Entity e, const Registry& r) { return r.HasComponent<T>(e); });
+    q.Where([](Entity e, const Registry& r) {
+        return r.HasComponent<T>(e);
+    });
     return q;
 }
 
@@ -67,4 +70,4 @@ inline bool IsBody(Entity e, const Registry& r) {
     return r.HasComponent<BodyComponent>(e);
 }
 
-}  // namespace nc
+}  // namespace nc::domain

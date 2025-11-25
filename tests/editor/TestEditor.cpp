@@ -11,7 +11,8 @@
 
 #include "neocad/editor/InputEvent.hpp"
 
-using namespace nc;
+using namespace nc::editor;
+using namespace nc::domain;
 
 // --- Minimal mock backend for GeometrySystem --------------------------------
 class DummyBackend : public IGeometryBackend {

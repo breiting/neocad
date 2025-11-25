@@ -1,6 +1,8 @@
 #include <neocad/domain/Entity.hpp>
-#include <neocad/scripting/Bindings.hpp>
+#include <neocad/lua/Bindings.hpp>
 #include <vector>
+
+using namespace nc::domain;
 
 namespace nc::lua {
 
@@ -16,4 +18,4 @@ void BindPrimitives(sol::table &cad, CadAPI &api) {
     });
 }
 
-}  // namespace nc
+}  // namespace nc::lua

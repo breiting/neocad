@@ -1,6 +1,6 @@
 add_executable(test_neocad
 	domain/TestGeometrySystem.cpp
-	scripting/TestLuaBasic.cpp
+	lua/TestLuaBasic.cpp
 	editor/TestEditor.cpp
 )
 
@@ -12,7 +12,7 @@ target_link_libraries(test_neocad PRIVATE
 	GTest::gtest_main
 	project_settings
 	neocad_domain
-	neocad_scripting
+	neocad_lua
 	neocad_occt
 	neocad_editor
 )

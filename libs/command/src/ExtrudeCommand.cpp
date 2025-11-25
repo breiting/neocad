@@ -1,8 +1,8 @@
 #include <neocad/command/ExtrudeCommand.hpp>
 #include <neocad/core/Logger.hpp>
 #include <neocad/domain/Entity.hpp>
-#include <neocad/domain/GeometrySystem.hpp>
-#include <neocad/domain/Registry.hpp>
+
+using namespace nc::domain;
 
 namespace nc::cmd {
 
@@ -24,4 +24,4 @@ void ExtrudeCommand::Execute(Registry& registry, GeometrySystem& geom) {
     }
 }
 
-}  // namespace nc
+}  // namespace nc::cmd

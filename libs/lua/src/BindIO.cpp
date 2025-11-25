@@ -1,5 +1,7 @@
 #include <neocad/domain/Entity.hpp>
-#include <neocad/scripting/Bindings.hpp>
+#include <neocad/lua/Bindings.hpp>
+
+using namespace nc::domain;
 
 namespace nc::lua {
 
@@ -11,4 +13,4 @@ void BindIO(sol::table& cad, CadAPI& api) {
         return api.ExportSTL(b, path);
     });
 }
-}  // namespace nc
+}  // namespace nc::lua

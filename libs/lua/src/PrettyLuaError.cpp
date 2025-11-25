@@ -1,6 +1,6 @@
 #include <fstream>
 #include <iostream>
-#include <neocad/scripting/PrettyLuaError.hpp>
+#include <neocad/lua/PrettyLuaError.hpp>
 #include <regex>
 #include <sstream>
 
@@ -118,4 +118,4 @@ void PrintLuaErrorPretty(const LuaErrorPretty& pe) {
     }
 }
 
-}  // namespace nc
+}  // namespace nc::lua

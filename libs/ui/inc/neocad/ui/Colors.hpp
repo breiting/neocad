@@ -2,7 +2,7 @@
 #include <array>
 #include <glm/vec4.hpp>
 
-namespace nc::Colors {
+namespace nc::ui {
 
 // --------------------
 // 🎨 Nord Theme Colors (https://www.nordtheme.com/docs/colors-and-palettes)
@@ -45,4 +45,4 @@ inline constexpr glm::vec4 GhibliShadow = {0.251f, 0.278f, 0.282f, 1.0f};    // 
 inline constexpr std::array<glm::vec4, 6> GhibliPalette = {GhibliSky,    GhibliLeaf,     GhibliEarth,
                                                            GhibliFlower, GhibliSunlight, GhibliShadow};
 
-}  // namespace nc::Colors
+}  // namespace nc::ui

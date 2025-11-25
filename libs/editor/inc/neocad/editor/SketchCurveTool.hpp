@@ -27,12 +27,12 @@ class SketchCurveTool : public ITool {
 
    private:
     CurveMode m_Mode;
-    std::vector<Entity> m_Points;       // captured dynamic points
-    bool m_WaitingSecondPoint = false;  // only relevant in Line mode
+    std::vector<domain::Entity> m_Points;  // captured dynamic points
+    bool m_WaitingSecondPoint = false;     // only relevant in Line mode
 
-    void CreateLine(Entity a, Entity b, Registry&);
+    void CreateLine(domain::Entity a, domain::Entity b, domain::Registry&);
     void FinalizePolyline(ToolContext&);
     void FinalizeFace(ToolContext&);
 };
 
-}  // namespace nc
+}  // namespace nc::editor

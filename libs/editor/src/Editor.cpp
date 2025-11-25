@@ -108,4 +108,4 @@ void Editor::ProcessCommandBuffer() {
     m_CommandBuffer.clear();
 }
 
-}  // namespace nc
+}  // namespace nc::editor

@@ -8,27 +8,27 @@ namespace nc::editor {
 /// and geometry services without knowing about UI or rendering.
 class ToolContext {
    public:
-    ToolContext(Registry& registry, GeometrySystem& geometrySystem)
+    ToolContext(domain::Registry& registry, domain::GeometrySystem& geometrySystem)
         : m_Registry(registry), m_GeometrySystem(geometrySystem) {
     }
 
-    Registry& GetRegistry() {
+    domain::Registry& GetRegistry() {
         return m_Registry;
     }
-    const Registry& GetRegistry() const {
+    const domain::Registry& GetRegistry() const {
         return m_Registry;
     }
 
-    GeometrySystem& GetGeometrySystem() {
+    domain::GeometrySystem& GetGeometrySystem() {
         return m_GeometrySystem;
     }
-    const GeometrySystem& GetGeometrySystem() const {
+    const domain::GeometrySystem& GetGeometrySystem() const {
         return m_GeometrySystem;
     }
 
    private:
-    Registry& m_Registry;
-    GeometrySystem& m_GeometrySystem;
+    domain::Registry& m_Registry;
+    domain::GeometrySystem& m_GeometrySystem;
 };
 
-}  // namespace nc
+}  // namespace nc::editor
