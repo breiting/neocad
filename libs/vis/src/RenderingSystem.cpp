@@ -1,7 +1,7 @@
 #include <neocad/domain/Components.hpp>
 #include <neocad/domain/Query.hpp>
-#include <neocad/rendering/ICamera.hpp>
-#include <neocad/rendering/RenderingSystem.hpp>
+#include <neocad/vis/ICamera.hpp>
+#include <neocad/vis/RenderingSystem.hpp>
 
 using namespace nc::domain;
 

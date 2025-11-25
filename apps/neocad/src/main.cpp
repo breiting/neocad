@@ -13,6 +13,7 @@
 #include <neocad/editor/ToolContext.hpp>
 #include <neocad/occt/OCCTBackend.hpp>
 #include <neocad/ui/Window.hpp>
+#include <neocad/vis/Mesh.hpp>
 
 using namespace nc::domain;
 using namespace nc::occt;
@@ -53,6 +54,21 @@ static KeyEvent MakeKeyEventFromGLFW(int key, int action, int mods) {
     }
 
     return ev;
+}
+
+Entity LoadSTLtoECS(const std::string& file, Registry& ecs) {
+    Mesh mesh;
+
+    if (!nc::StlReader::Load(file, mesh)) {
+        std::cerr << "Failed to load STL: " << file << "\n";
+        return nc::kInvalidEntity;
+    }
+
+    Entity e = ecs.CreateEntity();
+    ecs.AddComponent<nc::MeshComponent>(e, nc::MeshComponent{mesh});
+    ecs.AddComponent<nc::NameComponent>(e, nc::NameComponent{"ImportedSTL"});
+
+    return e;
 }
 
 int main() {

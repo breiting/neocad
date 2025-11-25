@@ -1,4 +1,4 @@
-#include <neocad/rendering/GlyphAtlas.hpp>
+#include <neocad/vis/GlyphAtlas.hpp>
 #include <vector>
 
 namespace nc::vis {

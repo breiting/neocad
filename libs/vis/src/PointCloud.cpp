@@ -2,7 +2,7 @@
 #include <glad.h>
 // clang-format on
 #include <glm/gtc/constants.hpp>
-#include <neocad/rendering/PointCloud.hpp>
+#include <neocad/vis/PointCloud.hpp>
 
 using namespace nc::domain;
 

@@ -1,5 +1,5 @@
-#include <neocad/rendering/LineSetMaterial.hpp>
-#include <neocad/rendering/Shader.hpp>
+#include <neocad/vis/LineSetMaterial.hpp>
+#include <neocad/vis/Shader.hpp>
 
 #include "assets/lineset_frag.h"
 #include "assets/lineset_vert.h"

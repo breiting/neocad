@@ -1,6 +1,6 @@
 #include <fstream>
 #include <iostream>
-#include <neocad/rendering/Shader.hpp>
+#include <neocad/vis/Shader.hpp>
 #include <sstream>
 
 namespace nc::vis {
@@ -88,4 +88,4 @@ void Shader::SetBool(const std::string& name, bool value) {
 unsigned int Shader::GetInt(const std::string& name) const {
     return glGetUniformLocation(ID, name.c_str());
 }
-}  // namespace nc
+}  // namespace nc::vis

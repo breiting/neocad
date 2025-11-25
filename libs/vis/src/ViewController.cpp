@@ -1,7 +1,7 @@
 #include <GLFW/glfw3.h>
 
 #include <glm/gtx/matrix_interpolation.hpp>
-#include <neocad/rendering/ViewController.hpp>
+#include <neocad/vis/ViewController.hpp>
 
 using namespace nc::editor;
 

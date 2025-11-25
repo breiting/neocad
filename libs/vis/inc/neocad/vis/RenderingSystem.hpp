@@ -1,7 +1,7 @@
 #pragma once
 #include <neocad/domain/Registry.hpp>
-#include <neocad/rendering/Mesh.hpp>
-#include <neocad/rendering/Renderer.hpp>
+#include <neocad/vis/Mesh.hpp>
+#include <neocad/vis/Renderer.hpp>
 #include <unordered_map>
 
 namespace nc::vis {

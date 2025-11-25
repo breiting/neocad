@@ -2,8 +2,8 @@
 #include <glad.h>
 // clang-format on
 #include <glm/gtc/constants.hpp>
-#include <neocad/rendering/BaseGeometry.hpp>
-#include <neocad/rendering/Mesh.hpp>
+#include <neocad/vis/BaseGeometry.hpp>
+#include <neocad/vis/Mesh.hpp>
 
 using namespace nc::domain;
 

@@ -1,12 +1,12 @@
 #pragma once
 #include <glm/mat4x4.hpp>
 #include <memory>
-#include <neocad/rendering/ICamera.hpp>
-#include <neocad/rendering/Light.hpp>
-#include <neocad/rendering/LineSet.hpp>
-#include <neocad/rendering/Material.hpp>
-#include <neocad/rendering/Mesh.hpp>
-#include <neocad/rendering/PointCloud.hpp>
+#include <neocad/vis/ICamera.hpp>
+#include <neocad/vis/Light.hpp>
+#include <neocad/vis/LineSet.hpp>
+#include <neocad/vis/Material.hpp>
+#include <neocad/vis/Mesh.hpp>
+#include <neocad/vis/PointCloud.hpp>
 
 namespace nc::vis {
 

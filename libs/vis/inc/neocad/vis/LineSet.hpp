@@ -1,14 +1,14 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <neocad/rendering/BaseGeometry.hpp>
+#include <neocad/vis/BaseGeometry.hpp>
 
 namespace nc::vis {
 
-class PointCloud : public BaseGeometry {
+class LineSet : public BaseGeometry {
    public:
-    PointCloud();
-    ~PointCloud();
+    LineSet();
+    ~LineSet();
 
     void Upload() override;
     void Render() const override;

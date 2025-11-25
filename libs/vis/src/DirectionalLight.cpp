@@ -1,4 +1,4 @@
-#include <neocad/rendering/DirectionalLight.hpp>
+#include <neocad/vis/DirectionalLight.hpp>
 
 namespace nc::vis {
 

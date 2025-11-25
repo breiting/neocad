@@ -1,5 +1,5 @@
 #include <glm/gtc/type_ptr.hpp>
-#include <neocad/rendering/TextRenderer2D.hpp>
+#include <neocad/vis/TextRenderer2D.hpp>
 
 namespace nc::vis {
 
@@ -186,4 +186,4 @@ void TextRenderer2D::DrawText(const std::string& text, float x, float y, float s
     Flush(proj);
 }
 
-}  // namespace nc
+}  // namespace nc::vis

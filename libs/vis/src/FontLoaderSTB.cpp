@@ -1,6 +1,6 @@
 #include <fstream>
 #include <iostream>
-#include <neocad/rendering/FontLoaderSTB.hpp>
+#include <neocad/vis/FontLoaderSTB.hpp>
 #include <vector>
 
 #include "stb_truetype.h"

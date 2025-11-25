@@ -14,7 +14,7 @@ add_library(neocad_vis STATIC
 	src/Renderer.cpp
 	src/RenderingSystem.cpp
 	src/Shader.cpp
-#	src/StlReader.cpp
+	src/StlReader.cpp
 	src/TextRenderer2D.cpp
 	src/ViewController.cpp
 )

@@ -1,6 +1,6 @@
-#include <neocad/rendering/DirectionalLight.hpp>
-#include <neocad/rendering/FlatShadedMaterial.hpp>
-#include <neocad/rendering/Shader.hpp>
+#include <neocad/vis/DirectionalLight.hpp>
+#include <neocad/vis/FlatShadedMaterial.hpp>
+#include <neocad/vis/Shader.hpp>
 #include <string>
 
 #include "assets/flat_frag.h"  // flat_frag_glsl

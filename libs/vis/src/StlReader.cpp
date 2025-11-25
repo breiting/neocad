@@ -4,7 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <limits>
-#include <neocad/rendering/StlReader.hpp>
+#include <neocad/vis/StlReader.hpp>
 #include <sstream>
 #include <string>
 
@@ -121,8 +121,8 @@ enum class StlFormat {
 
         const auto addVertex = [&mesh, &normalVec](const float v[3]) {
             Vertex vertex{};
-            vertex.position = glm::vec3{v[0], v[1], v[2]};
-            vertex.normal = normalVec;
+            vertex.SetPosition(glm::vec3{v[0], v[1], v[2]});
+            vertex.SetNormal(normalVec);
 
             mesh.vertices.push_back(vertex);
             mesh.indices.push_back(static_cast<std::uint32_t>(mesh.vertices.size() - 1));
@@ -145,7 +145,6 @@ enum class StlFormat {
     std::string line;
     glm::vec3 currentNormal{0.0f, 0.0f, 0.0f};
     bool inFacet = false;
-    std::size_t vertexCountInFacet = 0;
 
     while (std::getline(file, line)) {
         std::stringstream ss(line);
@@ -157,22 +156,19 @@ enum class StlFormat {
             std::string normalKeyword;
             ss >> normalKeyword >> currentNormal.x >> currentNormal.y >> currentNormal.z;
             inFacet = true;
-            vertexCountInFacet = 0;
         } else if (token == "vertex" && inFacet) {
             glm::vec3 position{};
             ss >> position.x >> position.y >> position.z;
 
             Vertex vertex{};
-            vertex.position = position;
-            vertex.normal = currentNormal;
+            vertex.SetPosition(position);
+            vertex.SetNormal(currentNormal);
 
             mesh.vertices.push_back(vertex);
             mesh.indices.push_back(static_cast<std::uint32_t>(mesh.vertices.size() - 1));
-            ++vertexCountInFacet;
         } else if (token == "endfacet") {
             // robustness: ignore if not exactly 3 vertices
             inFacet = false;
-            vertexCountInFacet = 0;
         }
     }
 

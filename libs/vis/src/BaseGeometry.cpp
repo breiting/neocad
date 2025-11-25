@@ -1,7 +1,7 @@
 // clang-format off
 #include <glad.h>
 // clang-format on
-#include <neocad/rendering/BaseGeometry.hpp>
+#include <neocad/vis/BaseGeometry.hpp>
 
 using namespace nc::domain;
 

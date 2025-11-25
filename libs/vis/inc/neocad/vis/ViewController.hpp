@@ -1,8 +1,8 @@
 #pragma once
 #include <neocad/editor/InputEvent.hpp>
-#include <neocad/rendering/Camera2D.hpp>
-#include <neocad/rendering/Camera3D.hpp>
-#include <neocad/rendering/ViewMode.hpp>
+#include <neocad/vis/Camera2D.hpp>
+#include <neocad/vis/Camera3D.hpp>
+#include <neocad/vis/ViewMode.hpp>
 
 namespace nc::vis {
 

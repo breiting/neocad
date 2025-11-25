@@ -1,7 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <neocad/rendering/BaseGeometry.hpp>
+#include <neocad/vis/BaseGeometry.hpp>
 #include <vector>
 
 namespace nc::vis {

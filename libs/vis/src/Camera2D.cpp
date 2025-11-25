@@ -1,5 +1,5 @@
 #include <glm/gtc/matrix_transform.hpp>
-#include <neocad/rendering/Camera2D.hpp>
+#include <neocad/vis/Camera2D.hpp>
 
 namespace nc::vis {
 

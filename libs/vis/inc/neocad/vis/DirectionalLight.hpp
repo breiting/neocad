@@ -1,6 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
-#include <neocad/rendering/Light.hpp>
+#include <neocad/vis/Light.hpp>
 
 namespace nc::vis {
 

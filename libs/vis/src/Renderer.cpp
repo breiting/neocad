@@ -1,9 +1,9 @@
 #include <glad.h>
 
 #include <glm/mat4x4.hpp>
-#include <neocad/rendering/Renderer.hpp>
+#include <neocad/vis/Renderer.hpp>
 
-#include "neocad/rendering/PointCloud.hpp"
+#include "neocad/vis/PointCloud.hpp"
 
 namespace nc::vis {
 

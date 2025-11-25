@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
-#include <neocad/rendering/Material.hpp>
-#include <neocad/rendering/Texture.hpp>
+#include <neocad/vis/Material.hpp>
+#include <neocad/vis/Texture.hpp>
 
 namespace nc::vis {
 

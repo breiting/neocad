@@ -2,7 +2,7 @@
 #include <glad.h>
 // clang-format on
 #include <glm/gtc/constants.hpp>
-#include <neocad/rendering/LineSet.hpp>
+#include <neocad/vis/LineSet.hpp>
 
 using namespace nc::domain;
 

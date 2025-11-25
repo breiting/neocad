@@ -11,4 +11,5 @@ PRIVATE
 	neocad_command
 	neocad_editor
 	neocad_ui
+	neocad_vis
 )

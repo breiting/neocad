@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include <neocad/rendering/Material.hpp>
+#include <neocad/vis/Material.hpp>
 
 namespace nc::vis {
 
