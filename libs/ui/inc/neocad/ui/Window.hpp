@@ -8,7 +8,7 @@
 #include <functional>
 #include <string>
 
-namespace nc {
+namespace nc::ui {
 
 class Window {
    public:
