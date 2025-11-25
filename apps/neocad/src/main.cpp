@@ -13,6 +13,8 @@
 #include <neocad/editor/ToolContext.hpp>
 #include <neocad/occt/OCCTBackend.hpp>
 #include <neocad/ui/Window.hpp>
+#include <neocad/vis/Camera2D.hpp>
+#include <neocad/vis/Camera3D.hpp>
 #include <neocad/vis/Mesh.hpp>
 #include <neocad/vis/RenderingSystem.hpp>
 #include <neocad/vis/StlReader.hpp>
@@ -94,6 +96,7 @@ int main() {
 
     // 3) ViewController
     ViewController viewController;
+    viewController.SetCameras(std::make_shared<Camera2D>(), std::make_shared<Camera3D>());
 
     // 4) RenderingSystem
     Renderer renderer;
