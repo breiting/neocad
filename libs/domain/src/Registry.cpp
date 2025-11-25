@@ -2,7 +2,7 @@
 #include <neocad/domain/Components.hpp>
 #include <neocad/domain/Registry.hpp>
 
-namespace nc {
+namespace nc::domain {
 
 Entity Registry::CreateEntity() {
     return m_NextId++;

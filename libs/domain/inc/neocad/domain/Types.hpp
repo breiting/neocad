@@ -2,7 +2,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 
-namespace nc {
+namespace nc::domain {
 
 using vec3 = glm::dvec3;  // double precision for geometry
 using vec2 = glm::dvec2;

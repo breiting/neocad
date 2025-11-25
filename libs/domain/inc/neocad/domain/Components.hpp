@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace nc {
+namespace nc::domain {
 
 /// Name/tag
 struct NameComponent {

@@ -3,7 +3,7 @@
 #include "neocad/domain/Components.hpp"
 #include "neocad/domain/Entity.hpp"
 
-namespace nc {
+namespace nc::domain {
 
 GeometrySystem::GeometrySystem(Registry& reg, IGeometryBackend& backend) : m_Registry(reg), m_Backend(backend) {
 }

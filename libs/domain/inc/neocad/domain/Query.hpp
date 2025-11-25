@@ -5,7 +5,7 @@
 #include <neocad/domain/Registry.hpp>
 #include <vector>
 
-namespace nc {
+namespace nc::domain {
 
 // Type: (Entity, Registry) → bool
 using QueryFilter = std::function<bool(Entity, const Registry&)>;

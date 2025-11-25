@@ -3,7 +3,7 @@
 #include <neocad/domain/Types.hpp>
 #include <string>
 
-namespace nc {
+namespace nc::domain {
 
 /// Interface for a geometry backend (OCCT or other).
 class IGeometryBackend {

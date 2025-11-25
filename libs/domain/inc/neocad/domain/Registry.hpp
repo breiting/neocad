@@ -3,7 +3,7 @@
 #include <neocad/domain/Entity.hpp>
 #include <unordered_map>
 
-namespace nc {
+namespace nc::domain {
 
 class Registry {
    public:
