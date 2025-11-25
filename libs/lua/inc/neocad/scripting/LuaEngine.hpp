@@ -2,7 +2,7 @@
 #include <neocad/scripting/CadAPI.hpp>
 #include <sol/sol.hpp>
 
-namespace nc {
+namespace nc::lua {
 
 class LuaEngine {
    public:

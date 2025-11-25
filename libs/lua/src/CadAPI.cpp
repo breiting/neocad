@@ -3,7 +3,7 @@
 #include <neocad/domain/Registry.hpp>
 #include <neocad/scripting/CadAPI.hpp>
 
-namespace nc {
+namespace nc::lua {
 
 CadAPI::CadAPI(Registry& reg, GeometrySystem& geom) : m_Registry(reg), m_GeometrySystem(geom) {
 }

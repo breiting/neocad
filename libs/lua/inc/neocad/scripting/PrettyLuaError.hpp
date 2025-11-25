@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-namespace nc {
+namespace nc::lua {
 
 struct LuaFrame {
     std::string file;

@@ -1,7 +1,7 @@
 #include <neocad/domain/Entity.hpp>
 #include <neocad/scripting/Bindings.hpp>
 
-namespace nc {
+namespace nc::lua {
 
 void BindIO(sol::table& cad, CadAPI& api) {
     cad.set_function("save_step", [&api](Entity b, const std::string& path) {

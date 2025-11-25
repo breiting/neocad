@@ -4,7 +4,7 @@
 #include <neocad/scripting/LuaEngine.hpp>
 #include <neocad/scripting/PrettyLuaError.hpp>
 
-namespace nc {
+namespace nc::lua {
 
 LuaEngine::LuaEngine(CadAPI& api) : m_API(api) {
 }

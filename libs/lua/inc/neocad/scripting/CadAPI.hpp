@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-namespace nc {
+namespace nc::lua {
 
 class Registry;
 class GeometrySystem;

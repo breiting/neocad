@@ -2,7 +2,7 @@
 #include <neocad/scripting/Bindings.hpp>
 #include <vector>
 
-namespace nc {
+namespace nc::lua {
 
 void BindPrimitives(sol::table &cad, CadAPI &api) {
     cad.set_function("point", [&api](double x, double y, double z) {

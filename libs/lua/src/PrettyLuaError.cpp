@@ -67,7 +67,7 @@ std::string makeContext(const std::string& file, int line, int pad = 2) {
 
 }  // namespace
 
-namespace nc {
+namespace nc::lua {
 
 LuaErrorPretty FormatLuaError(lua_State* L, const sol::error& e) {
     (void)L;  // optional: luaL_traceback

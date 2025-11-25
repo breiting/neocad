@@ -2,7 +2,7 @@
 #include <neocad/scripting/CadAPI.hpp>
 #include <sol/sol.hpp>
 
-namespace nc {
+namespace nc::lua {
 
 void BindPrimitives(sol::table& cad, CadAPI& api);
 void BindConstruct(sol::table& cad, CadAPI& api);
