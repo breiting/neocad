@@ -43,4 +43,4 @@ class Renderer {
     std::shared_ptr<Light> m_Light;
 };
 
-}  // namespace nc
+}  // namespace nc::vis

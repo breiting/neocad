@@ -108,4 +108,4 @@ void Mesh::RecalculateNormals() {
     }
     m_Dirty = true;
 }
-}  // namespace nc
+}  // namespace nc::vis

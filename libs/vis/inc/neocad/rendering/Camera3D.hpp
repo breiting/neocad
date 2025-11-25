@@ -31,4 +31,4 @@ class Camera3D : public ICamera {
     float m_Aspect{1.0};
 };
 
-}  // namespace nc
+}  // namespace nc::vis

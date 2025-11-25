@@ -21,4 +21,4 @@ class BaseGeometry {
     std::vector<Vertex> m_Vertices;
     bool m_Dirty;
 };
-}  // namespace nc
+}  // namespace nc::vis

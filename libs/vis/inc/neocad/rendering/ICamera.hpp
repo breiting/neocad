@@ -17,4 +17,4 @@ class ICamera {
     /// Get the 4×4 projection matrix (view → clip).
     virtual glm::mat4 Projection() const = 0;
 };
-}  // namespace nc
+}  // namespace nc::vis

@@ -53,4 +53,4 @@ void FlatShadedMaterial::SetTexture(std::shared_ptr<Texture> texture) {
     m_Texture = texture;
     m_TextureLocation = m_Shader->GetInt("u_Texture");
 }
-}  // namespace nc
+}  // namespace nc::vis

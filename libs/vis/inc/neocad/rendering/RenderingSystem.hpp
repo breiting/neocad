@@ -11,11 +11,11 @@ class RenderingSystem {
     RenderingSystem(Renderer& r) : m_Renderer(r) {
     }
 
-    void Update(const Registry& ecs, const ICamera& cam);
+    void Update(const domain::Registry& ecs, const ICamera& cam);
 
    private:
     Renderer& m_Renderer;
-    std::unordered_map<Entity, std::shared_ptr<Mesh>> m_Meshes;
+    std::unordered_map<domain::Entity, std::shared_ptr<Mesh>> m_Meshes;
 };
 
-}  // namespace nc
+}  // namespace nc::vis

@@ -17,7 +17,7 @@ class ViewController {
     void SetViewportSize(int w, int h);
 
     void Update(double dt);
-    void OnInput(const nc::InputEvent& ev);
+    void OnInput(const editor::InputEvent& ev);
 
     ViewState GetViewState();
 
@@ -40,7 +40,7 @@ class ViewController {
     glm::dvec2 m_LastMouse{0, 0};
 
     void StartTransition(ViewMode target);
-    void HandleMouseInput(const nc::MouseButtonEvent&, const nc::MouseMoveEvent&, const nc::ScrollEvent&);
+    void HandleMouseInput(const editor::MouseButtonEvent&, const editor::MouseMoveEvent&, const editor::ScrollEvent&);
 };
 
-}  // namespace nc
+}  // namespace nc::vis

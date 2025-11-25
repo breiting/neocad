@@ -26,4 +26,4 @@ class Texture {
     unsigned int m_TextureId;
     int m_Width, m_Height, m_Channels;
 };
-}  // namespace nc
+}  // namespace nc::vis

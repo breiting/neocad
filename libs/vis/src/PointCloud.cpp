@@ -55,4 +55,4 @@ void PointCloud::deleteBuffers() {
     if (m_Vbo)
         glDeleteBuffers(1, &m_Vbo);
 }
-}  // namespace nc
+}  // namespace nc::vis

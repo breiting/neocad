@@ -31,4 +31,4 @@ class FontSystem {
     GlyphAtlas m_Atlas;
 };
 
-}  // namespace nc
+}  // namespace nc::vis

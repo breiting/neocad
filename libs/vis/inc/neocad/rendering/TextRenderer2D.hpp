@@ -53,4 +53,4 @@ class TextRenderer2D {
     float m_StartX = 0.0f;
 };
 
-}  // namespace nc
+}  // namespace nc::vis

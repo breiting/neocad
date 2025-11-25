@@ -21,4 +21,4 @@ void LineSetMaterial::Apply(const glm::mat4& model, const glm::mat4& view, const
 std::shared_ptr<Shader> LineSetMaterial::GetShader() const {
     return m_Shader;
 }
-}  // namespace nc
+}  // namespace nc::vis

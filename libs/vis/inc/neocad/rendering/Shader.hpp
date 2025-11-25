@@ -28,4 +28,4 @@ class Shader {
     std::string readShaderFile(const std::string& path);
     void compileShader(const std::string& vertexCode, const std::string& fragmentCode);
 };
-}  // namespace nc
+}  // namespace nc::vis

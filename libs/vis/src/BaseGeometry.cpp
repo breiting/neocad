@@ -20,4 +20,4 @@ size_t BaseGeometry::VertexCount() const {
 const std::vector<Vertex>& BaseGeometry::GetVertices() const {
     return m_Vertices;
 }
-}  // namespace nc
+}  // namespace nc::vis

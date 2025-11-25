@@ -58,4 +58,4 @@ class Vertex {
     glm::vec3 m_Color;
     glm::vec2 m_TexCoord;
 };
-}  // namespace nc
+}  // namespace nc::vis

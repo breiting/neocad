@@ -46,4 +46,4 @@ bool FontSystem::LoadDefaultFont() {
     return LoadFromMemory(g_RobotoRegular, PIXEL_HEIGHT);
 }
 
-}  // namespace nc
+}  // namespace nc::vis

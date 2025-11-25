@@ -8,6 +8,8 @@
 #include <sstream>
 #include <string>
 
+using namespace nc::domain;
+
 namespace nc::vis {
 
 namespace {
@@ -118,7 +120,7 @@ enum class StlFormat {
         const glm::vec3 normalVec{normal[0], normal[1], normal[2]};
 
         const auto addVertex = [&mesh, &normalVec](const float v[3]) {
-            TriMesh::PureVertex vertex{};
+            Vertex vertex{};
             vertex.position = glm::vec3{v[0], v[1], v[2]};
             vertex.normal = normalVec;
 
@@ -160,7 +162,7 @@ enum class StlFormat {
             glm::vec3 position{};
             ss >> position.x >> position.y >> position.z;
 
-            TriMesh::PureVertex vertex{};
+            Vertex vertex{};
             vertex.position = position;
             vertex.normal = currentNormal;
 
@@ -204,4 +206,4 @@ bool StlReader::LoadFromFile(const std::string& filePath, TriMesh& outMesh) cons
     }
 }
 
-}  // namespace nc
+}  // namespace nc::vis

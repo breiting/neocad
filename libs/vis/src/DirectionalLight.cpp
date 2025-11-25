@@ -21,4 +21,4 @@ void DirectionalLight::SetColor(const glm::vec3 &color) {
 void DirectionalLight::SetDirection(const glm::vec3 &dir) {
     m_Direction = dir;
 }
-}  // namespace nc
+}  // namespace nc::vis

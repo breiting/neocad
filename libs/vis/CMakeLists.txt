@@ -1,4 +1,4 @@
-add_library(neocad_rendering STATIC
+add_library(neocad_vis STATIC
 	src/BaseGeometry.cpp
 	src/Camera2D.cpp
 	src/Camera3D.cpp
@@ -19,7 +19,7 @@ add_library(neocad_rendering STATIC
 	src/ViewController.cpp
 )
 
-target_include_directories(neocad_rendering
+target_include_directories(neocad_vis
 PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/inc
 	${CMAKE_CURRENT_SOURCE_DIR}/../../extern
@@ -27,7 +27,7 @@ PUBLIC
 	${GEN_INC_DIR}
 )
 
-target_link_libraries(neocad_rendering
+target_link_libraries(neocad_vis
 PUBLIC
 	project_settings
 	glad

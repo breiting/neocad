@@ -7,4 +7,4 @@ enum class ViewMode {
     Sketch2D
 };
 
-}  // namespace nc
+}  // namespace nc::vis

@@ -27,4 +27,4 @@ class Mesh : public BaseGeometry {
     unsigned int m_Vao, m_Vbo, m_Ebo;
     std::vector<unsigned int> m_Indices;
 };
-}  // namespace nc
+}  // namespace nc::vis

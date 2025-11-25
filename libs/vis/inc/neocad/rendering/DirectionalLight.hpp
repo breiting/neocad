@@ -17,4 +17,4 @@ class DirectionalLight : public Light {
     glm::vec3 m_Direction;
     glm::vec3 m_Color;
 };
-}  // namespace nc
+}  // namespace nc::vis

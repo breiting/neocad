@@ -79,4 +79,4 @@ const GlyphAtlas::GlyphUV* GlyphAtlas::GetGlyph(char c) const {
     return (it != m_Glyphs.end()) ? &it->second : nullptr;
 }
 
-}  // namespace nc
+}  // namespace nc::vis

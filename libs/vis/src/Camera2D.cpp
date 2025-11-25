@@ -27,4 +27,4 @@ glm::mat4 Camera2D::Projection() const {
     return glm::lookAt(eye, at, glm::vec3(0, 1, 0));
 }
 
-}  // namespace nc
+}  // namespace nc::vis

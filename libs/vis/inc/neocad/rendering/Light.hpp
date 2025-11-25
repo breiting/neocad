@@ -12,4 +12,4 @@ class Light {
     virtual glm::vec3 GetDirection() const = 0;
     virtual glm::vec3 GetPosition() const = 0;
 };
-}  // namespace nc
+}  // namespace nc::vis

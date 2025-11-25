@@ -19,4 +19,4 @@ class PointCloud : public BaseGeometry {
    private:
     unsigned int m_Vao, m_Vbo;
 };
-}  // namespace nc
+}  // namespace nc::vis

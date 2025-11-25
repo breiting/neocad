@@ -1,38 +1,65 @@
 #include <neocad/domain/Components.hpp>
+#include <neocad/domain/Query.hpp>
 #include <neocad/rendering/ICamera.hpp>
 #include <neocad/rendering/RenderingSystem.hpp>
 
-using namespace nc;
+using namespace nc::domain;
 
-void RenderingSystem::Update(const Registry& ecs, const ICamera& cam) {
+namespace nc::vis {
+void RenderingSystem::Update(const Registry& registry, const ICamera& cam) {
     m_Renderer.BeginFrame(cam);
 
-    for (Entity e : ecs.Entities()) {
-        if (auto* comp = ecs.TryGetComponent<MeshComponent>(e)) {
-            auto& mesh = m_Meshes[e];
-            if (!mesh)
-                mesh = std::make_shared<MeshGPU>();
-            mesh->Upload(comp->mesh);
-            glm::mat4 model = glm::mat4(1.0f);
-            m_Renderer.DrawMesh(*mesh, model);
-        }
+    // 1) RENDER MESHES
+    {
+        auto entities = Query{}.Where(HasComponent<MeshComponent>()).Execute(registry);
+        for (Entity e : entities) {
+            auto* comp = registry.GetComponent<MeshComponent>(e);
+            if (!comp)
+                continue;
 
-        if (auto* comp = ecs.TryGetComponent<LineSetComponent>(e)) {
-            auto& lines = m_Meshes[e];
-            if (!lines)
-                lines = std::make_shared<LineSetGPU>();
-            lines->Upload(comp->lineSet);
-            m_Renderer.DrawLineSet(*lines, glm::mat4(1.0f));
-        }
+            auto& gpuMesh = m_GraphicCache[e];
+            if (!gpuMesh)
+                gpuMesh = std::make_shared<MeshGPU>();
 
-        if (auto* comp = ecs.TryGetComponent<PointComponent>(e)) {
-            auto& pts = m_Meshes[e];
-            if (!pts)
-                pts = std::make_shared<PointGPU>();
-            pts->Upload(comp->points);
-            m_Renderer.DrawPoints(*pts, glm::mat4(1.0f));
+            gpuMesh->Upload(comp->mesh);
+            m_Renderer.DrawMesh(*gpuMesh, glm::mat4(1.0f));
+        }
+    }
+
+    // 2) RENDER LINE SETS
+    {
+        auto entities = Query{}.Where(HasComponent<LineSetComponent>()).Execute(registry);
+        for (Entity e : entities) {
+            auto* comp = registry.GetComponent<LineSetComponent>(e);
+            if (!comp)
+                continue;
+
+            auto& gpuLines = m_GraphicCache[e];
+            if (!gpuLines)
+                gpuLines = std::make_shared<LineSetGPU>();
+
+            gpuLines->Upload(comp->lineSet);
+            m_Renderer.DrawLineSet(*gpuLines, glm::mat4(1.0f));
+        }
+    }
+
+    // 3) RENDER POINTS
+    {
+        auto entities = Query{}.Where(HasComponent<PointComponent>()).Execute(registry);
+        for (Entity e : entities) {
+            auto* comp = registry.GetComponent<PointComponent>(e);
+            if (!comp)
+                continue;
+
+            auto& gpuPoints = m_GraphicCache[e];
+            if (!gpuPoints)
+                gpuPoints = std::make_shared<PointGPU>();
+
+            gpuPoints->Upload(comp->points);
+            m_Renderer.DrawPoints(*gpuPoints, glm::mat4(1.0f));
         }
     }
 
     m_Renderer.EndFrame();
 }
+}  // namespace nc::vis

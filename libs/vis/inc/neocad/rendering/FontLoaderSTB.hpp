@@ -39,4 +39,4 @@ class FontLoaderSTB {
     float m_LineGap = 0.f;
 };
 
-}  // namespace nc
+}  // namespace nc::vis

@@ -16,4 +16,4 @@ class LineSetMaterial : public Material {
    private:
     std::shared_ptr<Shader> m_Shader;
 };
-}  // namespace nc
+}  // namespace nc::vis

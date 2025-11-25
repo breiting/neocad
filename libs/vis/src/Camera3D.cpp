@@ -49,4 +49,4 @@ glm::mat4 Camera3D::Projection() const {
     return glm::perspective(glm::radians(m_FovY), m_Aspect, m_Near, m_Far);
 }
 
-}  // namespace nc
+}  // namespace nc::vis

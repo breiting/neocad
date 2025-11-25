@@ -34,4 +34,4 @@ class GlyphAtlas {
     float m_Ascent{0.0};
 };
 
-}  // namespace nc
+}  // namespace nc::vis

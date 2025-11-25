@@ -57,4 +57,4 @@ void Renderer::EndFrame() {
     // glFlush();  // usually not needed when using double buffering
 }
 
-}  // namespace nc
+}  // namespace nc::vis

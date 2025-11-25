@@ -16,4 +16,4 @@ class Material {
 
     virtual std::shared_ptr<Shader> GetShader() const = 0;
 };
-}  // namespace nc
+}  // namespace nc::vis

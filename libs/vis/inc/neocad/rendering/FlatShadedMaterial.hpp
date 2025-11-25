@@ -26,4 +26,4 @@ class FlatShadedMaterial : public Material {
     std::shared_ptr<Texture> m_Texture;
     unsigned int m_TextureLocation;
 };
-}  // namespace nc
+}  // namespace nc::vis
