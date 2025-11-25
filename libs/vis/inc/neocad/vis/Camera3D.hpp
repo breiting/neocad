@@ -1,11 +1,11 @@
 #pragma once
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
-#include <neocad/vis/ICamera.hpp>
+#include <neocad/editor/ICamera.hpp>
 
 namespace nc::vis {
 
-class Camera3D : public ICamera {
+class Camera3D : public editor::ICamera {
    public:
     void SetTarget(const glm::vec3& t);
     void SetDistance(float d);

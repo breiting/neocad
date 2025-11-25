@@ -1,14 +1,14 @@
 #include <neocad/domain/Components.hpp>
 #include <neocad/domain/Query.hpp>
-#include <neocad/vis/ICamera.hpp>
+#include <neocad/editor/ViewController.hpp>
 #include <neocad/vis/RenderingSystem.hpp>
 
 using namespace nc::domain;
+using namespace nc::editor;
 
 namespace nc::vis {
-void RenderingSystem::Update(Registry& registry, const ICamera& cam) {
-    m_Renderer.BeginFrame(cam);
-
+void RenderingSystem::Update(Registry& registry, const ViewState& state) {
+    m_ViewState = state;
     {
         auto entities = HasComponentQuery<MeshComponent>().Execute(registry);
         for (Entity e : entities) {
@@ -70,4 +70,14 @@ void RenderingSystem::Update(Registry& registry, const ICamera& cam) {
 
     m_Renderer.EndFrame();
 }
+
+void RenderingSystem::Render() {
+    m_Renderer.BeginFrame(m_ViewState.view, m_ViewState.proj);
+
+    for (auto& [e, geom] : m_Meshes) {
+        m_Renderer.DrawMesh(*geom, glm::mat4(1.0f));
+    }
+    // TODO
+}
+
 }  // namespace nc::vis

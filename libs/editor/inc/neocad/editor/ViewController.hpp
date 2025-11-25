@@ -1,10 +1,14 @@
 #pragma once
+#include <glm/glm.hpp>
+#include <neocad/editor/ICamera.hpp>
 #include <neocad/editor/InputEvent.hpp>
-#include <neocad/vis/Camera2D.hpp>
-#include <neocad/vis/Camera3D.hpp>
-#include <neocad/vis/ViewMode.hpp>
 
-namespace nc::vis {
+namespace nc::editor {
+
+enum class ViewMode {
+    View3D,
+    Sketch2D
+};
 
 struct ViewState {
     ViewMode mode;
@@ -21,9 +25,11 @@ class ViewController {
 
     ViewState GetViewState();
 
+    void SetCameras(std::shared_ptr<ICamera> cam2d, std::shared_ptr<ICamera> cam3d);
+
    private:
-    Camera3D m_Cam3D;
-    Camera2D m_Cam2D;
+    std::shared_ptr<ICamera> m_Cam2D;
+    std::shared_ptr<ICamera> m_Cam3D;
 
     int m_W = 1280, m_H = 720;
     ViewMode m_Mode = ViewMode::View3D;
@@ -43,4 +49,4 @@ class ViewController {
     void HandleMouseInput(const editor::MouseButtonEvent&, const editor::MouseMoveEvent&, const editor::ScrollEvent&);
 };
 
-}  // namespace nc::vis
+}  // namespace nc::editor

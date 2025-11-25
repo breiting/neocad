@@ -14,14 +14,17 @@
 #include <neocad/occt/OCCTBackend.hpp>
 #include <neocad/ui/Window.hpp>
 #include <neocad/vis/Mesh.hpp>
+#include <neocad/vis/RenderingSystem.hpp>
+#include <neocad/vis/StlReader.hpp>
 
 using namespace nc::domain;
 using namespace nc::occt;
 using namespace nc::cmd;
 using namespace nc::editor;
 using namespace nc::ui;
+using namespace nc::vis;
 
-static KeyEvent MakeKeyEventFromGLFW(int key, int action, int mods) {
+static KeyEvent MakeKeyEventFromGLFW(int key, int /*action*/, int mods) {
     using namespace nc;
     KeyEvent ev{};
     ev.pressed = true;
@@ -43,12 +46,10 @@ static KeyEvent MakeKeyEventFromGLFW(int key, int action, int mods) {
     }
 
     ev.text = 0;
-    // Buchstaben (vereinfachte Variante, US-Layout)
     if (key >= GLFW_KEY_A && key <= GLFW_KEY_Z) {
         char base = ev.shift ? 'A' : 'a';
         ev.text = static_cast<char>(base + (key - GLFW_KEY_A));
     }
-    // Ziffern
     if (key >= GLFW_KEY_0 && key <= GLFW_KEY_9 && !ev.shift) {
         ev.text = static_cast<char>('0' + (key - GLFW_KEY_0));
     }
@@ -57,16 +58,17 @@ static KeyEvent MakeKeyEventFromGLFW(int key, int action, int mods) {
 }
 
 Entity LoadSTLtoECS(const std::string& file, Registry& ecs) {
-    Mesh mesh;
+    TriMesh mesh;
+    StlReader reader;
 
-    if (!nc::StlReader::Load(file, mesh)) {
-        std::cerr << "Failed to load STL: " << file << "\n";
-        return nc::kInvalidEntity;
+    if (!reader.LoadFromFile(file, mesh)) {
+        LOG(ERROR) << "Failed to load STL: " << file << "\n";
+        return INVALID_ENTITY;
     }
 
     Entity e = ecs.CreateEntity();
-    ecs.AddComponent<nc::MeshComponent>(e, nc::MeshComponent{mesh});
-    ecs.AddComponent<nc::NameComponent>(e, nc::NameComponent{"ImportedSTL"});
+    ecs.AddComponent<MeshComponent>(e, MeshComponent{mesh});
+    ecs.AddComponent<NameComponent>(e, NameComponent{"ImportedSTL"});
 
     return e;
 }
@@ -76,46 +78,53 @@ int main() {
     LOG(INFO) << "neoCAD";
     LOG(INFO) << "================================";
 
+    // 1) ECS + Backend
     Registry registry;
-    OCCTBackend backend;  // deine konkrete Backend-Implementierung
+    OCCTBackend backend;
     GeometrySystem geom(registry, backend);
+
+    // 2) Editor
     ToolContext ctx(registry, geom);
     Editor editor(ctx);
-
     editor.RegisterTool(EditorMode::InsertPoint, std::make_unique<InsertPointTool>());
     editor.RegisterTool(EditorMode::InsertLine, std::make_unique<SketchCurveTool>(CurveMode::Polyline));
     editor.RegisterTool(EditorMode::InsertCircle, std::make_unique<InsertCircleTool>());
     editor.RegisterTool(EditorMode::InsertSketch, std::make_unique<SketchCurveTool>(CurveMode::Face));
+    // editor.RegisterDefaultTools();  // TODO:
 
+    // 3) ViewController
+    ViewController viewController;
+
+    // 4) RenderingSystem
+    Renderer renderer;
+    RenderingSystem rs(renderer);
+
+    // 5) Window
     Window::CreateInfo ci;
     Window window;
     if (!window.Create(ci))
         return -1;
 
-    // KEY
+    viewController.SetViewportSize(window.GetWidth(), window.GetHeight());
+
+    // 6) INPUT MAPPING
     window.SetKeyPressedCallback([&](int key, int action) {
         InputEvent ev;
         ev.type = InputEventType::Key;
-        ev.data = MakeKeyEventFromGLFW(key, action, /*mods fehlt hier*/ 0);
+        ev.data = MakeKeyEventFromGLFW(key, action, 0);
         editor.OnInput(ev);
+        viewController.OnInput(ev);
     });
 
-    // MOUSE BUTTON
-    window.SetMouseButtonCallback([&](int button, int action, int mods) {
-        (void)mods;
+    window.SetMouseButtonCallback([&](int btn, int act, int mods) {
         double x, y;
         glfwGetCursorPos(window.GetNative(), &x, &y);
-
         InputEvent ev;
         ev.type = InputEventType::MouseButton;
-
-        MouseButtonEvent mb{};
-        mb.button = (button == GLFW_MOUSE_BUTTON_RIGHT) ? MouseButton::Right : MouseButton::Left;
-        mb.pressed = (action == GLFW_PRESS);
-        mb.position = {x, y};
-        ev.data = mb;
-
+        ev.data = MouseButtonEvent{
+            (btn == GLFW_MOUSE_BUTTON_LEFT ? MouseButton::Left : MouseButton::Right), act == GLFW_PRESS, {x, y}};
         editor.OnInput(ev);
+        viewController.OnInput(ev);
     });
 
     // MOUSE MOVE
@@ -126,6 +135,7 @@ int main() {
         mm.position = {x, y};
         ev.data = mm;
         editor.OnInput(ev);
+        viewController.OnInput(ev);
     });
 
     // SCROLL
@@ -136,12 +146,24 @@ int main() {
         sc.offset = {dx, dy};
         ev.data = sc;
         editor.OnInput(ev);
+        viewController.OnInput(ev);
     });
 
+    Entity stl = LoadSTLtoECS("body.stl", registry);
+    if (stl == INVALID_ENTITY) {
+        LOG(ERROR) << "Error";
+        return -1;
+    }
+
     while (window.PollEvents()) {
-        editor.Update(1.0 / 60.0);
+        double dt = 1.0 / 60.0;
+
+        editor.Update(dt);
+        viewController.Update(dt);
+        rs.Update(registry, viewController.GetViewState());
+
         window.BeginFrame();
-        // TODO: rendering
+        rs.Render();
         window.EndFrame();
     }
 

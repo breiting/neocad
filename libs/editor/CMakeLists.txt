@@ -3,6 +3,7 @@ add_library(neocad_editor STATIC
 	src/InsertCircleTool.cpp
 	src/InsertPointTool.cpp
 	src/SketchCurveTool.cpp
+	src/ViewController.cpp
 )
 
 target_include_directories(neocad_editor PUBLIC
@@ -11,6 +12,7 @@ target_include_directories(neocad_editor PUBLIC
 
 target_link_libraries(neocad_editor
 PUBLIC
+	project_settings
 	neocad_core
 	neocad_domain
 )

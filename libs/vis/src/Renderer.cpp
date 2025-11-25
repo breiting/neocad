@@ -1,23 +1,18 @@
 #include <glad.h>
 
 #include <glm/mat4x4.hpp>
+#include <neocad/vis/PointCloud.hpp>
 #include <neocad/vis/Renderer.hpp>
-
-#include "neocad/vis/PointCloud.hpp"
 
 namespace nc::vis {
 
-void Renderer::BeginFrame(const ICamera& cam) {
-    // Store camera matrices for this frame
-    m_View = cam.View();
-    m_Proj = cam.Projection();
+void Renderer::BeginFrame(const glm::mat4& view, const glm::mat4& proj) {
+    m_View = view;
+    m_Proj = proj;
 
     // Basic GL state for 3D rendering
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
-
-    // (Optional) leave clear() dem Window überlassen:
-    // Window::BeginFrame() sollte glClearColor + glClear machen.
 }
 
 void Renderer::DrawMesh(const Mesh& mesh, const glm::mat4& model) {

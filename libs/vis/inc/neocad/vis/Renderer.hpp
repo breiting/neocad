@@ -1,7 +1,6 @@
 #pragma once
 #include <glm/mat4x4.hpp>
 #include <memory>
-#include <neocad/vis/ICamera.hpp>
 #include <neocad/vis/Light.hpp>
 #include <neocad/vis/LineSet.hpp>
 #include <neocad/vis/Material.hpp>
@@ -17,7 +16,7 @@ namespace nc::vis {
 class Renderer {
    public:
     /// Must be called once per frame before Draw*.
-    void BeginFrame(const ICamera& cam);
+    void BeginFrame(const glm::mat4& view, const glm::mat4& proj);
 
     /// Optional: allow caller to change material (shader) for subsequent draws.
     void SetMaterial(std::shared_ptr<Material> material) {

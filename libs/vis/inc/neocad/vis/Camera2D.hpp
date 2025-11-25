@@ -1,11 +1,11 @@
 #pragma once
 #include <glm/mat4x4.hpp>
 #include <glm/vec2.hpp>
-#include <neocad/vis/ICamera.hpp>
+#include <neocad/editor/ICamera.hpp>
 
 namespace nc::vis {
 
-class Camera2D : public ICamera {
+class Camera2D : public editor::ICamera {
    public:
     void SetCenter(const glm::vec2& c) {
         m_Center = c;

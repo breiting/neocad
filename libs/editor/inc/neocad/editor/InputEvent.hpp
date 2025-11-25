@@ -21,7 +21,7 @@ enum class MouseButton {
 enum class KeyCode {
     Unknown,
     Escape,
-    Enter
+    Enter,
 };
 
 struct KeyEvent {
