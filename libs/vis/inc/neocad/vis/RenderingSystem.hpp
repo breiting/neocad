@@ -12,13 +12,13 @@ class RenderingSystem {
     RenderingSystem(Renderer& r) : m_Renderer(r) {
     }
 
-    void Update(domain::Registry& registry, const editor::ViewState& view);
-    void Render();
+    void Update(domain::Registry& registry);
+    void Render(const editor::ViewState& view);
 
    private:
     Renderer& m_Renderer;
-    editor::ViewState m_ViewState;
     std::unordered_map<domain::Entity, std::shared_ptr<Mesh>> m_Meshes;
+    std::unordered_map<domain::Entity, std::shared_ptr<Material>> m_Material;
 };
 
 }  // namespace nc::vis

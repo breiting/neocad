@@ -1,10 +1,16 @@
 #include <glad.h>
 
 #include <glm/mat4x4.hpp>
+#include <memory>
+#include <neocad/vis/DirectionalLight.hpp>
 #include <neocad/vis/PointCloud.hpp>
 #include <neocad/vis/Renderer.hpp>
 
 namespace nc::vis {
+
+Renderer::Renderer() {
+    m_Light = std::make_shared<DirectionalLight>();
+}
 
 void Renderer::BeginFrame(const glm::mat4& view, const glm::mat4& proj) {
     m_View = view;
@@ -15,34 +21,18 @@ void Renderer::BeginFrame(const glm::mat4& view, const glm::mat4& proj) {
     glDepthFunc(GL_LESS);
 }
 
-void Renderer::DrawMesh(const Mesh& mesh, const glm::mat4& model) {
-    if (!m_Material) {
-        // No material bound → nothing to draw
-        return;
-    }
-
-    // Ask material to bind shader & set uniforms (proj/view/model, colors, etc.)
-    m_Material->Apply(m_Proj, m_View, model, m_Light);
-
-    // Delegate geometry draw to  wrapper
+void Renderer::DrawMesh(const Mesh& mesh, std::shared_ptr<Material> mat, const glm::mat4& model) {
+    mat->Apply(m_Proj, m_View, model, m_Light);
     mesh.Render();
 }
 
-void Renderer::DrawLineSet(const LineSet& lines, const glm::mat4& model) {
-    if (!m_Material) {
-        return;
-    }
-
-    m_Material->Apply(m_Proj, m_View, model, m_Light);
+void Renderer::DrawLineSet(const LineSet& lines, std::shared_ptr<Material> mat, const glm::mat4& model) {
+    mat->Apply(m_Proj, m_View, model, m_Light);
     lines.Render();
 }
 
-void Renderer::DrawPoints(const PointCloud& points, const glm::mat4& model) {
-    if (!m_Material) {
-        return;
-    }
-
-    m_Material->Apply(m_Proj, m_View, model, m_Light);
+void Renderer::DrawPoints(const PointCloud& points, std::shared_ptr<Material> mat, const glm::mat4& model) {
+    mat->Apply(m_Proj, m_View, model, m_Light);
     points.Render();
 }
 

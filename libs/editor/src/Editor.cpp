@@ -35,6 +35,8 @@ void Editor::SetMode(EditorMode mode) {
 void Editor::Update(double dt) {
     if (m_ActiveTool)
         m_ActiveTool->Update(m_Ctx, dt);
+
+    m_ViewController.Update(dt);
 }
 
 // ---------------------------------------------------------------------
@@ -48,6 +50,7 @@ void Editor::OnInput(const InputEvent& ev) {
     if (m_ActiveTool) {
         m_ActiveTool->OnInput(ev, m_Ctx);
     }
+    m_ViewController.OnInput(ev);
 }
 
 // ---------------------------------------------------------------------

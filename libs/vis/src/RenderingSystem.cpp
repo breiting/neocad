@@ -1,14 +1,15 @@
+#include <neocad/core/Logger.hpp>
 #include <neocad/domain/Components.hpp>
 #include <neocad/domain/Query.hpp>
 #include <neocad/editor/ViewController.hpp>
+#include <neocad/vis/FlatShadedMaterial.hpp>
 #include <neocad/vis/RenderingSystem.hpp>
 
 using namespace nc::domain;
 using namespace nc::editor;
 
 namespace nc::vis {
-void RenderingSystem::Update(Registry& registry, const ViewState& state) {
-    m_ViewState = state;
+void RenderingSystem::Update(Registry& registry) {
     {
         auto entities = HasComponentQuery<MeshComponent>().Execute(registry);
         for (Entity e : entities) {
@@ -17,8 +18,11 @@ void RenderingSystem::Update(Registry& registry, const ViewState& state) {
                 continue;
 
             auto& mesh = m_Meshes[e];
-            if (!mesh) {
+            auto& material = m_Material[e];
+            if (!mesh && !material) {
+                LOG(INFO) << "Mesh and Material created";
                 mesh = std::make_shared<Mesh>();
+                material = std::make_shared<FlatShadedMaterial>();
 
                 mesh->SetVertices(comp->mesh.vertices);
                 for (size_t i = 0; i + 2 < comp->mesh.indices.size(); i += 3) {
@@ -27,8 +31,6 @@ void RenderingSystem::Update(Registry& registry, const ViewState& state) {
                 mesh->RecalculateNormals();
                 mesh->Upload();
             }
-
-            m_Renderer.DrawMesh(*mesh, glm::mat4(1.0f));
         }
     }
 
@@ -71,11 +73,11 @@ void RenderingSystem::Update(Registry& registry, const ViewState& state) {
     m_Renderer.EndFrame();
 }
 
-void RenderingSystem::Render() {
-    m_Renderer.BeginFrame(m_ViewState.view, m_ViewState.proj);
+void RenderingSystem::Render(const ViewState& state) {
+    m_Renderer.BeginFrame(state.view, state.proj);
 
-    for (auto& [e, geom] : m_Meshes) {
-        m_Renderer.DrawMesh(*geom, glm::mat4(1.0f));
+    for (auto& [e, mesh] : m_Meshes) {
+        m_Renderer.DrawMesh(*mesh, m_Material[e], glm::mat4(1.0f));
     }
     // TODO
 }

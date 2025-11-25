@@ -16,6 +16,7 @@ add_library(neocad_vis STATIC
 	src/Shader.cpp
 	src/StlReader.cpp
 	src/TextRenderer2D.cpp
+	src/Texture.cpp
 )
 
 target_include_directories(neocad_vis

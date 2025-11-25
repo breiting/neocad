@@ -7,6 +7,8 @@
 #include <string>
 #include <unordered_map>
 
+#include "neocad/editor/ViewController.hpp"
+
 namespace nc::editor {
 
 class Editor {
@@ -28,6 +30,13 @@ class Editor {
         return m_Mode;
     }
 
+    ViewController& GetViewController() {
+        return m_ViewController;
+    }
+    const ViewController& GetViewController() const {
+        return m_ViewController;
+    }
+
     ToolContext& GetContext() {
         return m_Ctx;
     }
@@ -37,6 +46,7 @@ class Editor {
 
    private:
     ToolContext& m_Ctx;
+    ViewController m_ViewController;
     EditorMode m_Mode{EditorMode::Normal};
 
     std::unordered_map<EditorMode, std::unique_ptr<ITool>> m_Tools;

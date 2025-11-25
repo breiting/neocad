@@ -71,6 +71,7 @@ Entity LoadSTLtoECS(const std::string& file, Registry& ecs) {
     Entity e = ecs.CreateEntity();
     ecs.AddComponent<MeshComponent>(e, MeshComponent{mesh});
     ecs.AddComponent<NameComponent>(e, NameComponent{"ImportedSTL"});
+    LOG(INFO) << "Successfully added entity: " << e;
 
     return e;
 }
@@ -92,11 +93,6 @@ int main() {
     editor.RegisterTool(EditorMode::InsertLine, std::make_unique<SketchCurveTool>(CurveMode::Polyline));
     editor.RegisterTool(EditorMode::InsertCircle, std::make_unique<InsertCircleTool>());
     editor.RegisterTool(EditorMode::InsertSketch, std::make_unique<SketchCurveTool>(CurveMode::Face));
-    // editor.RegisterDefaultTools();  // TODO:
-
-    // 3) ViewController
-    ViewController viewController;
-    viewController.SetCameras(std::make_shared<Camera2D>(), std::make_shared<Camera3D>());
 
     // 4) RenderingSystem
     Renderer renderer;
@@ -108,7 +104,10 @@ int main() {
     if (!window.Create(ci))
         return -1;
 
-    viewController.SetViewportSize(window.GetWidth(), window.GetHeight());
+    auto cam2d = std::make_shared<Camera2D>();
+    auto cam3d = std::make_shared<Camera3D>();
+    editor.GetViewController().SetCameras(cam2d, cam3d);
+    editor.GetViewController().SetViewportSize(window.GetWidth(), window.GetHeight());
 
     // 6) INPUT MAPPING
     window.SetKeyPressedCallback([&](int key, int action) {
@@ -116,7 +115,6 @@ int main() {
         ev.type = InputEventType::Key;
         ev.data = MakeKeyEventFromGLFW(key, action, 0);
         editor.OnInput(ev);
-        viewController.OnInput(ev);
     });
 
     window.SetMouseButtonCallback([&](int btn, int act, int mods) {
@@ -127,7 +125,6 @@ int main() {
         ev.data = MouseButtonEvent{
             (btn == GLFW_MOUSE_BUTTON_LEFT ? MouseButton::Left : MouseButton::Right), act == GLFW_PRESS, {x, y}};
         editor.OnInput(ev);
-        viewController.OnInput(ev);
     });
 
     // MOUSE MOVE
@@ -138,7 +135,6 @@ int main() {
         mm.position = {x, y};
         ev.data = mm;
         editor.OnInput(ev);
-        viewController.OnInput(ev);
     });
 
     // SCROLL
@@ -149,7 +145,6 @@ int main() {
         sc.offset = {dx, dy};
         ev.data = sc;
         editor.OnInput(ev);
-        viewController.OnInput(ev);
     });
 
     Entity stl = LoadSTLtoECS("body.stl", registry);
@@ -161,12 +156,13 @@ int main() {
     while (window.PollEvents()) {
         double dt = 1.0 / 60.0;
 
+        // Update
         editor.Update(dt);
-        viewController.Update(dt);
-        rs.Update(registry, viewController.GetViewState());
+        rs.Update(registry);
 
+        // Render
         window.BeginFrame();
-        rs.Render();
+        rs.Render(editor.GetViewController().GetViewState());
         window.EndFrame();
     }
 
