@@ -3,6 +3,22 @@
 
 #include "GLFW/glfw3.h"
 
+GLuint g_DefaultTexture = 0;
+
+/**
+ * Creates a default texture which can be used, if no textures are used for shaders (prevent warning)
+ */
+void CreateDefaultTexture() {
+    unsigned char whitePixel[4] = {255, 255, 255, 255};  // RGBA white
+
+    glGenTextures(1, &g_DefaultTexture);
+    glBindTexture(GL_TEXTURE_2D, g_DefaultTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, whitePixel);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+}
+
 namespace nc::ui {
 bool Window::Create(const CreateInfo& ci) {
     if (!glfwInit()) {
@@ -30,6 +46,8 @@ bool Window::Create(const CreateInfo& ci) {
         LOG(ERROR) << "Failed to init GLAD.\n";
         return false;
     }
+
+    CreateDefaultTexture();
 
     glfwSwapInterval(1);  // VSync
     InitCallbacks();

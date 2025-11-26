@@ -1,4 +1,3 @@
-#include <cmath>
 #include <glm/ext/scalar_constants.hpp>
 #include <glm/glm.hpp>
 #include <neocad/domain/PrimitiveFactory.hpp>
