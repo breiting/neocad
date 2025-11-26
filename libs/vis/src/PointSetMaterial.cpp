@@ -11,11 +11,11 @@ PointSetMaterial::PointSetMaterial() {
     m_Shader = std::make_shared<Shader>(pointset_vert_glsl, pointset_frag_glsl);
 }
 
-void PointSetMaterial::Apply(const glm::mat4& /*model*/, const glm::mat4& view, const glm::mat4& projection,
+void PointSetMaterial::Apply(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection,
                              std::shared_ptr<Light> /*light*/) {
     m_Shader->Bind();
-    m_Shader->SetMat4("u_View", view);
-    m_Shader->SetMat4("u_Projection", projection);
+    m_Shader->SetMat4("u_View", view * model);
+    m_Shader->SetMat4("u_Proj", projection);
 
     // uniforms
     m_Shader->SetFloat("u_Radius", m_Radius);

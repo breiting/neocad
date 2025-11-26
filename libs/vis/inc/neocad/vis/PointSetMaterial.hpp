@@ -27,7 +27,7 @@ class PointSetMaterial : public Material {
    private:
     std::shared_ptr<Shader> m_Shader;
     glm::vec4 m_Color{1.0f, 0.5f, 0.0f, 1.0f};  // default orange
-    float m_Radius = 3.0f;                      // default world-units
+    float m_Radius = 0.05f;                     // default world-units
 };
 
 }  // namespace nc::vis
