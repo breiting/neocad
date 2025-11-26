@@ -12,6 +12,7 @@ add_library(neocad_vis STATIC
 	src/LineSetMaterial.cpp
 	src/Mesh.cpp
 	src/PointSet.cpp
+	src/PointSetMaterial.cpp
 	src/OpenGLRenderer.cpp
 	src/RenderingSystem.cpp
 	src/Shader.cpp

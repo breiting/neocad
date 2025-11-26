@@ -3,58 +3,61 @@
 // clang-format on
 #include <glm/gtc/constants.hpp>
 #include <neocad/vis/PointSet.hpp>
+#include <neocad/vis/Shader.hpp>
 
 using namespace nc::domain;
 
 namespace nc::vis {
 
-PointSet::PointSet() : BaseGeometry(), m_Vao(0), m_Vbo(0) {
+PointSet::PointSet() {
 }
 
 PointSet::~PointSet() {
     deleteBuffers();
 }
 
+void PointSet::deleteBuffers() {
+    if (m_Vbo) {
+        glDeleteBuffers(1, &m_Vbo);
+        m_Vbo = 0;
+    }
+    if (m_Vao) {
+        glDeleteVertexArrays(1, &m_Vao);
+        m_Vao = 0;
+    }
+}
+
 void PointSet::Upload() {
-    // ignore if the data has not changed
-    if (!m_Dirty)
+    if (m_Vertices.empty())
         return;
 
-    // Clean up old objects if necessary
-    deleteBuffers();
+    if (!m_Vao) {
+        glGenVertexArrays(1, &m_Vao);
+        glGenBuffers(1, &m_Vbo);
+    }
 
-    glGenVertexArrays(1, &m_Vao);
     glBindVertexArray(m_Vao);
-
-    glGenBuffers(1, &m_Vbo);
     glBindBuffer(GL_ARRAY_BUFFER, m_Vbo);
-    glBufferData(GL_ARRAY_BUFFER, m_Vertices.size() * sizeof(Vertex), m_Vertices.data(), GL_STATIC_DRAW);
 
-    // Position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)Vertex::PositionOffset());
+    glBufferData(GL_ARRAY_BUFFER, m_Vertices.size() * sizeof(Vertex), m_Vertices.data(), GL_DYNAMIC_DRAW);
+
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)Vertex::PositionOffset());
 
-    // Normal
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)Vertex::NormalOffset());
-    glEnableVertexAttribArray(1);
-
-    // Color
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)Vertex::ColorOffset());
-    glEnableVertexAttribArray(2);
+    // Instancing !
+    glVertexAttribDivisor(0, 1);
 
     glBindVertexArray(0);
     m_Dirty = false;
 }
 
 void PointSet::Render() const {
+    if (!m_Vao)
+        return;
+
     glBindVertexArray(m_Vao);
-    glDrawArrays(GL_POINTS, 0, m_Vertices.size());
+    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, static_cast<GLsizei>(m_Vertices.size()));
+    glBindVertexArray(0);
 }
 
-void PointSet::deleteBuffers() {
-    if (m_Vao)
-        glDeleteVertexArrays(1, &m_Vao);
-    if (m_Vbo)
-        glDeleteBuffers(1, &m_Vbo);
-}
 }  // namespace nc::vis

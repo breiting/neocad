@@ -8,6 +8,7 @@
 #include <neocad/vis/IRenderer.hpp>
 #include <neocad/vis/LineSet.hpp>
 #include <neocad/vis/Mesh.hpp>
+#include <neocad/vis/PointSet.hpp>
 #include <unordered_map>
 
 namespace nc::vis {
@@ -24,6 +25,8 @@ class RenderingSystem {
 
     void SetShowAxis(bool b);
 
+    void MarkPointsDirty();
+
    private:
     std::unique_ptr<IRenderer> m_Renderer;
     std::shared_ptr<DirectionalLight> m_Light;
@@ -31,6 +34,10 @@ class RenderingSystem {
     std::unordered_map<domain::Entity, std::shared_ptr<Mesh>> m_Meshes;
     std::unordered_map<domain::Entity, std::shared_ptr<LineSet>> m_Lines;
     std::unordered_map<domain::Entity, std::shared_ptr<Material>> m_Material;
+
+    bool m_PointsDirty = true;
+    std::shared_ptr<PointSet> m_Points;
+    std::shared_ptr<Material> m_PointSetMaterial;
 };
 
 }  // namespace nc::vis

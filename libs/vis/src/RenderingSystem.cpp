@@ -1,3 +1,4 @@
+#include <memory>
 #include <neocad/core/Colors.hpp>
 #include <neocad/core/Logger.hpp>
 #include <neocad/domain/Components.hpp>
@@ -6,6 +7,7 @@
 #include <neocad/vis/DirectionalLight.hpp>
 #include <neocad/vis/FlatShadedMaterial.hpp>
 #include <neocad/vis/LineSetMaterial.hpp>
+#include <neocad/vis/PointSetMaterial.hpp>
 #include <neocad/vis/RenderingSystem.hpp>
 
 using namespace nc::domain;
@@ -26,6 +28,8 @@ namespace nc::vis {
 RenderingSystem::RenderingSystem(std::unique_ptr<IRenderer> r) : m_Renderer(std::move(r)) {
     m_Light = std::make_shared<DirectionalLight>();
     m_Light->SetColor(SUN_LIGHT);
+    m_PointSetMaterial = std::make_shared<PointSetMaterial>();
+    m_Points = std::make_shared<PointSet>();
 }
 
 void RenderingSystem::SetViewportSize(int w, int h) {
@@ -77,7 +81,7 @@ void RenderingSystem::Update(Registry& registry) {
             auto& lines = m_Lines[e];
             auto& material = m_Material[e];
             if (!lines) {
-                LOG(INFO) << "Creeating LineSet ...";
+                LOG(INFO) << "Creating LineSet ...";
                 lines = std::make_shared<LineSet>();
                 material = std::make_shared<LineSetMaterial>();
 
@@ -87,7 +91,6 @@ void RenderingSystem::Update(Registry& registry) {
                 for (Entity vEnt : comp->vertices) {
                     if (auto* pos = registry.GetComponent<PositionComponent>(vEnt)) {
                         Vertex v;
-                        printf("%f %f %f\n", pos->position.x, pos->position.y, pos->position.z);
                         v.SetPosition(pos->position);
                         v.SetColor({core::Nord12.r, core::Nord12.g, core::Nord12.b});
                         vertices.push_back(v);
@@ -99,22 +102,22 @@ void RenderingSystem::Update(Registry& registry) {
         }
     }
 
-    // 3) RENDER POINTS
-    // {
-    //     auto entities = HasComponentQuery<PointComponent>().Execute(registry);
-    //     for (Entity e : entities) {
-    //         auto* comp = registry.GetComponent<PointComponent>(e);
-    //         if (!comp)
-    //             continue;
-    //
-    //         auto& gpuPoints = m_GraphicCache[e];
-    //         if (!gpuPoints)
-    //             gpuPoints = std::make_shared<PointGPU>();
-    //
-    //         gpuPoints->Upload(comp->points);
-    //         m_Renderer.DrawPoints(*gpuPoints, glm::mat4(1.0f));
-    //     }
-    // }
+    {
+        if (m_PointsDirty) {
+            auto entities = HasComponentQuery<PositionComponent>().Execute(registry);
+            LOG(INFO) << "Creating PointSet ...";
+            for (Entity e : entities) {
+                if (auto* pc = registry.GetComponent<domain::PositionComponent>(e)) {
+                    Vertex v;
+                    v.SetPosition(pc->position);
+                    v.SetColor({core::Nord12.r, core::Nord12.g, core::Nord12.b});
+                    m_Points->AddVertex(v);
+                }
+                m_Points->Upload();
+                m_PointsDirty = false;
+            }
+        }
+    }
 }
 
 void RenderingSystem::Render(ICamera* cam) {
@@ -134,7 +137,15 @@ void RenderingSystem::Render(ICamera* cam) {
     for (auto& [e, lines] : m_Lines) {
         m_Renderer->DrawLineSet(lines, m_Material[e], GLOBAL_WORLD_TRANSFORM * glm::mat4(1.0f));
     }
+    // Batch render points
+    if (m_Points && m_PointSetMaterial)
+        m_Renderer->DrawPoints(m_Points, m_PointSetMaterial, GLOBAL_WORLD_TRANSFORM * glm::mat4(1.0f));
+
     m_Renderer->EndFrame();
+}
+
+void RenderingSystem::MarkPointsDirty() {
+    m_PointsDirty = true;
 }
 
 }  // namespace nc::vis

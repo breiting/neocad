@@ -19,6 +19,7 @@ class Shader {
     // Set data to shader
     void SetMat4(const std::string& name, const glm::mat4& matrix);
     void SetVec3(const std::string& name, const glm::vec3& value);
+    void SetVec4(const std::string& name, const glm::vec4& value);
     void SetFloat(const std::string& name, float value);
     void SetBool(const std::string& name, bool value);
 

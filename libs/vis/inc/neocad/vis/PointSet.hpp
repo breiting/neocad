@@ -1,5 +1,4 @@
 #pragma once
-
 #include <glm/glm.hpp>
 #include <neocad/vis/BaseGeometry.hpp>
 
@@ -17,6 +16,7 @@ class PointSet : public BaseGeometry {
     void deleteBuffers();
 
    private:
-    unsigned int m_Vao, m_Vbo;
+    unsigned int m_Vao = 0;
+    unsigned int m_Vbo = 0;
 };
 }  // namespace nc::vis

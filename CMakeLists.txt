@@ -112,6 +112,8 @@ embed_text_to_header("${SHADER_SRC_DIR}/grid.vert" "${GEN_INC_DIR}/assets/grid_v
 embed_text_to_header("${SHADER_SRC_DIR}/grid.frag" "${GEN_INC_DIR}/assets/grid_frag.h" grid_frag_glsl)
 embed_text_to_header("${SHADER_SRC_DIR}/lineset.vert" "${GEN_INC_DIR}/assets/lineset_vert.h" lineset_vert_glsl)
 embed_text_to_header("${SHADER_SRC_DIR}/lineset.frag" "${GEN_INC_DIR}/assets/lineset_frag.h" lineset_frag_glsl)
+embed_text_to_header("${SHADER_SRC_DIR}/pointset.vert" "${GEN_INC_DIR}/assets/pointset_vert.h" pointset_vert_glsl)
+embed_text_to_header("${SHADER_SRC_DIR}/pointset.frag" "${GEN_INC_DIR}/assets/pointset_frag.h" pointset_frag_glsl)
 embed_text_to_header("${SHADER_SRC_DIR}/unlit.vert" "${GEN_INC_DIR}/assets/unlit_vert.h" unlit_vert_glsl)
 embed_text_to_header("${SHADER_SRC_DIR}/unlit.frag" "${GEN_INC_DIR}/assets/unlit_frag.h" unlit_frag_glsl)
 
