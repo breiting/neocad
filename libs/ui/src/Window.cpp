@@ -44,6 +44,10 @@ void Window::Destroy() {
     glfwTerminate();
 }
 
+void Window::Close() {
+    glfwSetWindowShouldClose(m_Window, true);
+}
+
 bool Window::PollEvents() {
     if (!m_Window || glfwWindowShouldClose(m_Window))
         return false;
@@ -51,12 +55,7 @@ bool Window::PollEvents() {
     return true;
 }
 
-void Window::BeginFrame() {
-    glClearColor(0.18f, 0.20f, 0.25f, 1.0f);  // Nord0
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
-
-void Window::EndFrame() {
+void Window::SwapBuffers() {
     glfwSwapBuffers(m_Window);
 }
 

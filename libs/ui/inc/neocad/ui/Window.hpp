@@ -20,11 +20,11 @@ class Window {
     };
 
     bool Create(const CreateInfo &ci);
+    void Close();
     void Destroy();
 
-    bool PollEvents();  // returns false if window should close
-    void BeginFrame();  // clear screen
-    void EndFrame();    // swap buffers
+    bool PollEvents();
+    void SwapBuffers();
 
     float Aspect() const;
     int GetWidth() const {

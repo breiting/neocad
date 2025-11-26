@@ -103,19 +103,20 @@ int main() {
 
     // RenderingSystem
     auto renderer = std::make_unique<OpenGLRenderer>();
-    RenderingSystem rs(std::move(renderer));
+    RenderingSystem renderingSystem(std::move(renderer));
 
     // Window
     Window window;
     if (!window.Create({WINDOW_WIDTH, WINDOW_HEIGHT, APP_NAME}))
         return -1;
 
+    // TODO
     auto cam2d = std::make_shared<Camera2D>();
     auto cam3d = std::make_shared<Camera3D>();
     editor.GetViewController().SetCameras(cam2d, cam3d);
     editor.GetViewController().SetViewportSize(window.GetWidth(), window.GetHeight());
 
-    // 6) INPUT MAPPING
+    // INPUT MAPPING
     window.SetKeyPressedCallback([&](int key, int action) {
         InputEvent ev;
         ev.type = InputEventType::Key;
@@ -133,7 +134,6 @@ int main() {
         editor.OnInput(ev);
     });
 
-    // MOUSE MOVE
     window.SetMouseMoveCallback([&](double x, double y) {
         InputEvent ev;
         ev.type = InputEventType::MouseMove;
@@ -143,7 +143,6 @@ int main() {
         editor.OnInput(ev);
     });
 
-    // SCROLL
     window.SetScrollCallback([&](double dx, double dy) {
         InputEvent ev;
         ev.type = InputEventType::Scroll;
@@ -155,21 +154,24 @@ int main() {
 
     Entity stl = LoadSTLtoECS("body.stl", registry);
     if (stl == INVALID_ENTITY) {
-        LOG(ERROR) << "Error";
+        LOG(ERROR) << "Error during loading STL file";
         return -1;
     }
 
+    auto lt = static_cast<float>(glfwGetTime());
     while (window.PollEvents()) {
-        double dt = 1.0 / 60.0;
+        float ct = static_cast<float>(glfwGetTime());
+        float dt = ct - lt;
+        lt = ct;
 
-        // Update
+        // UPDATE
         editor.Update(dt);
-        rs.Update(registry);
+        renderingSystem.Update(registry);
 
-        // Render
-        window.BeginFrame();
-        rs.Render(editor.GetViewController().GetViewState());
-        window.EndFrame();
+        // RENDER
+        renderingSystem.Render(editor.GetViewController().GetViewState());
+
+        window.SwapBuffers();
     }
 
     window.Destroy();
