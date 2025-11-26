@@ -1,3 +1,4 @@
+#include <memory>
 #include <neocad/command/ExtrudeCommand.hpp>
 #include <neocad/core/Logger.hpp>
 #include <neocad/domain/Components.hpp>
@@ -19,12 +20,18 @@
 #include <neocad/vis/RenderingSystem.hpp>
 #include <neocad/vis/StlReader.hpp>
 
+#include "neocad/vis/OpenGLRenderer.hpp"
+
 using namespace nc::domain;
 using namespace nc::occt;
 using namespace nc::cmd;
 using namespace nc::editor;
 using namespace nc::ui;
 using namespace nc::vis;
+
+constexpr int WINDOW_WIDTH = 1280;
+constexpr int WINDOW_HEIGHT = 800;
+constexpr const char* APP_NAME = "neocad";
 
 static KeyEvent MakeKeyEventFromGLFW(int key, int /*action*/, int mods) {
     using namespace nc;
@@ -78,15 +85,15 @@ Entity LoadSTLtoECS(const std::string& file, Registry& ecs) {
 
 int main() {
     LOG(INFO) << "================================";
-    LOG(INFO) << "neoCAD";
+    LOG(INFO) << APP_NAME;
     LOG(INFO) << "================================";
 
-    // 1) ECS + Backend
+    // ECS + Backend
     Registry registry;
     OCCTBackend backend;
     GeometrySystem geom(registry, backend);
 
-    // 2) Editor
+    // Editor
     ToolContext ctx(registry, geom);
     Editor editor(ctx);
     editor.RegisterTool(EditorMode::InsertPoint, std::make_unique<InsertPointTool>());
@@ -94,14 +101,13 @@ int main() {
     editor.RegisterTool(EditorMode::InsertCircle, std::make_unique<InsertCircleTool>());
     editor.RegisterTool(EditorMode::InsertSketch, std::make_unique<SketchCurveTool>(CurveMode::Face));
 
-    // 4) RenderingSystem
-    Renderer renderer;
-    RenderingSystem rs(renderer);
+    // RenderingSystem
+    auto renderer = std::make_unique<OpenGLRenderer>();
+    RenderingSystem rs(std::move(renderer));
 
-    // 5) Window
-    Window::CreateInfo ci;
+    // Window
     Window window;
-    if (!window.Create(ci))
+    if (!window.Create({WINDOW_WIDTH, WINDOW_HEIGHT, APP_NAME}))
         return -1;
 
     auto cam2d = std::make_shared<Camera2D>();

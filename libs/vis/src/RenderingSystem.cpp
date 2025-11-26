@@ -9,6 +9,10 @@ using namespace nc::domain;
 using namespace nc::editor;
 
 namespace nc::vis {
+
+RenderingSystem::RenderingSystem(std::unique_ptr<IRenderer> r) : m_Renderer(std::move(r)) {
+}
+
 void RenderingSystem::Update(Registry& registry) {
     {
         auto entities = HasComponentQuery<MeshComponent>().Execute(registry);
@@ -69,17 +73,15 @@ void RenderingSystem::Update(Registry& registry) {
         }
     }
 #endif
-
-    m_Renderer.EndFrame();
 }
 
 void RenderingSystem::Render(const ViewState& state) {
-    m_Renderer.BeginFrame(state.view, state.proj);
+    m_Renderer->BeginFrame(state.view, state.proj);
 
     for (auto& [e, mesh] : m_Meshes) {
-        m_Renderer.DrawMesh(*mesh, m_Material[e], glm::mat4(1.0f));
+        m_Renderer->DrawMesh(mesh, m_Material[e], glm::mat4(1.0f));
     }
-    // TODO
+    m_Renderer->EndFrame();
 }
 
 }  // namespace nc::vis
