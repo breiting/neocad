@@ -77,7 +77,7 @@ enum class StlFormat {
     return StlFormat::Ascii;
 }
 
-[[nodiscard]] bool LoadBinaryStl(std::ifstream& file, TriMesh& mesh) {
+[[nodiscard]] bool LoadBinaryStl(std::ifstream& file, Mesh& mesh) {
     mesh.Clear();
 
     file.clear();
@@ -136,7 +136,7 @@ enum class StlFormat {
     return true;
 }
 
-[[nodiscard]] bool LoadAsciiStl(std::ifstream& file, TriMesh& mesh) {
+[[nodiscard]] bool LoadAsciiStl(std::ifstream& file, Mesh& mesh) {
     mesh.Clear();
 
     file.clear();
@@ -182,7 +182,7 @@ enum class StlFormat {
 
 }  // namespace
 
-bool StlReader::LoadFromFile(const std::string& filePath, TriMesh& outMesh) const {
+bool StlReader::LoadFromFile(const std::string& filePath, Mesh& outMesh) const {
     std::ifstream file(filePath, std::ios::binary);
     if (!file.is_open()) {
         std::cerr << "[StlReader] Could not open file: " << filePath << '\n';

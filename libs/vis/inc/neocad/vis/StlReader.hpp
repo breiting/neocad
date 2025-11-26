@@ -21,7 +21,7 @@ class StlReader final {
     /// \param filePath Path to the STL file.
     /// \param outMesh  Target mesh. Will be overwritten on success.
     /// \return true on success, false on failure.
-    [[nodiscard]] bool LoadFromFile(const std::string& filePath, domain::TriMesh& outMesh) const;
+    [[nodiscard]] bool LoadFromFile(const std::string& filePath, domain::Mesh& outMesh) const;
 };
 
 }  // namespace nc::vis

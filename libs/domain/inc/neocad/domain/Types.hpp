@@ -12,7 +12,7 @@ struct Polygon {
     std::vector<vec3> vertices;  ///< assumed ordered and planar
 };
 
-struct TriMesh {
+struct Mesh {
     std::vector<Vertex> vertices;
     std::vector<std::uint32_t> indices;
 

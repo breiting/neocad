@@ -54,11 +54,9 @@ void ViewController::OnInput(const InputEvent& ev) {
     if (ev.type == InputEventType::MouseButton) {
         const auto& e = std::get<MouseButtonEvent>(ev.data);
         if (e.button == MouseButton::Left) {
-            LOG(INFO) << "LMB pressed: " << e.pressed;
             m_LMB = e.pressed;
         }
         if (e.button == MouseButton::Right) {
-            LOG(INFO) << "RMB pressed: " << e.pressed;
             m_RMB = e.pressed;
         }
         if (e.pressed) {  // FIRST PRESS

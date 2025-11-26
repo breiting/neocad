@@ -44,7 +44,7 @@ struct RadiusComponent {
 
 /// 3D Mesh component for rendering
 struct MeshComponent {
-    TriMesh mesh;
+    Mesh mesh;
 };
 
 /// SketchPlane component which acts as a proxy for 2D sketching

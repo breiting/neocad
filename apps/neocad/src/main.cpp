@@ -20,6 +20,7 @@
 #include <neocad/vis/RenderingSystem.hpp>
 #include <neocad/vis/StlReader.hpp>
 
+#include "neocad/domain/PrimitiveFactory.hpp"
 #include "neocad/vis/OpenGLRenderer.hpp"
 
 using namespace nc::domain;
@@ -67,7 +68,7 @@ static KeyEvent MakeKeyEventFromGLFW(int key, int /*action*/, int mods) {
 }
 
 Entity LoadSTLtoECS(const std::string& file, Registry& ecs) {
-    TriMesh mesh;
+    nc::domain::Mesh mesh;
     StlReader reader;
 
     if (!reader.LoadFromFile(file, mesh)) {
@@ -83,54 +84,6 @@ Entity LoadSTLtoECS(const std::string& file, Registry& ecs) {
     return e;
 }
 
-Entity MakeUnitCube(Registry& ecs) {
-    using namespace nc::domain;
-
-    // Hard-coded 24 vertices (4 per face) → perfect normals per face
-    struct Face {
-        glm::vec3 normal;
-        glm::vec3 v0, v1, v2, v3;  // clockwise
-    };
-
-    std::vector<Face> faces = {
-        // FRONT (+Z)
-        {{0, 0, 1}, {-0.5, -0.5, +0.5}, {+0.5, -0.5, +0.5}, {+0.5, +0.5, +0.5}, {-0.5, +0.5, +0.5}},
-        // BACK (-Z)
-        {{0, 0, -1}, {-0.5, -0.5, -0.5}, {-0.5, +0.5, -0.5}, {+0.5, +0.5, -0.5}, {+0.5, -0.5, -0.5}},
-        // LEFT (-X)
-        {{-1, 0, 0}, {-0.5, -0.5, -0.5}, {-0.5, -0.5, +0.5}, {-0.5, +0.5, +0.5}, {-0.5, +0.5, -0.5}},
-        // RIGHT (+X)
-        {{+1, 0, 0}, {+0.5, -0.5, -0.5}, {+0.5, +0.5, -0.5}, {+0.5, +0.5, +0.5}, {+0.5, -0.5, +0.5}},
-        // TOP (+Y)
-        {{0, +1, 0}, {-0.5, +0.5, -0.5}, {-0.5, +0.5, +0.5}, {+0.5, +0.5, +0.5}, {+0.5, +0.5, -0.5}},
-        // BOTTOM (-Y)
-        {{0, -1, 0}, {-0.5, -0.5, -0.5}, {+0.5, -0.5, -0.5}, {+0.5, -0.5, +0.5}, {-0.5, -0.5, +0.5}},
-    };
-
-    MeshComponent mc;
-
-    // Add vertices + normals
-    for (const auto& f : faces) {
-        mc.mesh.vertices.push_back(Vertex(f.v0, f.normal));
-        mc.mesh.vertices.push_back(Vertex(f.v1, f.normal));
-        mc.mesh.vertices.push_back(Vertex(f.v2, f.normal));
-        mc.mesh.vertices.push_back(Vertex(f.v3, f.normal));
-    }
-
-    // Add indices (2 triangles per face)
-    for (int i = 0; i < 6; ++i) {  // 6 faces
-        uint32_t off = i * 4;      // 4 vertices per face
-        mc.mesh.indices.insert(mc.mesh.indices.end(), {off + 0, off + 1, off + 2, off + 0, off + 2, off + 3});
-    }
-
-    // ECS Entity erzeugen
-    Entity e = ecs.CreateEntity();
-    ecs.AddComponent<MeshComponent>(e, mc);
-    ecs.AddComponent<NameComponent>(e, {"UnitCube"});
-
-    return e;
-}
-
 int main() {
     LOG(INFO) << "================================";
     LOG(INFO) << APP_NAME;
@@ -142,8 +95,10 @@ int main() {
     GeometrySystem geom(registry, backend);
 
     // Test Cube
-    Entity cube = MakeUnitCube(registry);
-    LOG(INFO) << "Created cube with entityID: " << cube;
+    // Entity cube = PrimitiveFactory::MakeUnitCube(registry, "UnitCube");
+    // LOG(INFO) << "Created cube with entityID: " << cube;
+    Entity box = PrimitiveFactory::MakeBox(registry, {1, 2, 3});
+    LOG(INFO) << "Created box with entityID: " << box;
 
     // Editor
     ToolContext ctx(registry, geom);
@@ -209,11 +164,11 @@ int main() {
         renderingSystem.SetViewportSize(w, h);
     });
 
-    Entity stl = LoadSTLtoECS("part.stl", registry);
-    if (stl == INVALID_ENTITY) {
-        LOG(ERROR) << "Error during loading STL file";
-        return -1;
-    }
+    // Entity stl = LoadSTLtoECS("part.stl", registry);
+    // if (stl == INVALID_ENTITY) {
+    //     LOG(ERROR) << "Error during loading STL file";
+    //     return -1;
+    // }
 
     auto lt = static_cast<float>(glfwGetTime());
     while (window.PollEvents()) {
