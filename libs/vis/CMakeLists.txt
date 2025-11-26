@@ -1,4 +1,5 @@
 add_library(neocad_vis STATIC
+	src/AxisRenderer.cpp
 	src/BaseGeometry.cpp
 	src/Camera2D.cpp
 	src/Camera3D.cpp

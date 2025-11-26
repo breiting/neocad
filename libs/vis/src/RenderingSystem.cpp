@@ -32,6 +32,15 @@ void RenderingSystem::SetViewportSize(int w, int h) {
     m_Renderer->SetViewportSize(w, h);
 }
 
+bool RenderingSystem::Init() {
+    m_Axis = std::make_unique<AxisRenderer>();
+    return m_Axis->Init();
+}
+
+void RenderingSystem::SetShowAxis(bool b) {
+    m_Axis->SetVisible(b);
+}
+
 void RenderingSystem::Update(Registry& registry) {
     {
         auto entities = HasComponentQuery<MeshComponent>().Execute(registry);
@@ -102,6 +111,9 @@ void RenderingSystem::Render(ICamera* cam) {
         m_Light->SetDirection(cam->GetViewDirection());
     }
     m_Renderer->BeginFrame(cam->GetViewMatrix(), cam->GetProjectionMatrix(), m_Light);
+
+    if (m_Axis)
+        m_Axis->Render(GLOBAL_WORLD_TRANSFORM, cam->GetViewMatrix(), cam->GetProjectionMatrix());
 
     for (auto& [e, mesh] : m_Meshes) {
         m_Renderer->DrawMesh(mesh, m_Material[e], GLOBAL_WORLD_TRANSFORM * glm::mat4(1.0f));

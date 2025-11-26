@@ -116,6 +116,8 @@ int main() {
     // RenderingSystem (after Window initialization)
     auto renderer = std::make_unique<OpenGLRenderer>();
     RenderingSystem renderingSystem(std::move(renderer));
+    renderingSystem.Init();
+    renderingSystem.SetShowAxis(true);
 
     auto cam2D = std::make_shared<Camera2D>();
     auto cam3D = std::make_shared<Camera3D>();

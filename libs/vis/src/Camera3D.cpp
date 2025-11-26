@@ -48,8 +48,8 @@ void Camera3D::OnMousePan(double xpos, double ypos) {
     glm::vec3 right = glm::normalize(glm::cross(GetViewDirection(), glm::vec3(0.0f, 1.0f, 0.0f)));
     glm::vec3 up = glm::normalize(glm::cross(right, GetViewDirection()));
 
-    m_Target -= right * delta.x * 0.001f;
-    m_Target += up * delta.y * 0.001f;
+    m_Target -= right * delta.x * 0.01f;
+    m_Target += up * delta.y * 0.01f;
     UpdatePosition();
 }
 
