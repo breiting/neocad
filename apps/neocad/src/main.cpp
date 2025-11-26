@@ -86,57 +86,47 @@ Entity LoadSTLtoECS(const std::string& file, Registry& ecs) {
 Entity MakeUnitCube(Registry& ecs) {
     using namespace nc::domain;
 
-    // 8 vertices (clockwise)
-    std::vector<glm::vec3> verts = {{-0.5f, -0.5f, -1.5f}, {+0.5f, -0.5f, -1.5f}, {+0.5f, +0.5f, -1.5f},
-                                    {-0.5f, +0.5f, -1.5f}, {-0.5f, -0.5f, +1.5f}, {+0.5f, -0.5f, +1.5f},
-                                    {+0.5f, +0.5f, +1.5f}, {-0.5f, +0.5f, +1.5f}};
+    // Hard-coded 24 vertices (4 per face) → perfect normals per face
+    struct Face {
+        glm::vec3 normal;
+        glm::vec3 v0, v1, v2, v3;  // clockwise
+    };
 
-    // 12 triangles → 2 per face
-    std::vector<glm::uvec3> tris = {
-        {0, 1, 2}, {0, 2, 3},  // back
-        {4, 5, 6}, {4, 6, 7},  // front
-        {0, 4, 5}, {0, 5, 1},  // bottom
-        {3, 7, 6}, {3, 6, 2},  // top
-        {0, 4, 7}, {0, 7, 3},  // left
-        {1, 5, 6}, {1, 6, 2}   // right
+    std::vector<Face> faces = {
+        // FRONT (+Z)
+        {{0, 0, 1}, {-0.5, -0.5, +0.5}, {+0.5, -0.5, +0.5}, {+0.5, +0.5, +0.5}, {-0.5, +0.5, +0.5}},
+        // BACK (-Z)
+        {{0, 0, -1}, {-0.5, -0.5, -0.5}, {-0.5, +0.5, -0.5}, {+0.5, +0.5, -0.5}, {+0.5, -0.5, -0.5}},
+        // LEFT (-X)
+        {{-1, 0, 0}, {-0.5, -0.5, -0.5}, {-0.5, -0.5, +0.5}, {-0.5, +0.5, +0.5}, {-0.5, +0.5, -0.5}},
+        // RIGHT (+X)
+        {{+1, 0, 0}, {+0.5, -0.5, -0.5}, {+0.5, +0.5, -0.5}, {+0.5, +0.5, +0.5}, {+0.5, -0.5, +0.5}},
+        // TOP (+Y)
+        {{0, +1, 0}, {-0.5, +0.5, -0.5}, {-0.5, +0.5, +0.5}, {+0.5, +0.5, +0.5}, {+0.5, +0.5, -0.5}},
+        // BOTTOM (-Y)
+        {{0, -1, 0}, {-0.5, -0.5, -0.5}, {+0.5, -0.5, -0.5}, {+0.5, -0.5, +0.5}, {-0.5, -0.5, +0.5}},
     };
 
     MeshComponent mc;
-    std::vector<glm::vec3> normals(verts.size(), glm::vec3(0.0f));
 
-    for (auto& t : tris) {
-        glm::vec3 v0 = verts[t.x];
-        glm::vec3 v1 = verts[t.y];
-        glm::vec3 v2 = verts[t.z];
-
-        glm::vec3 n = glm::normalize(glm::cross(v1 - v0, v2 - v0));
-
-        normals[t.x] += n;
-        normals[t.y] += n;
-        normals[t.z] += n;
+    // Add vertices + normals
+    for (const auto& f : faces) {
+        mc.mesh.vertices.push_back(Vertex(f.v0, f.normal));
+        mc.mesh.vertices.push_back(Vertex(f.v1, f.normal));
+        mc.mesh.vertices.push_back(Vertex(f.v2, f.normal));
+        mc.mesh.vertices.push_back(Vertex(f.v3, f.normal));
     }
 
-    // normalize final vertex normals
-    for (auto& n : normals) {
-        n = glm::normalize(n);
+    // Add indices (2 triangles per face)
+    for (int i = 0; i < 6; ++i) {  // 6 faces
+        uint32_t off = i * 4;      // 4 vertices per face
+        mc.mesh.indices.insert(mc.mesh.indices.end(), {off + 0, off + 1, off + 2, off + 0, off + 2, off + 3});
     }
 
-    for (size_t i = 0; i < verts.size(); ++i) {
-        Vertex v;
-        v.SetPosition(verts[i]);
-        v.SetNormal(normals[i]);  // ***
-        mc.mesh.vertices.push_back(v);
-    }
-
-    for (auto& t : tris) {
-        mc.mesh.indices.push_back(t.x);
-        mc.mesh.indices.push_back(t.y);
-        mc.mesh.indices.push_back(t.z);
-    }
-
+    // ECS Entity erzeugen
     Entity e = ecs.CreateEntity();
     ecs.AddComponent<MeshComponent>(e, mc);
-    ecs.AddComponent<NameComponent>(e, {"Cube"});
+    ecs.AddComponent<NameComponent>(e, {"UnitCube"});
 
     return e;
 }
@@ -219,7 +209,7 @@ int main() {
         renderingSystem.SetViewportSize(w, h);
     });
 
-    Entity stl = LoadSTLtoECS("body.stl", registry);
+    Entity stl = LoadSTLtoECS("part.stl", registry);
     if (stl == INVALID_ENTITY) {
         LOG(ERROR) << "Error during loading STL file";
         return -1;
