@@ -37,6 +37,11 @@ class ViewController {
 
     std::shared_ptr<ICamera> m_Cam3D;
     std::shared_ptr<ICamera> m_Cam2D;
+
+    bool m_LMB = false;
+    bool m_RMB = false;
+    double m_LastX = 0.0;
+    double m_LastY = 0.0;
 };
 
 }  // namespace nc::editor

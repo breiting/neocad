@@ -6,10 +6,20 @@
 #include <neocad/vis/FlatShadedMaterial.hpp>
 #include <neocad/vis/RenderingSystem.hpp>
 
+#include "neocad/core/Colors.hpp"
+
 using namespace nc::domain;
 using namespace nc::editor;
 
 const glm::vec3 SUN_LIGHT = {1.0f, 0.95f, 0.9f};
+
+/**
+ * Make sure to convert all geometry into our coordinate system where +z is the height. Therefore we just flip Y and Z
+ */
+const glm::mat4 GLOBAL_WORLD_TRANSFORM = glm::mat4(1, 0, 0, 0,   //
+                                                   0, 0, -1, 0,  //
+                                                   0, 1, 0, 0,   //
+                                                   0, 0, 0, 1);
 
 namespace nc::vis {
 
@@ -35,7 +45,8 @@ void RenderingSystem::Update(Registry& registry) {
             if (!mesh && !material) {
                 LOG(INFO) << "Mesh and Material created";
                 mesh = std::make_shared<Mesh>();
-                material = std::make_shared<FlatShadedMaterial>(glm::vec3(1.f, 0.f, 0.f));
+                material =
+                    std::make_shared<FlatShadedMaterial>(glm::vec3(core::Nord11.r, core::Nord11.g, core::Nord11.b));
 
                 mesh->SetVertices(comp->mesh.vertices);
                 for (size_t i = 0; i + 2 < comp->mesh.indices.size(); i += 3) {
@@ -92,7 +103,7 @@ void RenderingSystem::Render(const glm::mat4& view, const glm::mat4& proj) {
     m_Renderer->BeginFrame(view, proj, m_Light);
 
     for (auto& [e, mesh] : m_Meshes) {
-        m_Renderer->DrawMesh(mesh, m_Material[e], glm::mat4(1.0f));
+        m_Renderer->DrawMesh(mesh, m_Material[e], GLOBAL_WORLD_TRANSFORM * glm::mat4(1.0f));
     }
     m_Renderer->EndFrame();
 }

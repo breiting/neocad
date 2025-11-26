@@ -51,22 +51,39 @@ void ViewController::OnInput(const InputEvent& ev) {
     if (!cam)
         return;
 
-    switch (ev.type) {
-        case InputEventType::MouseButton:
-            LOG(INFO) << "MouseButton";
-            cam->OnMouseStart();
-            break;
-        case InputEventType::MouseMove:
-            LOG(INFO) << "MouseMove";
-            cam->OnMouseRotation(std::get<MouseMoveEvent>(ev.data).position.x,
-                                 std::get<MouseMoveEvent>(ev.data).position.y);
-            break;
-        case InputEventType::Scroll:
-            LOG(INFO) << "MouseScroll";
-            cam->OnMouseScroll(std::get<ScrollEvent>(ev.data).offset.y);
-            break;
-        default:
-            break;
+    if (ev.type == InputEventType::MouseButton) {
+        const auto& e = std::get<MouseButtonEvent>(ev.data);
+        if (e.button == MouseButton::Left) {
+            LOG(INFO) << "LMB pressed: " << e.pressed;
+            m_LMB = e.pressed;
+        }
+        if (e.button == MouseButton::Right) {
+            LOG(INFO) << "RMB pressed: " << e.pressed;
+            m_RMB = e.pressed;
+        }
+        if (e.pressed) {  // FIRST PRESS
+            if (auto cam = GetActiveCamera())
+                cam->OnMouseStart();
+        }
+        return;
+    }
+
+    if (ev.type == InputEventType::MouseMove) {
+        auto& mm = std::get<MouseMoveEvent>(ev.data);
+        if (auto cam = GetActiveCamera()) {
+            if (m_LMB)
+                cam->OnMouseRotation(mm.position.x, mm.position.y);
+            else if (m_RMB)
+                cam->OnMousePan(mm.position.x, mm.position.y);
+        }
+        return;
+    }
+
+    if (ev.type == InputEventType::Scroll) {
+        auto& sc = std::get<ScrollEvent>(ev.data);
+        if (auto cam = GetActiveCamera())
+            cam->OnMouseScroll(sc.offset.y);
+        return;
     }
 }
 

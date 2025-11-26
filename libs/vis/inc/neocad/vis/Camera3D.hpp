@@ -6,7 +6,7 @@ namespace nc::vis {
 
 class Camera3D : public editor::ICamera {
    public:
-    Camera3D(float radius = 5.0f, float pitch = 20.0f, float yaw = 45.0f);
+    Camera3D(float radius = 10.0f, float pitch = 0.0f, float yaw = 0.0f);
 
     void OnMouseStart() override;
     void OnMouseRotation(double xpos, double ypos) override;

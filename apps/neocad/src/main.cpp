@@ -172,8 +172,10 @@ int main() {
     auto renderer = std::make_unique<OpenGLRenderer>();
     RenderingSystem renderingSystem(std::move(renderer));
 
-    editor.SetCamera2D(std::make_shared<Camera2D>());
-    editor.SetCamera3D(std::make_shared<Camera3D>());
+    auto cam2D = std::make_shared<Camera2D>();
+    auto cam3D = std::make_shared<Camera3D>();
+    editor.SetCamera2D(cam2D);
+    editor.SetCamera3D(cam3D);
     editor.SetViewportSize(window.GetWidth(), window.GetHeight());
 
     // INPUT MAPPING
@@ -217,11 +219,11 @@ int main() {
         renderingSystem.SetViewportSize(w, h);
     });
 
-    Entity stl = LoadSTLtoECS("body.stl", registry);
-    if (stl == INVALID_ENTITY) {
-        LOG(ERROR) << "Error during loading STL file";
-        return -1;
-    }
+    // Entity stl = LoadSTLtoECS("body.stl", registry);
+    // if (stl == INVALID_ENTITY) {
+    //     LOG(ERROR) << "Error during loading STL file";
+    //     return -1;
+    // }
 
     auto lt = static_cast<float>(glfwGetTime());
     while (window.PollEvents()) {

@@ -46,19 +46,19 @@ void OpenGLRenderer::BeginFrame(const glm::mat4& view, const glm::mat4& proj, st
 
 void OpenGLRenderer::DrawMesh(const std::shared_ptr<BaseGeometry> mesh, std::shared_ptr<Material> mat,
                               const glm::mat4& model) {
-    mat->Apply(m_Proj, m_View, model, m_Light);
+    mat->Apply(model, m_View, m_Proj, m_Light);
     mesh->Render();
 }
 
 void OpenGLRenderer::DrawLineSet(const std::shared_ptr<BaseGeometry> lines, std::shared_ptr<Material> mat,
                                  const glm::mat4& model) {
-    mat->Apply(m_Proj, m_View, model, m_Light);
+    mat->Apply(model, m_View, m_Proj, m_Light);
     lines->Render();
 }
 
 void OpenGLRenderer::DrawPoints(const std::shared_ptr<BaseGeometry> points, std::shared_ptr<Material> mat,
                                 const glm::mat4& model) {
-    mat->Apply(m_Proj, m_View, model, m_Light);
+    mat->Apply(model, m_View, m_Proj, m_Light);
     points->Render();
 }
 
