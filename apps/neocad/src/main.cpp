@@ -1,3 +1,4 @@
+#include <CLI/CLI.hpp>
 #include <memory>
 #include <neocad/command/ExtrudeCommand.hpp>
 #include <neocad/core/Logger.hpp>
@@ -5,6 +6,7 @@
 #include <neocad/domain/Entity.hpp>
 #include <neocad/domain/GeometrySystem.hpp>
 #include <neocad/domain/IGeometryBackend.hpp>
+#include <neocad/domain/PrimitiveFactory.hpp>
 #include <neocad/domain/Query.hpp>
 #include <neocad/domain/Registry.hpp>
 #include <neocad/editor/Editor.hpp>
@@ -17,11 +19,11 @@
 #include <neocad/vis/Camera2D.hpp>
 #include <neocad/vis/Camera3D.hpp>
 #include <neocad/vis/Mesh.hpp>
+#include <neocad/vis/OpenGLRenderer.hpp>
 #include <neocad/vis/RenderingSystem.hpp>
 #include <neocad/vis/StlReader.hpp>
 
-#include "neocad/domain/PrimitiveFactory.hpp"
-#include "neocad/vis/OpenGLRenderer.hpp"
+#include "CLI/CLI.hpp"
 
 using namespace nc::domain;
 using namespace nc::occt;
@@ -84,7 +86,15 @@ Entity LoadSTLtoECS(const std::string& file, Registry& ecs) {
     return e;
 }
 
-int main() {
+int main(int argc, char* argv[]) {
+    CLI::App app{"Desc"};
+    std::string model;
+    app.add_option("--load", model, "Load STL model");
+    bool loadCube = false;
+    app.add_flag("--cube", loadCube, "Load unit cube");
+
+    CLI11_PARSE(app, argc, argv);
+
     LOG(INFO) << "================================";
     LOG(INFO) << APP_NAME;
     LOG(INFO) << "================================";
@@ -94,11 +104,17 @@ int main() {
     OCCTBackend backend;
     GeometrySystem geom(registry, backend);
 
-    // Test Cube
-    // Entity cube = PrimitiveFactory::MakeUnitCube(registry, "UnitCube");
-    // LOG(INFO) << "Created cube with entityID: " << cube;
-    Entity box = PrimitiveFactory::MakeBox(registry, {1, 2, 3});
-    LOG(INFO) << "Created box with entityID: " << box;
+    if (loadCube) {
+        Entity cube = PrimitiveFactory::MakeUnitCube(registry, "UnitCube");
+        LOG(INFO) << "Loaded unit cube with ID: " << cube;
+    }
+    if (!model.empty()) {
+        Entity stl = LoadSTLtoECS(model, registry);
+        if (stl == INVALID_ENTITY) {
+            LOG(ERROR) << "Error loading STL file";
+            return -1;
+        }
+    }
 
     // Editor
     ToolContext ctx(registry, geom);
@@ -165,12 +181,6 @@ int main() {
         editor.SetViewportSize(w, h);
         renderingSystem.SetViewportSize(w, h);
     });
-
-    // Entity stl = LoadSTLtoECS("part.stl", registry);
-    // if (stl == INVALID_ENTITY) {
-    //     LOG(ERROR) << "Error during loading STL file";
-    //     return -1;
-    // }
 
     auto lt = static_cast<float>(glfwGetTime());
     while (window.PollEvents()) {

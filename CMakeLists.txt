@@ -19,6 +19,14 @@ file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/generated/assets")
 # Dependencies via FetchContent
 include(FetchContent)
 
+# CLI11
+FetchContent_Declare(
+		CLI11
+		GIT_REPOSITORY https://github.com/CLIUtils/CLI11.git
+		GIT_TAG v2.4.2   # stable version
+)
+FetchContent_MakeAvailable(CLI11)
+
 # ----------------------------------------------------------
 # GLM
 # ----------------------------------------------------------

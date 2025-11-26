@@ -12,4 +12,5 @@ PRIVATE
 	neocad_editor
 	neocad_ui
 	neocad_vis
+	CLI11::CLI11
 )
