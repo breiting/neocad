@@ -101,14 +101,14 @@ int main() {
     editor.RegisterTool(EditorMode::InsertCircle, std::make_unique<InsertCircleTool>());
     editor.RegisterTool(EditorMode::InsertSketch, std::make_unique<SketchCurveTool>(CurveMode::Face));
 
-    // RenderingSystem
-    auto renderer = std::make_unique<OpenGLRenderer>();
-    RenderingSystem renderingSystem(std::move(renderer));
-
     // Window
     Window window;
     if (!window.Create({WINDOW_WIDTH, WINDOW_HEIGHT, APP_NAME}))
         return -1;
+
+    // RenderingSystem (after Window initialization)
+    auto renderer = std::make_unique<OpenGLRenderer>();
+    RenderingSystem renderingSystem(std::move(renderer));
 
     // TODO
     auto cam2d = std::make_shared<Camera2D>();
