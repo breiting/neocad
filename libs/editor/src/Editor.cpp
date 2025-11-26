@@ -6,12 +6,10 @@ namespace nc::editor {
 Editor::Editor(ToolContext& ctx) : m_Ctx(ctx) {
 }
 
-// ---------------------------------------------------------------------
 void Editor::RegisterTool(EditorMode mode, std::unique_ptr<ITool> tool) {
     m_Tools[mode] = std::move(tool);
 }
 
-// ---------------------------------------------------------------------
 void Editor::SetMode(EditorMode mode) {
     if (m_Mode == mode)
         return;
@@ -31,7 +29,6 @@ void Editor::SetMode(EditorMode mode) {
     m_CommandBuffer.clear();
 }
 
-// ---------------------------------------------------------------------
 void Editor::Update(double dt) {
     if (m_ActiveTool)
         m_ActiveTool->Update(m_Ctx, dt);
@@ -53,21 +50,20 @@ ICamera* Editor::GetActiveCamera() {
     return m_ViewController.GetActiveCamera();
 }
 
-// ---------------------------------------------------------------------
 void Editor::OnInput(const InputEvent& ev) {
-    // 1) globale Keyboard-Shortcuts (nur bei KeyEvent relevant)
+    m_ViewController.OnInput(ev);
+
+    // Global keyboard shortcuts
     if (auto* key = AsKey(ev)) {
         HandleKey(*key);
     }
 
-    // 2) Event an aktives Tool durchreichen
+    // Send events to active tool
     if (m_ActiveTool) {
         m_ActiveTool->OnInput(ev, m_Ctx);
     }
-    m_ViewController.OnInput(ev);
 }
 
-// ---------------------------------------------------------------------
 void Editor::HandleKey(const KeyEvent& key) {
     printf("%c %d\n", key.text, key.pressed);
     if (!key.pressed)

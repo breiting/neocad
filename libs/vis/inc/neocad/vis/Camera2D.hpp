@@ -1,28 +1,38 @@
 #pragma once
-#include <glm/mat4x4.hpp>
-#include <glm/vec2.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <neocad/editor/ICamera.hpp>
 
 namespace nc::vis {
 
 class Camera2D : public editor::ICamera {
    public:
-    void SetCenter(const glm::vec2& c) {
-        m_Center = c;
+    Camera2D();
+
+    // --- ICamera Interface ---
+    void OnMouseStart() override;
+    void OnMouseRotation(double xpos, double ypos) override;  // ignored for 2D
+    void OnMousePan(double xpos, double ypos) override;
+    void OnMouseScroll(double yoffset) override;
+    void Update(float /*dt*/) override {
     }
-    void Pan(float dx, float dy);
-    void Zoom(float factor);  // >1 zoom in, <1 zoom out
-                              //
-    void SetAspect(float aspect) override;
-    glm::mat4 View() const override;
-    glm::mat4 Projection() const override;
+
+    glm::mat4 GetViewMatrix() const override;
+    glm::mat4 GetProjectionMatrix() const override;
+    void SetAspectRatio(float aspect) override;
+    // --------------------------
+
+    // Optional helpers
+    void SetPosition(const glm::vec2& pos);
+    const glm::vec2& GetPosition() const;
+    float GetZoom() const;
 
    private:
-    glm::vec2 m_Center{0.0, 0.0};
-    float m_Scale{1.0};  // 1.0 = 1 Welt-Einheit == 1 NDC-Einheit (togglebar)
-    float m_Near{-1.0};
-    float m_Far{+1.0};
-    float m_Aspect{1.0};
+    glm::vec2 m_Position;   // center in world units
+    glm::vec2 m_LastMouse;  // pixel coords
+    bool m_FirstMouse;
+    float m_Zoom;         // scale factor
+    float m_AspectRatio;  // W/H ratio
 };
 
 }  // namespace nc::vis

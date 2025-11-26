@@ -1,6 +1,5 @@
 #pragma once
-
-#include <glm/glm.hpp>
+#include <glm/mat4x4.hpp>
 
 namespace nc::editor {
 
@@ -8,13 +7,16 @@ class ICamera {
    public:
     virtual ~ICamera() = default;
 
-    /// Set the render surface aspect ratio (width / height).
-    virtual void SetAspect(float aspect) = 0;
+    virtual glm::mat4 GetViewMatrix() const = 0;
+    virtual glm::mat4 GetProjectionMatrix() const = 0;
+    virtual void SetAspectRatio(float aspect) = 0;
 
-    /// Get the 4×4 view matrix (world → view).
-    virtual glm::mat4 View() const = 0;
+    virtual void OnMouseStart() = 0;
+    virtual void OnMouseRotation(double x, double y) = 0;
+    virtual void OnMousePan(double x, double y) = 0;
+    virtual void OnMouseScroll(double yoffset) = 0;
 
-    /// Get the 4×4 projection matrix (view → clip).
-    virtual glm::mat4 Projection() const = 0;
+    virtual void Update(float dt) = 0;
 };
+
 }  // namespace nc::editor

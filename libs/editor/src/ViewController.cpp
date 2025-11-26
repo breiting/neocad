@@ -11,9 +11,9 @@ void ViewController::SetViewportSize(int width, int height) {
     m_Height = height;
 
     if (m_Cam2D)
-        m_Cam2D->SetAspect(float(width) / float(height));
+        m_Cam2D->SetAspectRatio(float(width) / float(height));
     if (m_Cam3D)
-        m_Cam3D->SetAspect(float(width) / float(height));
+        m_Cam3D->SetAspectRatio(float(width) / float(height));
 }
 
 void ViewController::SetCamera3D(std::shared_ptr<ICamera> cam) {
@@ -34,18 +34,42 @@ void ViewController::SwitchMode(ViewMode mode) {
 }
 
 void ViewController::OnInput(const InputEvent& ev) {
-    if (ev.type != InputEventType::Key)
+    if (ev.type == InputEventType::Key) {
+        const auto& key = std::get<KeyEvent>(ev.data);
+        if (key.text == '1') {
+            LOG(INFO) << "Switch to 3D";
+            SwitchMode(ViewMode::View3D);
+        }
+        if (key.text == '2') {
+            SwitchMode(ViewMode::Sketch2D);
+            LOG(INFO) << "Switch to 2D";
+        }
+        return;
+    }
+
+    auto* cam = GetActiveCamera();
+    if (!cam)
         return;
 
-    const auto& key = std::get<KeyEvent>(ev.data);
-    if (key.text == '1') {
-        LOG(INFO) << "Switch to 3D";
-        SwitchMode(ViewMode::View3D);
+    switch (ev.type) {
+        case InputEventType::MouseButton:
+            cam->OnMouseStart();
+            break;
+        case InputEventType::MouseMove:
+            cam->OnMouseRotation(std::get<MouseMoveEvent>(ev.data).position.x,
+                                 std::get<MouseMoveEvent>(ev.data).position.y);
+            break;
+        case InputEventType::Scroll:
+            cam->OnMouseScroll(std::get<ScrollEvent>(ev.data).offset.y);
+            break;
+        default:
+            break;
     }
-    if (key.text == '2') {
-        SwitchMode(ViewMode::Sketch2D);
-        LOG(INFO) << "Switch to 2D";
-    }
+}
+
+void ViewController::Update(double dt) {
+    if (auto* cam = GetActiveCamera())
+        cam->Update(static_cast<float>(dt));
 }
 
 }  // namespace nc::editor

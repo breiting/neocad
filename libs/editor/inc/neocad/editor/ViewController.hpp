@@ -28,6 +28,8 @@ class ViewController {
     void SwitchMode(ViewMode mode);
     void OnInput(const InputEvent& ev);
 
+    void Update(double dt);
+
    private:
     ViewMode m_Mode = ViewMode::View3D;
     int m_Width = 1280;

@@ -83,6 +83,64 @@ Entity LoadSTLtoECS(const std::string& file, Registry& ecs) {
     return e;
 }
 
+Entity MakeUnitCube(Registry& ecs) {
+    using namespace nc::domain;
+
+    // 8 vertices (clockwise)
+    std::vector<glm::vec3> verts = {{-0.5f, -0.5f, -0.5f}, {+0.5f, -0.5f, -0.5f}, {+0.5f, +0.5f, -0.5f},
+                                    {-0.5f, +0.5f, -0.5f}, {-0.5f, -0.5f, +0.5f}, {+0.5f, -0.5f, +0.5f},
+                                    {+0.5f, +0.5f, +0.5f}, {-0.5f, +0.5f, +0.5f}};
+
+    // 12 triangles → 2 per face
+    std::vector<glm::uvec3> tris = {
+        {0, 1, 2}, {0, 2, 3},  // back
+        {4, 5, 6}, {4, 6, 7},  // front
+        {0, 4, 5}, {0, 5, 1},  // bottom
+        {3, 7, 6}, {3, 6, 2},  // top
+        {0, 4, 7}, {0, 7, 3},  // left
+        {1, 5, 6}, {1, 6, 2}   // right
+    };
+
+    MeshComponent mc;
+    std::vector<glm::vec3> normals(verts.size(), glm::vec3(0.0f));
+
+    for (auto& t : tris) {
+        glm::vec3 v0 = verts[t.x];
+        glm::vec3 v1 = verts[t.y];
+        glm::vec3 v2 = verts[t.z];
+
+        glm::vec3 n = glm::normalize(glm::cross(v1 - v0, v2 - v0));
+
+        normals[t.x] += n;
+        normals[t.y] += n;
+        normals[t.z] += n;
+    }
+
+    // normalize final vertex normals
+    for (auto& n : normals) {
+        n = glm::normalize(n);
+    }
+
+    for (size_t i = 0; i < verts.size(); ++i) {
+        Vertex v;
+        v.SetPosition(verts[i]);
+        v.SetNormal(normals[i]);  // ***
+        mc.mesh.vertices.push_back(v);
+    }
+
+    for (auto& t : tris) {
+        mc.mesh.indices.push_back(t.x);
+        mc.mesh.indices.push_back(t.y);
+        mc.mesh.indices.push_back(t.z);
+    }
+
+    Entity e = ecs.CreateEntity();
+    ecs.AddComponent<MeshComponent>(e, mc);
+    ecs.AddComponent<NameComponent>(e, {"Cube"});
+
+    return e;
+}
+
 int main() {
     LOG(INFO) << "================================";
     LOG(INFO) << APP_NAME;
@@ -92,6 +150,10 @@ int main() {
     Registry registry;
     OCCTBackend backend;
     GeometrySystem geom(registry, backend);
+
+    // Test Cube
+    Entity cube = MakeUnitCube(registry);
+    LOG(INFO) << "Created cube with entityID: " << cube;
 
     // Editor
     ToolContext ctx(registry, geom);
@@ -174,7 +236,7 @@ int main() {
         // RENDER
         auto* cam = editor.GetActiveCamera();
         assert(cam);
-        renderingSystem.Render(cam->View(), cam->Projection());
+        renderingSystem.Render(cam->GetViewMatrix(), cam->GetProjectionMatrix());
 
         window.SwapBuffers();
     }

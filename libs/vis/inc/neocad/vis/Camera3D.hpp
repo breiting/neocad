@@ -1,34 +1,44 @@
 #pragma once
-#include <glm/mat4x4.hpp>
-#include <glm/vec3.hpp>
+#include <glm/glm.hpp>
 #include <neocad/editor/ICamera.hpp>
 
 namespace nc::vis {
 
 class Camera3D : public editor::ICamera {
    public:
-    void SetTarget(const glm::vec3& t);
-    void SetDistance(float d);
-    void AddYawPitch(float dYaw, float dPitch);
-    void Dolly(float delta);  // Scroll-Zoom
-    void Pan(float dx, float dy, float aspect);
+    Camera3D(float radius = 5.0f, float pitch = 20.0f, float yaw = 45.0f);
 
-    void SetAspect(float aspect) override;
-    glm::mat4 View() const override;
-    glm::mat4 Projection() const override;
+    void OnMouseStart() override;
+    void OnMouseRotation(double xpos, double ypos) override;
+    void OnMousePan(double xpos, double ypos) override;
+    void OnMouseScroll(double yoffset) override;
+    void Update(float deltaTime) override;
 
-    glm::vec3 GetPosition() const;
+    glm::mat4 GetViewMatrix() const override;
+    glm::mat4 GetProjectionMatrix() const override;
+    void SetAspectRatio(float aspect) override;
+
+    glm::vec3 GetViewDirection() const;
+    void SetPosition(const glm::vec3& position);
+    void SetTarget(const glm::vec3& target);
+    const glm::vec3& GetPosition() const;
+    const glm::vec3& GetTarget() const;
 
    private:
-    glm::vec3 m_Target{0.0, 0.0, 0.0};
-    float m_Distance{6.0};
-    float m_Yaw{0.0};
-    float m_Pitch{0.35};  // + leicht nach unten
+    glm::vec2 OnMouseMove(double xpos, double ypos);
+    void UpdatePosition();
 
-    float m_FovY{45.0};
-    float m_Near{0.01};
-    float m_Far{1000.0};
-    float m_Aspect{1.0};
+    glm::vec2 m_Rotation;
+    glm::vec2 m_RotationVelocity;
+    float m_Radius;
+    float m_DampingFactor;
+    float m_VelocityThreshold;
+    glm::vec2 m_LastMouse;
+    bool m_FirstMouse;
+
+    glm::vec3 m_Position{0.0f, 0.0f, 5.0f};
+    glm::vec3 m_Target{0.0f, 0.0f, 0.0f};
+    float m_AspectRatio{1.0f};
 };
 
 }  // namespace nc::vis
