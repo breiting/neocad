@@ -149,7 +149,7 @@ int main(int argc, char* argv[]) {
         editor.OnInput(ev);
     });
 
-    window.SetMouseButtonCallback([&](int btn, int act, int mods) {
+    window.SetMouseButtonCallback([&](int btn, int act, int /*mods*/) {
         double x, y;
         glfwGetCursorPos(window.GetNative(), &x, &y);
         InputEvent ev;

@@ -5,10 +5,10 @@
 
 namespace nc::vis {
 
-class PointCloud : public BaseGeometry {
+class PointSet : public BaseGeometry {
    public:
-    PointCloud();
-    ~PointCloud();
+    PointSet();
+    ~PointSet();
 
     void Upload() override;
     void Render() const override;

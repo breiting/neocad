@@ -2,20 +2,20 @@
 #include <glad.h>
 // clang-format on
 #include <glm/gtc/constants.hpp>
-#include <neocad/vis/PointCloud.hpp>
+#include <neocad/vis/PointSet.hpp>
 
 using namespace nc::domain;
 
 namespace nc::vis {
 
-PointCloud::PointCloud() : BaseGeometry(), m_Vao(0), m_Vbo(0) {
+PointSet::PointSet() : BaseGeometry(), m_Vao(0), m_Vbo(0) {
 }
 
-PointCloud::~PointCloud() {
+PointSet::~PointSet() {
     deleteBuffers();
 }
 
-void PointCloud::Upload() {
+void PointSet::Upload() {
     // ignore if the data has not changed
     if (!m_Dirty)
         return;
@@ -46,12 +46,12 @@ void PointCloud::Upload() {
     m_Dirty = false;
 }
 
-void PointCloud::Render() const {
+void PointSet::Render() const {
     glBindVertexArray(m_Vao);
     glDrawArrays(GL_POINTS, 0, m_Vertices.size());
 }
 
-void PointCloud::deleteBuffers() {
+void PointSet::deleteBuffers() {
     if (m_Vao)
         glDeleteVertexArrays(1, &m_Vao);
     if (m_Vbo)

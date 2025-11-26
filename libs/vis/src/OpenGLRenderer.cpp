@@ -4,8 +4,8 @@
 #include <memory>
 #include <neocad/core/Colors.hpp>
 #include <neocad/core/Logger.hpp>
+#include <neocad/vis/BaseGeometry.hpp>
 #include <neocad/vis/OpenGLRenderer.hpp>
-#include <neocad/vis/PointCloud.hpp>
 
 namespace nc::vis {
 

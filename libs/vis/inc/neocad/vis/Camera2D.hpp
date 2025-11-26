@@ -11,7 +11,7 @@ class Camera2D : public editor::ICamera {
 
     // --- ICamera Interface ---
     void OnMouseStart() override;
-    void OnMouseRotation(double xpos, double ypos) override {
+    void OnMouseRotation(double /*xpos*/, double /*ypos*/) override {
     }  // No rotation in 2D
     void OnMousePan(double xpos, double ypos) override;
     void OnMouseScroll(double yoffset) override;

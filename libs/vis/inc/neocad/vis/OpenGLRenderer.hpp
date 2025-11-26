@@ -2,10 +2,7 @@
 #include <glm/mat4x4.hpp>
 #include <memory>
 #include <neocad/vis/IRenderer.hpp>
-#include <neocad/vis/LineSet.hpp>
 #include <neocad/vis/Material.hpp>
-#include <neocad/vis/Mesh.hpp>
-#include <neocad/vis/PointCloud.hpp>
 
 namespace nc::vis {
 
