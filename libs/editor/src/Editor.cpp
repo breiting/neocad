@@ -66,7 +66,6 @@ void Editor::OnInput(const InputEvent& ev) {
 }
 
 void Editor::HandleKey(const KeyEvent& key) {
-    printf("%c %d\n", key.text, key.pressed);
     if (!key.pressed)
         return;
 

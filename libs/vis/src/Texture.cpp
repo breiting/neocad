@@ -14,7 +14,6 @@ Texture::Texture(const std::string& path) {
 
     unsigned char* data = stbi_load(path.c_str(), &m_Width, &m_Height, &m_Channels, 0);
     if (data) {
-        printf("bind texture\n");
         glGenTextures(1, &m_TextureId);
         glBindTexture(GL_TEXTURE_2D, m_TextureId);
 
