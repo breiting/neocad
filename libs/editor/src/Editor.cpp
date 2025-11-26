@@ -1,4 +1,5 @@
 #include <cctype>
+#include <neocad/core/Logger.hpp>
 #include <neocad/editor/Editor.hpp>
 
 namespace nc::editor {
@@ -105,6 +106,7 @@ void Editor::ProcessCommandBuffer() {
     const std::string cmd = m_CommandBuffer;
 
     if (cmd == "ip") {
+        LOG(INFO) << "InsertPoint mode ...";
         SetMode(EditorMode::InsertPoint);
     } else if (cmd == "il") {
         SetMode(EditorMode::InsertLine);

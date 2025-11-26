@@ -16,6 +16,11 @@ void Registry::AddComponent<NameComponent>(Entity e, const NameComponent& tag) {
 }
 
 template <>
+void Registry::RemoveComponent<NameComponent>(Entity e) {
+    m_Names.erase(e);
+}
+
+template <>
 NameComponent* Registry::GetComponent<NameComponent>(Entity e) {
     auto it = m_Names.find(e);
     return (it != m_Names.end()) ? &it->second : nullptr;
@@ -31,6 +36,12 @@ bool Registry::HasComponent<NameComponent>(Entity e) const {
 template <>
 void Registry::AddComponent<PositionComponent>(Entity e, const PositionComponent& comp) {
     m_Positions[e] = comp;
+    TriggerAdded<PositionComponent>(e);
+}
+
+template <>
+void Registry::RemoveComponent<PositionComponent>(Entity e) {
+    m_Names.erase(e);
 }
 
 template <>
@@ -52,6 +63,11 @@ void Registry::AddComponent<RadiusComponent>(Entity e, const RadiusComponent& co
 }
 
 template <>
+void Registry::RemoveComponent<RadiusComponent>(Entity e) {
+    m_Names.erase(e);
+}
+
+template <>
 RadiusComponent* Registry::GetComponent<RadiusComponent>(Entity e) {
     auto it = m_Circles.find(e);
     return (it != m_Circles.end()) ? &it->second : nullptr;
@@ -67,6 +83,11 @@ bool Registry::HasComponent<RadiusComponent>(Entity e) const {
 template <>
 void Registry::AddComponent<EdgeComponent>(Entity e, const EdgeComponent& comp) {
     m_Lines[e] = comp;
+}
+
+template <>
+void Registry::RemoveComponent<EdgeComponent>(Entity e) {
+    m_Names.erase(e);
 }
 
 template <>
@@ -87,6 +108,11 @@ void Registry::AddComponent<FaceComponent>(Entity e, const FaceComponent& comp) 
 }
 
 template <>
+void Registry::RemoveComponent<FaceComponent>(Entity e) {
+    m_Names.erase(e);
+}
+
+template <>
 FaceComponent* Registry::GetComponent<FaceComponent>(Entity e) {
     auto it = m_Faces.find(e);
     return (it != m_Faces.end()) ? &it->second : nullptr;
@@ -101,6 +127,11 @@ bool Registry::HasComponent<FaceComponent>(Entity e) const {
 template <>
 void Registry::AddComponent<MeshComponent>(Entity e, const MeshComponent& comp) {
     m_Meshes[e] = comp;
+}
+
+template <>
+void Registry::RemoveComponent<MeshComponent>(Entity e) {
+    m_Names.erase(e);
 }
 
 template <>
@@ -121,7 +152,11 @@ void Registry::AddComponent<SketchPlaneComponent>(Entity e, const SketchPlaneCom
 }
 
 template <>
+void Registry::RemoveComponent<SketchPlaneComponent>(Entity e) {
+    m_Names.erase(e);
+}
 
+template <>
 SketchPlaneComponent* Registry::GetComponent<SketchPlaneComponent>(Entity e) {
     auto it = m_SketchPlanes.find(e);
     return (it != m_SketchPlanes.end()) ? &it->second : nullptr;
@@ -136,6 +171,11 @@ bool Registry::HasComponent<SketchPlaneComponent>(Entity e) const {
 template <>
 void Registry::AddComponent<BodyComponent>(Entity e, const BodyComponent& comp) {
     m_Bodies[e] = comp;
+}
+
+template <>
+void Registry::RemoveComponent<BodyComponent>(Entity e) {
+    m_Names.erase(e);
 }
 
 template <>

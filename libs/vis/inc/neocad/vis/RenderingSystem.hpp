@@ -19,7 +19,7 @@ class RenderingSystem {
 
     void SetViewportSize(int w, int h);
 
-    bool Init();
+    bool Init(domain::Registry& registry);
     void Update(domain::Registry& registry);
     void Render(editor::ICamera* cam);
 

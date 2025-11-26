@@ -36,8 +36,20 @@ void RenderingSystem::SetViewportSize(int w, int h) {
     m_Renderer->SetViewportSize(w, h);
 }
 
-bool RenderingSystem::Init() {
+bool RenderingSystem::Init(Registry& registry) {
     m_Axis = std::make_unique<AxisRenderer>();
+
+    // Register change callbacks
+    registry.OnComponentAdded<PositionComponent>([&](Entity) {
+        m_PointsDirty = true;
+    });
+    registry.OnComponentModified<PositionComponent>([&](Entity) {
+        m_PointsDirty = true;
+    });
+    registry.OnComponentRemoved<PositionComponent>([&](Entity) {
+        m_PointsDirty = true;
+    });
+
     return m_Axis->Init();
 }
 

@@ -178,7 +178,7 @@ int main(int argc, char* argv[]) {
     // RenderingSystem (after Window initialization)
     auto renderer = std::make_unique<OpenGLRenderer>();
     RenderingSystem renderingSystem(std::move(renderer));
-    renderingSystem.Init();
+    renderingSystem.Init(registry);
     renderingSystem.SetShowAxis(true);
 
     auto cam2D = std::make_shared<Camera2D>();

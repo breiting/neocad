@@ -15,10 +15,13 @@ void InsertPointTool::OnInput(const InputEvent& ev, ToolContext& ctx) {
         double wy = m->position.y;
         double wz = 0.0;
 
+        printf("%f %f\n", wx, wy);
+
         auto& reg = ctx.GetRegistry();
         Entity e = reg.CreateEntity();
         PositionComponent pc;
         pc.position = vec3(wx, wy, wz);
+        pc.position = vec3(wx / 600.0, wy / 500.0, 0);
         reg.AddComponent(e, pc);
     }
 }
