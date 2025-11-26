@@ -13,5 +13,5 @@ PUBLIC
 	glfw
 	glad
 	glm::glm
-	neocad_editor
+	neocad_core
 )

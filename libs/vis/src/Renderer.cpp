@@ -19,6 +19,7 @@ void Renderer::BeginFrame(const glm::mat4& view, const glm::mat4& proj) {
     // Basic GL state for 3D rendering
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 void Renderer::DrawMesh(const Mesh& mesh, std::shared_ptr<Material> mat, const glm::mat4& model) {

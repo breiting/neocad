@@ -3,6 +3,8 @@ project(neocad VERSION 0.1 LANGUAGES CXX)
 
 # Produce json file for neovim clangd completion
 set (CMAKE_EXPORT_COMPILE_COMMANDS 1)
+# Required for clang-uml to work properly on macOS
+set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

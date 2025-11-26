@@ -1,11 +1,10 @@
-#include "neocad/ui/Window.hpp"
-
-#include <iostream>
+#include <neocad/core/Logger.hpp>
+#include <neocad/ui/Window.hpp>
 
 namespace nc::ui {
 bool Window::Create(const CreateInfo& ci) {
     if (!glfwInit()) {
-        std::cerr << "GLFW init failed.\n";
+        LOG(ERROR) << "GLFW init failed.\n";
         return false;
     }
 
@@ -19,14 +18,14 @@ bool Window::Create(const CreateInfo& ci) {
 
     m_Window = glfwCreateWindow(ci.width, ci.height, ci.title.c_str(), nullptr, nullptr);
     if (!m_Window) {
-        std::cerr << "Failed to create GLFW window.\n";
+        LOG(ERROR) << "Failed to create GLFW window.\n";
         glfwTerminate();
         return false;
     }
 
     glfwMakeContextCurrent(m_Window);
     if (!gladLoadGL((GLADloadfunc)glfwGetProcAddress)) {
-        std::cerr << "Failed to init GLAD.\n";
+        LOG(ERROR) << "Failed to init GLAD.\n";
         return false;
     }
 
