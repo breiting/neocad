@@ -52,10 +52,10 @@ TEST(GeometrySystemTest, ExtrudeFaceCreatesBody) {
     Entity l3 = reg.CreateEntity();
     Entity l4 = reg.CreateEntity();
 
-    reg.AddComponent<LineComponent>(l1, {p1, p2});
-    reg.AddComponent<LineComponent>(l2, {p2, p3});
-    reg.AddComponent<LineComponent>(l3, {p3, p4});
-    reg.AddComponent<LineComponent>(l4, {p4, p1});
+    reg.AddComponent<EdgeComponent>(l1, {p1, p2});
+    reg.AddComponent<EdgeComponent>(l2, {p2, p3});
+    reg.AddComponent<EdgeComponent>(l3, {p3, p4});
+    reg.AddComponent<EdgeComponent>(l4, {p4, p1});
 
     Entity f = reg.CreateEntity();
     FaceComponent face{{l1, l2, l3, l4}};

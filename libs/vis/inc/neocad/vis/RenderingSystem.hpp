@@ -6,6 +6,7 @@
 #include <neocad/vis/AxisRenderer.hpp>
 #include <neocad/vis/DirectionalLight.hpp>
 #include <neocad/vis/IRenderer.hpp>
+#include <neocad/vis/LineSet.hpp>
 #include <neocad/vis/Mesh.hpp>
 #include <unordered_map>
 
@@ -28,6 +29,7 @@ class RenderingSystem {
     std::shared_ptr<DirectionalLight> m_Light;
     std::unique_ptr<AxisRenderer> m_Axis;
     std::unordered_map<domain::Entity, std::shared_ptr<Mesh>> m_Meshes;
+    std::unordered_map<domain::Entity, std::shared_ptr<LineSet>> m_Lines;
     std::unordered_map<domain::Entity, std::shared_ptr<Material>> m_Material;
 };
 

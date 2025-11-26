@@ -17,15 +17,16 @@ struct PositionComponent {
     vec3 position;
 };
 
-/// Line between two point entities
-struct LineComponent {
+/// Connection (edge) between two point entities
+struct EdgeComponent {
     Entity p0{INVALID_ENTITY};
     Entity p1{INVALID_ENTITY};
 };
 
-/// Planar face defined by a sequence of line entities forming a closed loop.
+/// Planar face defined by a sequence of edge entities forming a closed loop.
 struct FaceComponent {
-    std::vector<Entity> edges;  ///< entities referring to LineComponent
+    std::vector<Entity> vertices;  ///< entities referring to PositionComponent
+    std::vector<Entity> edges;     ///< entities referring to EdgeComponent
 };
 
 /// Opaque handle to a backend shape (OCCT or other).

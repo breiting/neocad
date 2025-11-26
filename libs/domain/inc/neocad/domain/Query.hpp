@@ -59,7 +59,7 @@ inline bool IsPoint(Entity e, const Registry& r) {
 }
 
 inline bool IsLine(Entity e, const Registry& r) {
-    return r.HasComponent<LineComponent>(e);
+    return r.HasComponent<EdgeComponent>(e);
 }
 
 inline bool IsFace(Entity e, const Registry& r) {

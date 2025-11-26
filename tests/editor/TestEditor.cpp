@@ -50,7 +50,7 @@ static size_t CountPoints(const Registry& reg) {
 static size_t CountLines(const Registry& reg) {
     size_t count = 0;
     for (Entity e : reg.Entities()) {
-        if (reg.HasComponent<LineComponent>(e))
+        if (reg.HasComponent<EdgeComponent>(e))
             ++count;
     }
     return count;

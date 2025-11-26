@@ -68,7 +68,7 @@ void SketchCurveTool::OnInput(const InputEvent& ev, ToolContext& ctx) {
 // -------------------------------------------------
 void SketchCurveTool::CreateLine(Entity a, Entity b, Registry& reg) {
     Entity line = reg.CreateEntity();
-    reg.AddComponent(line, LineComponent{a, b});
+    reg.AddComponent(line, EdgeComponent{a, b});
 }
 
 // -------------------------------------------------

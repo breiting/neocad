@@ -37,10 +37,10 @@ int main() {
     Entity l3 = registry.CreateEntity();
     Entity l4 = registry.CreateEntity();
 
-    registry.AddComponent<LineComponent>(l1, {p1, p2});
-    registry.AddComponent<LineComponent>(l2, {p2, p3});
-    registry.AddComponent<LineComponent>(l3, {p3, p4});
-    registry.AddComponent<LineComponent>(l4, {p4, p1});
+    registry.AddComponent<EdgeComponent>(l1, {p1, p2});
+    registry.AddComponent<EdgeComponent>(l2, {p2, p3});
+    registry.AddComponent<EdgeComponent>(l3, {p3, p4});
+    registry.AddComponent<EdgeComponent>(l4, {p4, p1});
 
     Entity f = registry.CreateEntity();
     FaceComponent face{{l1, l2, l3, l4}};

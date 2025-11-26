@@ -34,13 +34,9 @@ void LineSet::Upload() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)Vertex::PositionOffset());
     glEnableVertexAttribArray(0);
 
-    // Normal
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)Vertex::NormalOffset());
-    glEnableVertexAttribArray(1);
-
     // Color
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)Vertex::ColorOffset());
-    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)Vertex::ColorOffset());
+    glEnableVertexAttribArray(1);
 
     glBindVertexArray(0);
     m_Dirty = false;
@@ -48,7 +44,7 @@ void LineSet::Upload() {
 
 void LineSet::Render() const {
     glBindVertexArray(m_Vao);
-    glDrawArrays(GL_LINES, 0, m_Vertices.size());
+    glDrawArrays(GL_LINE_LOOP, 0, m_Vertices.size());
 }
 
 void LineSet::deleteBuffers() {

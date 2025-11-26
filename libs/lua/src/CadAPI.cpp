@@ -18,7 +18,7 @@ Entity CadAPI::CreatePoint(double x, double y, double z) {
 
 Entity CadAPI::CreateLine(Entity p1, Entity p2) {
     Entity e = m_Registry.CreateEntity();
-    m_Registry.AddComponent<LineComponent>(e, {p1, p2});
+    m_Registry.AddComponent<EdgeComponent>(e, {p1, p2});
     return e;
 }
 

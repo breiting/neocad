@@ -65,18 +65,18 @@ bool Registry::HasComponent<RadiusComponent>(Entity e) const {
 // ---------- LINE ----------
 
 template <>
-void Registry::AddComponent<LineComponent>(Entity e, const LineComponent& comp) {
+void Registry::AddComponent<EdgeComponent>(Entity e, const EdgeComponent& comp) {
     m_Lines[e] = comp;
 }
 
 template <>
-LineComponent* Registry::GetComponent<LineComponent>(Entity e) {
+EdgeComponent* Registry::GetComponent<EdgeComponent>(Entity e) {
     auto it = m_Lines.find(e);
     return (it != m_Lines.end()) ? &it->second : nullptr;
 }
 
 template <>
-bool Registry::HasComponent<LineComponent>(Entity e) const {
+bool Registry::HasComponent<EdgeComponent>(Entity e) const {
     return m_Lines.count(e) > 0;
 }
 

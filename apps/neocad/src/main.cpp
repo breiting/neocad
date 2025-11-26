@@ -86,12 +86,53 @@ Entity LoadSTLtoECS(const std::string& file, Registry& ecs) {
     return e;
 }
 
+Entity CreateTestFace5(Registry& ecs) {
+    using namespace nc::domain;
+
+    // --- 1) 5 POSITIONEN (VERTICES) ---
+    std::vector<glm::vec3> pts = {
+        {0.0f, 0.0f, 0.0f}, {1.5f, 1.0f, 0.0f}, {2.0f, 2.2f, 0.0f}, {0.5f, 2.0f, 0.0f}, {-0.5f, 0.7f, 0.0f}};
+
+    std::vector<Entity> vertexEntities;
+    for (auto& p : pts) {
+        Entity v = ecs.CreateEntity();
+        ecs.AddComponent<PositionComponent>(v, {p});
+        ecs.AddComponent<NameComponent>(v, {"Vertex"});
+        vertexEntities.push_back(v);
+    }
+
+    // --- 2) EDGES ANLEGEN (jeweils v[i] → v[i+1]) ---
+    std::vector<Entity> edgeEntities;
+    for (size_t i = 0; i < vertexEntities.size(); ++i) {
+        Entity e = ecs.CreateEntity();
+        Entity v0 = vertexEntities[i];
+        Entity v1 = vertexEntities[(i + 1) % vertexEntities.size()];  // close loop!
+
+        ecs.AddComponent<EdgeComponent>(e, {v0, v1});
+        ecs.AddComponent<NameComponent>(e, {"Edge"});
+        edgeEntities.push_back(e);
+    }
+
+    // --- 3) FACEENTITY ANLEGEN ---
+    Entity face = ecs.CreateEntity();
+    FaceComponent fc;
+    fc.vertices = vertexEntities;
+    fc.edges = edgeEntities;
+
+    ecs.AddComponent<FaceComponent>(face, std::move(fc));
+    ecs.AddComponent<NameComponent>(face, {"TestFace5"});
+
+    return face;
+}
+
 int main(int argc, char* argv[]) {
     CLI::App app{"Desc"};
     std::string model;
     app.add_option("--load", model, "Load STL model");
     bool loadCube = false;
     app.add_flag("--cube", loadCube, "Load unit cube");
+    bool loadFace = false;
+    app.add_flag("--face", loadFace, "Load test face");
 
     CLI11_PARSE(app, argc, argv);
 
@@ -108,6 +149,11 @@ int main(int argc, char* argv[]) {
         Entity cube = PrimitiveFactory::MakeUnitCube(registry, "UnitCube");
         LOG(INFO) << "Loaded unit cube with ID: " << cube;
     }
+    if (loadFace) {
+        Entity face = CreateTestFace5(registry);
+        LOG(INFO) << "Loaded face with ID: " << face;
+    }
+
     if (!model.empty()) {
         Entity stl = LoadSTLtoECS(model, registry);
         if (stl == INVALID_ENTITY) {
