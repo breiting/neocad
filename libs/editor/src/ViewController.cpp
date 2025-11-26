@@ -53,13 +53,16 @@ void ViewController::OnInput(const InputEvent& ev) {
 
     switch (ev.type) {
         case InputEventType::MouseButton:
+            LOG(INFO) << "MouseButton";
             cam->OnMouseStart();
             break;
         case InputEventType::MouseMove:
+            LOG(INFO) << "MouseMove";
             cam->OnMouseRotation(std::get<MouseMoveEvent>(ev.data).position.x,
                                  std::get<MouseMoveEvent>(ev.data).position.y);
             break;
         case InputEventType::Scroll:
+            LOG(INFO) << "MouseScroll";
             cam->OnMouseScroll(std::get<ScrollEvent>(ev.data).offset.y);
             break;
         default:

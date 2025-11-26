@@ -4,15 +4,12 @@
 #include <memory>
 #include <neocad/core/Colors.hpp>
 #include <neocad/core/Logger.hpp>
-#include <neocad/vis/DirectionalLight.hpp>
 #include <neocad/vis/OpenGLRenderer.hpp>
 #include <neocad/vis/PointCloud.hpp>
 
 namespace nc::vis {
 
 OpenGLRenderer::OpenGLRenderer() : m_Wireframe(false) {
-    m_Light = std::make_shared<DirectionalLight>();
-
     glEnable(GL_DEPTH_TEST);
     // glEnable(GL_CULL_FACE);
     // glDepthFunc(GL_LESS);
@@ -37,9 +34,10 @@ void OpenGLRenderer::ToggleWireframe() {
     glPolygonMode(GL_FRONT_AND_BACK, m_Wireframe ? GL_LINE : GL_FILL);
 }
 
-void OpenGLRenderer::BeginFrame(const glm::mat4& view, const glm::mat4& proj) {
+void OpenGLRenderer::BeginFrame(const glm::mat4& view, const glm::mat4& proj, std::shared_ptr<Light> light) {
     m_View = view;
     m_Proj = proj;
+    m_Light = light;
 
     auto bg = core::Nord0;
     glClearColor(bg.r, bg.g, bg.b, bg.a);

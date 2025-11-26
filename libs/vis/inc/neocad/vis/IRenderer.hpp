@@ -12,7 +12,7 @@ class IRenderer {
 
     virtual void SetViewportSize(int w, int h) = 0;
 
-    virtual void BeginFrame(const glm::mat4& view, const glm::mat4& proj) = 0;
+    virtual void BeginFrame(const glm::mat4& view, const glm::mat4& proj, std::shared_ptr<Light> light) = 0;
     virtual void EndFrame() = 0;
 
     virtual void DrawMesh(const std::shared_ptr<BaseGeometry> mesh, std::shared_ptr<Material> mat,

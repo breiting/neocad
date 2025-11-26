@@ -2,15 +2,20 @@
 #include <neocad/domain/Components.hpp>
 #include <neocad/domain/Query.hpp>
 #include <neocad/editor/ViewController.hpp>
+#include <neocad/vis/DirectionalLight.hpp>
 #include <neocad/vis/FlatShadedMaterial.hpp>
 #include <neocad/vis/RenderingSystem.hpp>
 
 using namespace nc::domain;
 using namespace nc::editor;
 
+const glm::vec3 SUN_LIGHT = {1.0f, 0.95f, 0.9f};
+
 namespace nc::vis {
 
 RenderingSystem::RenderingSystem(std::unique_ptr<IRenderer> r) : m_Renderer(std::move(r)) {
+    m_Light = std::make_shared<DirectionalLight>();
+    m_Light->SetColor(SUN_LIGHT);
 }
 
 void RenderingSystem::SetViewportSize(int w, int h) {
@@ -30,7 +35,7 @@ void RenderingSystem::Update(Registry& registry) {
             if (!mesh && !material) {
                 LOG(INFO) << "Mesh and Material created";
                 mesh = std::make_shared<Mesh>();
-                material = std::make_shared<FlatShadedMaterial>();
+                material = std::make_shared<FlatShadedMaterial>(glm::vec3(1.f, 0.f, 0.f));
 
                 mesh->SetVertices(comp->mesh.vertices);
                 for (size_t i = 0; i + 2 < comp->mesh.indices.size(); i += 3) {
@@ -80,7 +85,11 @@ void RenderingSystem::Update(Registry& registry) {
 }
 
 void RenderingSystem::Render(const glm::mat4& view, const glm::mat4& proj) {
-    m_Renderer->BeginFrame(view, proj);
+    if (m_Light) {
+        glm::vec3 camDir = -glm::mat3(view) * glm::vec3(0, 0, 1);
+        m_Light->SetDirection(glm::normalize(camDir));
+    }
+    m_Renderer->BeginFrame(view, proj, m_Light);
 
     for (auto& [e, mesh] : m_Meshes) {
         m_Renderer->DrawMesh(mesh, m_Material[e], glm::mat4(1.0f));
