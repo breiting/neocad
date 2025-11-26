@@ -3,6 +3,7 @@
 #include <glm/mat4x4.hpp>
 #include <memory>
 #include <neocad/core/Colors.hpp>
+#include <neocad/core/Logger.hpp>
 #include <neocad/vis/DirectionalLight.hpp>
 #include <neocad/vis/OpenGLRenderer.hpp>
 #include <neocad/vis/PointCloud.hpp>
@@ -24,6 +25,11 @@ OpenGLRenderer::OpenGLRenderer() : m_Wireframe(false) {
 
 OpenGLRenderer::~OpenGLRenderer() {
     glDisable(GL_DEPTH_TEST);
+}
+
+void OpenGLRenderer::SetViewportSize(int w, int h) {
+    LOG(INFO) << "Setting viewport to " << w << "x" << h;
+    glViewport(0, 0, w, h);
 }
 
 void OpenGLRenderer::ToggleWireframe() {

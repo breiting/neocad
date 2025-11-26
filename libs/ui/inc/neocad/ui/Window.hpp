@@ -38,6 +38,7 @@ class Window {
     void SetMouseButtonCallback(std::function<void(int button, int action, int mods)> cb);
     void SetMouseMoveCallback(std::function<void(double x, double y)> cb);
     void SetScrollCallback(std::function<void(double dx, double dy)> cb);
+    void SetWindowSizeCallback(std::function<void(int w, int h)> cb);
 
     GLFWwindow *GetNative() {
         return m_Window;
@@ -54,6 +55,7 @@ class Window {
     std::function<void(int, int, int)> m_MouseButtonCallback;
     std::function<void(double, double)> m_MouseMoveCallback;
     std::function<void(double, double)> m_ScrollCallback;
+    std::function<void(int, int)> m_WindowSizeCallback;
 };
 
 }  // namespace nc::ui

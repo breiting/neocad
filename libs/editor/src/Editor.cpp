@@ -35,8 +35,22 @@ void Editor::SetMode(EditorMode mode) {
 void Editor::Update(double dt) {
     if (m_ActiveTool)
         m_ActiveTool->Update(m_Ctx, dt);
+}
 
-    m_ViewController.Update(dt);
+void Editor::SetCamera2D(std::shared_ptr<ICamera> cam) {
+    m_ViewController.SetCamera2D(cam);
+}
+
+void Editor::SetCamera3D(std::shared_ptr<ICamera> cam) {
+    m_ViewController.SetCamera3D(cam);
+}
+
+void Editor::SetViewportSize(int w, int h) {
+    m_ViewController.SetViewportSize(w, h);
+}
+
+ICamera* Editor::GetActiveCamera() {
+    return m_ViewController.GetActiveCamera();
 }
 
 // ---------------------------------------------------------------------

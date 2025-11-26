@@ -30,19 +30,18 @@ class Editor {
         return m_Mode;
     }
 
-    ViewController& GetViewController() {
-        return m_ViewController;
-    }
-    const ViewController& GetViewController() const {
-        return m_ViewController;
-    }
-
     ToolContext& GetContext() {
         return m_Ctx;
     }
     const ToolContext& GetContext() const {
         return m_Ctx;
     }
+
+    // Adapter for ViewController
+    void SetCamera2D(std::shared_ptr<ICamera> cam);
+    void SetCamera3D(std::shared_ptr<ICamera> cam);
+    void SetViewportSize(int w, int h);
+    ICamera* GetActiveCamera();
 
    private:
     ToolContext& m_Ctx;

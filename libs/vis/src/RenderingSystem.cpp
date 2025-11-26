@@ -13,6 +13,10 @@ namespace nc::vis {
 RenderingSystem::RenderingSystem(std::unique_ptr<IRenderer> r) : m_Renderer(std::move(r)) {
 }
 
+void RenderingSystem::SetViewportSize(int w, int h) {
+    m_Renderer->SetViewportSize(w, h);
+}
+
 void RenderingSystem::Update(Registry& registry) {
     {
         auto entities = HasComponentQuery<MeshComponent>().Execute(registry);
@@ -75,8 +79,8 @@ void RenderingSystem::Update(Registry& registry) {
 #endif
 }
 
-void RenderingSystem::Render(const ViewState& state) {
-    m_Renderer->BeginFrame(state.view, state.proj);
+void RenderingSystem::Render(const glm::mat4& view, const glm::mat4& proj) {
+    m_Renderer->BeginFrame(view, proj);
 
     for (auto& [e, mesh] : m_Meshes) {
         m_Renderer->DrawMesh(mesh, m_Material[e], glm::mat4(1.0f));

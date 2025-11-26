@@ -10,6 +10,8 @@ class IRenderer {
    public:
     virtual ~IRenderer() = default;
 
+    virtual void SetViewportSize(int w, int h) = 0;
+
     virtual void BeginFrame(const glm::mat4& view, const glm::mat4& proj) = 0;
     virtual void EndFrame() = 0;
 

@@ -1,5 +1,6 @@
 #pragma once
-#include <glm/glm.hpp>
+
+#include <memory>
 #include <neocad/editor/ICamera.hpp>
 #include <neocad/editor/InputEvent.hpp>
 
@@ -10,43 +11,30 @@ enum class ViewMode {
     Sketch2D
 };
 
-struct ViewState {
-    ViewMode mode;
-    glm::dmat4 view;
-    glm::dmat4 proj;
-};
-
 class ViewController {
    public:
-    void SetViewportSize(int w, int h);
+    ViewController();
 
-    void Update(double dt);
-    void OnInput(const editor::InputEvent& ev);
+    void SetViewportSize(int width, int height);
 
-    ViewState GetViewState();
+    void SetCamera3D(std::shared_ptr<ICamera> cam);
+    void SetCamera2D(std::shared_ptr<ICamera> cam);
 
-    void SetCameras(std::shared_ptr<ICamera> cam2d, std::shared_ptr<ICamera> cam3d);
+    ICamera* GetActiveCamera() const;
+    ViewMode GetMode() const {
+        return m_Mode;
+    }
+
+    void SwitchMode(ViewMode mode);
+    void OnInput(const InputEvent& ev);
 
    private:
-    std::shared_ptr<ICamera> m_Cam2D;
-    std::shared_ptr<ICamera> m_Cam3D;
-
-    int m_W = 1280, m_H = 720;
     ViewMode m_Mode = ViewMode::View3D;
+    int m_Width = 1280;
+    int m_Height = 720;
 
-    // --- Transition ---
-    bool m_Transition = false;
-    ViewMode m_TargetMode = ViewMode::View3D;
-    double m_T = 0.0;         // 0..1
-    double m_Duration = 0.4;  // seconds
-
-    // --- Input helpers ---
-    bool m_Rotating = false;
-    bool m_Panning = false;
-    glm::dvec2 m_LastMouse{0, 0};
-
-    void StartTransition(ViewMode target);
-    void HandleMouseInput(const editor::MouseButtonEvent&, const editor::MouseMoveEvent&, const editor::ScrollEvent&);
+    std::shared_ptr<ICamera> m_Cam3D;
+    std::shared_ptr<ICamera> m_Cam2D;
 };
 
 }  // namespace nc::editor

@@ -110,11 +110,9 @@ int main() {
     auto renderer = std::make_unique<OpenGLRenderer>();
     RenderingSystem renderingSystem(std::move(renderer));
 
-    // TODO
-    auto cam2d = std::make_shared<Camera2D>();
-    auto cam3d = std::make_shared<Camera3D>();
-    editor.GetViewController().SetCameras(cam2d, cam3d);
-    editor.GetViewController().SetViewportSize(window.GetWidth(), window.GetHeight());
+    editor.SetCamera2D(std::make_shared<Camera2D>());
+    editor.SetCamera3D(std::make_shared<Camera3D>());
+    editor.SetViewportSize(window.GetWidth(), window.GetHeight());
 
     // INPUT MAPPING
     window.SetKeyPressedCallback([&](int key, int action) {
@@ -152,6 +150,11 @@ int main() {
         editor.OnInput(ev);
     });
 
+    window.SetWindowSizeCallback([&](int w, int h) {
+        editor.SetViewportSize(w, h);
+        renderingSystem.SetViewportSize(w, h);
+    });
+
     Entity stl = LoadSTLtoECS("body.stl", registry);
     if (stl == INVALID_ENTITY) {
         LOG(ERROR) << "Error during loading STL file";
@@ -169,7 +172,9 @@ int main() {
         renderingSystem.Update(registry);
 
         // RENDER
-        renderingSystem.Render(editor.GetViewController().GetViewState());
+        auto* cam = editor.GetActiveCamera();
+        assert(cam);
+        renderingSystem.Render(cam->View(), cam->Projection());
 
         window.SwapBuffers();
     }

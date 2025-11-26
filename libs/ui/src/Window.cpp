@@ -1,6 +1,8 @@
 #include <neocad/core/Logger.hpp>
 #include <neocad/ui/Window.hpp>
 
+#include "GLFW/glfw3.h"
+
 namespace nc::ui {
 bool Window::Create(const CreateInfo& ci) {
     if (!glfwInit()) {
@@ -88,6 +90,13 @@ void Window::InitCallbacks() {
             return;
         self->m_MouseMoveCallback(x, y);
     });
+
+    glfwSetFramebufferSizeCallback(m_Window, [](GLFWwindow* w, int width, int height) {
+        auto* self = static_cast<Window*>(glfwGetWindowUserPointer(w));
+        if (!self)
+            return;
+        self->m_WindowSizeCallback(width, height);
+    });
 }
 
 float Window::Aspect() const {
@@ -108,5 +117,8 @@ void Window::SetKeyPressedCallback(std::function<void(int, int)> cb) {
 
 void Window::SetScrollCallback(std::function<void(double, double)> cb) {
     m_ScrollCallback = std::move(cb);
+}
+void Window::SetWindowSizeCallback(std::function<void(int, int)> cb) {
+    m_WindowSizeCallback = std::move(cb);
 }
 }  // namespace nc::ui

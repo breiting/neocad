@@ -11,8 +11,10 @@ class RenderingSystem {
    public:
     RenderingSystem(std::unique_ptr<IRenderer> r);
 
+    void SetViewportSize(int w, int h);
+
     void Update(domain::Registry& registry);
-    void Render(const editor::ViewState& view);
+    void Render(const glm::mat4& view, const glm::mat4& proj);
 
    private:
     std::unique_ptr<IRenderer> m_Renderer;

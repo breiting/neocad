@@ -1,90 +1,51 @@
-#include <glm/gtx/matrix_interpolation.hpp>
+#include <neocad/core/Logger.hpp>
 #include <neocad/editor/ViewController.hpp>
 
 namespace nc::editor {
 
-void ViewController::SetViewportSize(int w, int h) {
-    m_W = w;
-    m_H = h;
+ViewController::ViewController() {
 }
 
-void ViewController::SetCameras(std::shared_ptr<ICamera> cam2d, std::shared_ptr<ICamera> cam3d) {
-    m_Cam2D = cam2d;
-    m_Cam3D = cam3d;
+void ViewController::SetViewportSize(int width, int height) {
+    m_Width = width;
+    m_Height = height;
+
+    if (m_Cam2D)
+        m_Cam2D->SetAspect(float(width) / float(height));
+    if (m_Cam3D)
+        m_Cam3D->SetAspect(float(width) / float(height));
+}
+
+void ViewController::SetCamera3D(std::shared_ptr<ICamera> cam) {
+    m_Cam3D = std::move(cam);
+}
+void ViewController::SetCamera2D(std::shared_ptr<ICamera> cam) {
+    m_Cam2D = std::move(cam);
+}
+
+ICamera* ViewController::GetActiveCamera() const {
+    if (m_Mode == ViewMode::View3D)
+        return m_Cam3D.get();
+    return m_Cam2D.get();
+}
+
+void ViewController::SwitchMode(ViewMode mode) {
+    m_Mode = mode;
 }
 
 void ViewController::OnInput(const InputEvent& ev) {
-    if (ev.type == InputEventType::Key) {
-        const auto& k = std::get<KeyEvent>(ev.data);
-        if (k.text == '1')
-            StartTransition(ViewMode::View3D);
-        if (k.text == '2')
-            StartTransition(ViewMode::Sketch2D);
-        return;
-    }
-
-    // 2) Mouse/Scroll only
-    if (m_Transition)
-        return;  // ignore during animation
-
-    // if (ev.type == nc::InputEventType::MouseButton || ev.type == nc::InputEventType::MouseMove ||
-    //     ev.type == nc::InputEventType::Scroll) {
-    //     HandleMouseInput(std::get_if<MouseButtonEvent>(&ev.data), std::get_if<nc::MouseMoveEvent>(&ev.data),
-    //                      std::get_if<ScrollEvent>(&ev.data));
-    // }
-}
-
-void ViewController::StartTransition(ViewMode target) {
-    if (target == m_Mode)
-        return;
-    m_TargetMode = target;
-    m_Transition = true;
-    m_T = 0.0;
-}
-
-void ViewController::Update(double dt) {
-    if (!m_Transition)
+    if (ev.type != InputEventType::Key)
         return;
 
-    m_T += dt / m_Duration;
-    if (m_T >= 1.0) {
-        m_T = 1.0;
-        m_Transition = false;
-        m_Mode = m_TargetMode;
+    const auto& key = std::get<KeyEvent>(ev.data);
+    if (key.text == '1') {
+        LOG(INFO) << "Switch to 3D";
+        SwitchMode(ViewMode::View3D);
     }
-}
-
-ViewState ViewController::GetViewState() {
-    double aspect = double(m_W) / double(m_H);
-    m_Cam2D->SetAspect(aspect);
-    m_Cam3D->SetAspect(aspect);
-    ViewState vs;
-
-    if (!m_Transition) {
-        vs.mode = m_Mode;
-        if (m_Mode == ViewMode::View3D) {
-            vs.view = m_Cam3D->View();
-            vs.proj = m_Cam3D->Projection();
-        } else {
-            vs.view = m_Cam2D->View();
-            vs.proj = m_Cam2D->Projection();
-        }
-        return vs;
+    if (key.text == '2') {
+        SwitchMode(ViewMode::Sketch2D);
+        LOG(INFO) << "Switch to 2D";
     }
-
-    // During transition → interpolate view matrix
-    glm::dmat4 A = (m_Mode == ViewMode::View3D) ? m_Cam3D->View() : m_Cam2D->View();
-    glm::dmat4 B = (m_TargetMode == ViewMode::View3D) ? m_Cam3D->View() : m_Cam2D->View();
-
-    vs.view = glm::interpolate(A, B, m_T);
-
-    if (m_TargetMode == ViewMode::View3D)
-        vs.proj = m_Cam3D->Projection();
-    else
-        vs.proj = m_Cam2D->Projection();
-
-    vs.mode = m_Mode;
-    return vs;
 }
 
 }  // namespace nc::editor
