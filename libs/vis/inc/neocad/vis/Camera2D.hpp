@@ -20,6 +20,10 @@ class Camera2D : public editor::ICamera {
     glm::mat4 GetViewMatrix() const override;
     glm::mat4 GetProjectionMatrix() const override;
     void SetAspectRatio(float aspect) override;
+    glm::vec3 GetViewDirection() const override {
+        return {0, 0, -1};
+    }
+
     // --------------------------
 
     // Optional helpers

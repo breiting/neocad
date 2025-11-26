@@ -95,12 +95,13 @@ void RenderingSystem::Update(Registry& registry) {
 #endif
 }
 
-void RenderingSystem::Render(const glm::mat4& view, const glm::mat4& proj) {
+void RenderingSystem::Render(ICamera* cam) {
+    if (!cam)
+        return;
     if (m_Light) {
-        glm::vec3 camDir = -glm::mat3(view) * glm::vec3(0, 0, 1);
-        m_Light->SetDirection(glm::normalize(camDir));
+        m_Light->SetDirection(cam->GetViewDirection());
     }
-    m_Renderer->BeginFrame(view, proj, m_Light);
+    m_Renderer->BeginFrame(cam->GetViewMatrix(), cam->GetProjectionMatrix(), m_Light);
 
     for (auto& [e, mesh] : m_Meshes) {
         m_Renderer->DrawMesh(mesh, m_Material[e], GLOBAL_WORLD_TRANSFORM * glm::mat4(1.0f));

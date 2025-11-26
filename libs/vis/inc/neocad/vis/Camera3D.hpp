@@ -18,7 +18,7 @@ class Camera3D : public editor::ICamera {
     glm::mat4 GetProjectionMatrix() const override;
     void SetAspectRatio(float aspect) override;
 
-    glm::vec3 GetViewDirection() const;
+    glm::vec3 GetViewDirection() const override;
     void SetPosition(const glm::vec3& position);
     void SetTarget(const glm::vec3& target);
     const glm::vec3& GetPosition() const;

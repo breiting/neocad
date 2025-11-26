@@ -87,9 +87,9 @@ Entity MakeUnitCube(Registry& ecs) {
     using namespace nc::domain;
 
     // 8 vertices (clockwise)
-    std::vector<glm::vec3> verts = {{-0.5f, -0.5f, -0.5f}, {+0.5f, -0.5f, -0.5f}, {+0.5f, +0.5f, -0.5f},
-                                    {-0.5f, +0.5f, -0.5f}, {-0.5f, -0.5f, +0.5f}, {+0.5f, -0.5f, +0.5f},
-                                    {+0.5f, +0.5f, +0.5f}, {-0.5f, +0.5f, +0.5f}};
+    std::vector<glm::vec3> verts = {{-0.5f, -0.5f, -1.5f}, {+0.5f, -0.5f, -1.5f}, {+0.5f, +0.5f, -1.5f},
+                                    {-0.5f, +0.5f, -1.5f}, {-0.5f, -0.5f, +1.5f}, {+0.5f, -0.5f, +1.5f},
+                                    {+0.5f, +0.5f, +1.5f}, {-0.5f, +0.5f, +1.5f}};
 
     // 12 triangles → 2 per face
     std::vector<glm::uvec3> tris = {
@@ -219,11 +219,11 @@ int main() {
         renderingSystem.SetViewportSize(w, h);
     });
 
-    // Entity stl = LoadSTLtoECS("body.stl", registry);
-    // if (stl == INVALID_ENTITY) {
-    //     LOG(ERROR) << "Error during loading STL file";
-    //     return -1;
-    // }
+    Entity stl = LoadSTLtoECS("body.stl", registry);
+    if (stl == INVALID_ENTITY) {
+        LOG(ERROR) << "Error during loading STL file";
+        return -1;
+    }
 
     auto lt = static_cast<float>(glfwGetTime());
     while (window.PollEvents()) {
@@ -238,7 +238,7 @@ int main() {
         // RENDER
         auto* cam = editor.GetActiveCamera();
         assert(cam);
-        renderingSystem.Render(cam->GetViewMatrix(), cam->GetProjectionMatrix());
+        renderingSystem.Render(cam);
 
         window.SwapBuffers();
     }

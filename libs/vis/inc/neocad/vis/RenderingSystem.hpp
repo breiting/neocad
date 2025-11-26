@@ -1,5 +1,6 @@
 #pragma once
 #include <neocad/domain/Registry.hpp>
+#include <neocad/editor/ICamera.hpp>
 #include <neocad/editor/ViewController.hpp>
 #include <neocad/vis/DirectionalLight.hpp>
 #include <neocad/vis/IRenderer.hpp>
@@ -15,7 +16,7 @@ class RenderingSystem {
     void SetViewportSize(int w, int h);
 
     void Update(domain::Registry& registry);
-    void Render(const glm::mat4& view, const glm::mat4& proj);
+    void Render(editor::ICamera* cam);
 
    private:
     std::unique_ptr<IRenderer> m_Renderer;

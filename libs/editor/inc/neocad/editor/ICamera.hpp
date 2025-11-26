@@ -10,6 +10,7 @@ class ICamera {
     virtual glm::mat4 GetViewMatrix() const = 0;
     virtual glm::mat4 GetProjectionMatrix() const = 0;
     virtual void SetAspectRatio(float aspect) = 0;
+    virtual glm::vec3 GetViewDirection() const = 0;
 
     virtual void OnMouseStart() = 0;
     virtual void OnMouseRotation(double x, double y) = 0;
