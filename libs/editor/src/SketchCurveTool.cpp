@@ -1,106 +1,117 @@
-#include <neocad/domain/GeometrySystem.hpp>
-#include <neocad/editor/InputEvent.hpp>
+#include <neocad/domain/Registry.hpp>
 #include <neocad/editor/SketchCurveTool.hpp>
 #include <neocad/editor/ToolContext.hpp>
 
 using namespace nc::domain;
+using Clock = std::chrono::steady_clock;
 
 namespace nc::editor {
 
+constexpr double DEBOUNCE_TIME = 0.05;
+
+// -------------------------------------------------
 void SketchCurveTool::OnEnter(ToolContext&) {
     m_Points.clear();
     m_WaitingSecondPoint = false;
-    m_LastPreviewLine = INVALID_ENTITY;  // <- für Live-Preview
+    m_PreviewPoint = INVALID_ENTITY;
+    m_LastPreviewLine = INVALID_ENTITY;
 }
 
+// -------------------------------------------------
 void SketchCurveTool::OnExit(ToolContext& ctx) {
     auto& reg = ctx.GetRegistry();
 
-    // Preview-Linie entfernen (falls vorhanden)
     if (m_LastPreviewLine != INVALID_ENTITY) {
         reg.RemoveComponent<EdgeComponent>(m_LastPreviewLine);
-        m_LastPreviewLine = INVALID_ENTITY;
     }
+    m_PreviewPoint = INVALID_ENTITY;
+    m_LastPreviewLine = INVALID_ENTITY;
 
     m_Points.clear();
     m_WaitingSecondPoint = false;
 }
 
+// -------------------------------------------------
 void SketchCurveTool::OnInput(const InputEvent& ev, ToolContext& ctx) {
     auto& reg = ctx.GetRegistry();
 
-    // ----------------------- MOUSE MOVE = Preview -----------------------
+    // ----- MOUSE MOVE → Preview -----
     if (auto* m = AsMouseMove(ev)) {
-        if (!m_Points.empty()) {
-            glm::vec3 world = ctx.GetCamera()->ScreenToWorld(m->position.x, m->position.y);
+        if (m_Points.empty())
+            return;
 
-            // 1) Update / create preview point
-            if (m_PreviewPoint == INVALID_ENTITY) {
-                m_PreviewPoint = reg.CreateEntity();
-                reg.AddComponent(m_PreviewPoint, PositionComponent{world});
-            } else {
-                reg.GetComponent<PositionComponent>(m_PreviewPoint)->position = world;
-            }
+        double elapsed = std::chrono::duration<double>(Clock::now() - m_LastClickTime).count();
+        if (elapsed < DEBOUNCE_TIME)
+            return;
 
-            // 2) Remove old rubberband preview line
-            if (m_LastPreviewLine != INVALID_ENTITY) {
-                reg.RemoveComponent<EdgeComponent>(m_LastPreviewLine);
-            }
+        glm::vec3 world = ctx.GetCamera()->ScreenToWorld(m->position.x, m->position.y);
 
-            // 3) Create new rubberband preview line
-            Entity a = m_Points.back();
-            Entity b = m_PreviewPoint;
-            m_LastPreviewLine = reg.CreateEntity();
-            reg.AddComponent(m_LastPreviewLine, EdgeComponent{a, b});
+        if (m_PreviewPoint == INVALID_ENTITY) {
+            m_PreviewPoint = reg.CreateEntity();
+            reg.AddComponent(m_PreviewPoint, PositionComponent{world});
+        } else {
+            reg.GetComponent<PositionComponent>(m_PreviewPoint)->position = world;
         }
+
+        if (m_LastPreviewLine != INVALID_ENTITY) {
+            reg.RemoveComponent<EdgeComponent>(m_LastPreviewLine);
+        }
+
+        m_LastPreviewLine = reg.CreateEntity();
+        reg.AddComponent(m_LastPreviewLine, EdgeComponent{m_Points.back(), m_PreviewPoint});
+
         return;
     }
 
-    // ----------------------- MOUSE CLICK = FINAL POINT -----------------------
+    // ----- LEFT MOUSE → Commit Point -----
     if (auto* m = AsMouseButton(ev)) {
         if (m->button == MouseButton::Left && m->pressed) {
+            m_LastClickTime = Clock::now();
+
             glm::vec3 world = ctx.GetCamera()->ScreenToWorld(m->position.x, m->position.y);
 
-            // 1) new real point
-            Entity p = reg.CreateEntity();
-            reg.AddComponent(p, PositionComponent{world});
+            // Reuse preview as final point if exists
+            Entity p;
+            if (m_PreviewPoint != INVALID_ENTITY) {
+                p = m_PreviewPoint;
+                reg.GetComponent<PositionComponent>(p)->position = world;
+                m_PreviewPoint = INVALID_ENTITY;
+            } else {
+                p = reg.CreateEntity();
+                reg.AddComponent(p, PositionComponent{world});
+            }
             m_Points.push_back(p);
 
-            // 2) make PERSISTENT line (from last point)
+            // Create persistent line from last real point
             if (m_Points.size() >= 2) {
-                Entity line = reg.CreateEntity();
-                reg.AddComponent(line, EdgeComponent{m_Points[m_Points.size() - 2], m_Points.back()});
+                CreateLine(m_Points[m_Points.size() - 2], m_Points.back(), reg);
             }
 
-            // 3) clear preview AFTER persistent line created
             if (m_LastPreviewLine != INVALID_ENTITY) {
                 reg.RemoveComponent<EdgeComponent>(m_LastPreviewLine);
                 m_LastPreviewLine = INVALID_ENTITY;
-                m_PreviewPoint = INVALID_ENTITY;
             }
 
-            // --- Mode: Single Line?
             if (m_Mode == CurveMode::Line) {
-                if (!m_WaitingSecondPoint)
+                if (!m_WaitingSecondPoint) {
                     m_WaitingSecondPoint = true;
-                else {
-                    OnExit(ctx);  // already created line above!
+                } else {
+                    OnExit(ctx);
                 }
             }
             return;
         }
     }
 
-    // ----------------------- KEY HANDLING -----------------------
+    // ----- KEYS -----
     if (auto* k = AsKey(ev)) {
-        if (k->code == KeyCode::Escape) {  // cancel but KEEP lines
+        if (k->code == KeyCode::Escape) {
             if (m_Mode == CurveMode::Polyline)
                 FinalizePolyline(ctx);
             OnExit(ctx);
             return;
         }
-
-        if (k->code == KeyCode::Enter) {  // CLOSE for face
+        if (k->code == KeyCode::Enter) {
             if (m_Mode == CurveMode::Face)
                 FinalizeFace(ctx);
             OnExit(ctx);
@@ -130,7 +141,6 @@ void SketchCurveTool::FinalizePolyline(ToolContext& ctx) {
 void SketchCurveTool::FinalizeFace(ToolContext& ctx) {
     if (m_Points.size() < 3)
         return;
-
     auto& reg = ctx.GetRegistry();
 
     FinalizePolyline(ctx);
@@ -139,7 +149,6 @@ void SketchCurveTool::FinalizeFace(ToolContext& ctx) {
     Entity face = reg.CreateEntity();
     FaceComponent fc;
     fc.vertices = m_Points;
-    // Edges? Optional: Query all lines between these points
     reg.AddComponent(face, fc);
 }
 

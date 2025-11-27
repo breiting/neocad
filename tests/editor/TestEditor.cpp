@@ -159,7 +159,7 @@ TEST(SketchCurveTool, FaceCreation) {
     GeometrySystem geom(reg, backend);
     ToolContext ctx{reg, geom};
 
-    SketchCurveTool tool{CurveMode::Face};
+    SketchCurveTool tool{SketchCurveTool::CurveMode::Face};
     tool.OnEnter(ctx);
 
     // simulate clicks

@@ -178,9 +178,10 @@ int main(int argc, char* argv[]) {
     ToolContext ctx(registry, geom);
     Editor editor(ctx);
     editor.RegisterTool(EditorMode::InsertPoint, std::make_unique<InsertPointTool>());
-    editor.RegisterTool(EditorMode::InsertLine, std::make_unique<SketchCurveTool>(CurveMode::Polyline));
+    editor.RegisterTool(EditorMode::InsertLine,
+                        std::make_unique<SketchCurveTool>(SketchCurveTool::CurveMode::Polyline));
+    editor.RegisterTool(EditorMode::InsertSketch, std::make_unique<SketchCurveTool>(SketchCurveTool::CurveMode::Face));
     editor.RegisterTool(EditorMode::InsertCircle, std::make_unique<InsertCircleTool>());
-    editor.RegisterTool(EditorMode::InsertSketch, std::make_unique<SketchCurveTool>(CurveMode::Face));
 
     // Window
     Window window;
