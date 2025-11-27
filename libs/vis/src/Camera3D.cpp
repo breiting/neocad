@@ -4,6 +4,9 @@
 #include <glm/glm.hpp>
 #include <neocad/vis/Camera3D.hpp>
 
+// Z = UP
+constexpr glm::vec3 UP_VECTOR = glm::vec3(0.f, 0.f, 1.f);
+
 namespace nc::vis {
 
 Camera3D::Camera3D(float radius, float pitch, float yaw)
@@ -39,14 +42,18 @@ glm::vec2 Camera3D::OnMouseMove(double xpos, double ypos) {
 void Camera3D::OnMouseRotation(double xpos, double ypos) {
     auto delta = OnMouseMove(xpos, ypos);
     float speed = 1.0f;
-    m_RotationVelocity += delta * speed;
+
+    m_RotationVelocity.x -= delta.x * speed;  // Yaw oft invertiert
+    m_RotationVelocity.y += delta.y * speed;
     UpdatePosition();
 }
 
 void Camera3D::OnMousePan(double xpos, double ypos) {
     auto delta = OnMouseMove(xpos, ypos);
-    glm::vec3 right = glm::normalize(glm::cross(GetViewDirection(), glm::vec3(0.0f, 1.0f, 0.0f)));
-    glm::vec3 up = glm::normalize(glm::cross(right, GetViewDirection()));
+
+    glm::vec3 viewDir = GetViewDirection();
+    glm::vec3 right = glm::normalize(glm::cross(viewDir, UP_VECTOR));
+    glm::vec3 up = glm::normalize(glm::cross(right, viewDir));
 
     m_Target -= right * delta.x * 0.01f;
     m_Target += up * delta.y * 0.01f;
@@ -77,9 +84,10 @@ void Camera3D::UpdatePosition() {
     float radYaw = glm::radians(m_Rotation.x);
 
     glm::vec3 offset;
+
     offset.x = m_Radius * cos(radPitch) * cos(radYaw);
-    offset.y = m_Radius * sin(radPitch);
-    offset.z = m_Radius * cos(radPitch) * sin(radYaw);
+    offset.y = m_Radius * cos(radPitch) * sin(radYaw);
+    offset.z = m_Radius * sin(radPitch);
 
     m_Position = m_Target + offset;
 }
@@ -101,8 +109,7 @@ const glm::vec3& Camera3D::GetTarget() const {
 }
 
 glm::mat4 Camera3D::GetViewMatrix() const {
-    auto up = glm::vec3(0.0f, 1.0f, 0.0f);
-    return glm::lookAt(m_Position, m_Target, up);
+    return glm::lookAt(m_Position, m_Target, UP_VECTOR);
 }
 
 glm::mat4 Camera3D::GetProjectionMatrix() const {
@@ -118,6 +125,7 @@ glm::vec3 Camera3D::GetViewDirection() const {
 glm::vec3 Camera3D::ScreenToWorld(double x, double y) const {
     float nx = (2.0f * x / m_VP.x) - 1.0f;
     float ny = 1.0f - (2.0f * y / m_VP.y);
+
     glm::vec4 cRayStart(nx, ny, -1.0f, 1.0f);
     glm::vec4 cRayEnd(nx, ny, 1.0f, 1.0f);
 
@@ -130,10 +138,10 @@ glm::vec3 Camera3D::ScreenToWorld(double x, double y) const {
     glm::vec3 rayOrigin = glm::vec3(rayStartWorld);
     glm::vec3 rayDir = glm::normalize(glm::vec3(rayEndWorld - rayStartWorld));
 
-    // Schnittebene = XY Ebene (z = 0)
+    // Schnitt mit XY-Ebene (z=0)
     float denom = rayDir.z;
     if (fabs(denom) < 1e-6f)
-        return glm::vec3(0, 0, 0);  // Ray parallel!
+        return glm::vec3(0, 0, 0);  // Parallel!
 
     float t = -rayOrigin.z / rayDir.z;
     return rayOrigin + t * rayDir;
