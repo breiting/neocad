@@ -1,6 +1,7 @@
 #pragma once
 #include <neocad/domain/GeometrySystem.hpp>
 #include <neocad/domain/Registry.hpp>
+#include <neocad/editor/ICamera.hpp>
 
 namespace nc::editor {
 
@@ -26,9 +27,18 @@ class ToolContext {
         return m_GeometrySystem;
     }
 
+    void SetCamera(ICamera* cam) {
+        m_Camera = cam;
+    }
+
+    ICamera* GetCamera() const {
+        return m_Camera;
+    }
+
    private:
     domain::Registry& m_Registry;
     domain::GeometrySystem& m_GeometrySystem;
+    ICamera* m_Camera;
 };
 
 }  // namespace nc::editor

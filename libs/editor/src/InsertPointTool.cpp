@@ -9,16 +9,23 @@ namespace nc::editor {
 
 void InsertPointTool::OnInput(const InputEvent& ev, ToolContext& ctx) {
     if (auto* m = AsMouseButton(ev)) {
-        if (!(m->button == MouseButton::Left))
+        if (m->button != MouseButton::Left)
             return;
-        double wx = m->position.x;
-        double wy = m->position.y;
-        double wz = 0.0;
+
+        if (!m->pressed)
+            return;
+
+        ICamera* cam = ctx.GetCamera();
+        if (!cam)
+            return;
+
+        glm::vec3 world = cam->ScreenToWorld(m->position.x, m->position.y);
+        printf("%f %f %f\n", world.x, world.y, world.z);
 
         auto& reg = ctx.GetRegistry();
         Entity e = reg.CreateEntity();
         PositionComponent pc;
-        pc.position = vec3(wx, wy, wz);
+        pc.position = world;
         reg.AddComponent(e, pc);
     }
 }

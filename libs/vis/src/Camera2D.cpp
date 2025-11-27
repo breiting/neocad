@@ -32,7 +32,6 @@ void Camera2D::OnMouseScroll(double yoffset) {
 }
 
 glm::mat4 Camera2D::GetViewMatrix() const {
-    // Wir schauen von oben (Z) nach unten (XY-Ebene)
     return glm::lookAt(glm::vec3(m_Position.x, m_Position.y, 10.0f),  // Position
                        glm::vec3(m_Position.x, m_Position.y, 0.0f),   // Target
                        glm::vec3(0, 1, 0)                             // Up
@@ -44,12 +43,20 @@ glm::mat4 Camera2D::GetProjectionMatrix() const {
     return glm::ortho(-half * m_AspectRatio, +half * m_AspectRatio, -half, +half, -100.0f, +100.0f);
 }
 
-void Camera2D::SetAspectRatio(float aspect) {
-    m_AspectRatio = aspect;
-}
-
 void Camera2D::SetPosition(const glm::vec2& pos) {
     m_Position = pos;
+}
+
+glm::vec3 Camera2D::ScreenToWorld(double x, double y) const {
+    float ndcX = (2.0f * x / m_VP.x) - 1.0f;
+    float ndcY = -(2.0f * y / m_VP.y) + 1.0f;  // Y-Achse invertieren!
+
+    glm::vec4 ndc(ndcX, ndcY, 0.0f, 1.0f);
+
+    glm::mat4 inv = glm::inverse(GetProjectionMatrix() * GetViewMatrix());
+    glm::vec4 world = inv * ndc;
+
+    return glm::vec3(world) / world.w;
 }
 
 }  // namespace nc::vis

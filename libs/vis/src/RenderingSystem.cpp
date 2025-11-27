@@ -18,9 +18,9 @@ const glm::vec3 SUN_LIGHT = {1.0f, 0.95f, 0.9f};
 /**
  * Make sure to convert all geometry into our coordinate system where +z is the height. Therefore we just flip Y and Z
  */
-const glm::mat4 GLOBAL_WORLD_TRANSFORM = glm::mat4(1, 0, 0, 0,   //
-                                                   0, 0, -1, 0,  //
-                                                   0, 1, 0, 0,   //
+const glm::mat4 GLOBAL_WORLD_TRANSFORM = glm::mat4(1, 0, 0, 0,   // X stays
+                                                   0, 0, -1, 0,  // Z will get -Y
+                                                   0, 1, 0, 0,   // Y will get Z
                                                    0, 0, 0, 1);
 
 namespace nc::vis {

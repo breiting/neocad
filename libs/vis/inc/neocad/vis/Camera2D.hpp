@@ -18,9 +18,13 @@ class Camera2D : public editor::ICamera {
     void Update(float /*dt*/) override {
     }
 
+    void SetViewport(int w, int h) override {
+        m_VP = {float(w), float(h)};
+        m_AspectRatio = float(w) / float(h);
+    }
+
     glm::mat4 GetViewMatrix() const override;
     glm::mat4 GetProjectionMatrix() const override;
-    void SetAspectRatio(float aspect) override;
     glm::vec3 GetViewDirection() const override {
         return {0, 0, -1};
     }
@@ -34,9 +38,12 @@ class Camera2D : public editor::ICamera {
         return m_Zoom;
     }
 
+    glm::vec3 ScreenToWorld(double screenX, double screenY) const override;
+
    private:
     glm::vec2 m_Position;
     glm::vec2 m_LastMouse;
+    glm::vec2 m_VP;
     bool m_FirstMouse;
     float m_Zoom;
     float m_AspectRatio;

@@ -10,10 +10,12 @@ void ViewController::SetViewportSize(int width, int height) {
     m_Width = width;
     m_Height = height;
 
-    if (m_Cam2D)
-        m_Cam2D->SetAspectRatio(float(width) / float(height));
-    if (m_Cam3D)
-        m_Cam3D->SetAspectRatio(float(width) / float(height));
+    if (m_Cam2D) {
+        m_Cam2D->SetViewport(width, height);
+    }
+    if (m_Cam3D) {
+        m_Cam3D->SetViewport(width, height);
+    }
 }
 
 void ViewController::SetCamera3D(std::shared_ptr<ICamera> cam) {

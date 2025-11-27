@@ -16,7 +16,6 @@ class Camera3D : public editor::ICamera {
 
     glm::mat4 GetViewMatrix() const override;
     glm::mat4 GetProjectionMatrix() const override;
-    void SetAspectRatio(float aspect) override;
 
     glm::vec3 GetViewDirection() const override;
     void SetPosition(const glm::vec3& position);
@@ -24,12 +23,20 @@ class Camera3D : public editor::ICamera {
     const glm::vec3& GetPosition() const;
     const glm::vec3& GetTarget() const;
 
+    glm::vec3 ScreenToWorld(double screenX, double screenY) const override;
+
+    void SetViewport(int w, int h) override {
+        m_VP = {float(w), float(h)};
+        m_AspectRatio = float(w) / float(h);
+    }
+
    private:
     glm::vec2 OnMouseMove(double xpos, double ypos);
     void UpdatePosition();
 
     glm::vec2 m_Rotation;
     glm::vec2 m_RotationVelocity;
+    glm::vec2 m_VP;
     float m_Radius;
     float m_DampingFactor;
     float m_VelocityThreshold;

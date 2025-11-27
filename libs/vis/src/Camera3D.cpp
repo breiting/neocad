@@ -111,12 +111,32 @@ glm::mat4 Camera3D::GetProjectionMatrix() const {
     return glm::perspective(glm::radians(fov), m_AspectRatio, 0.01f, 500.0f);
 }
 
-void Camera3D::SetAspectRatio(float aspect) {
-    m_AspectRatio = aspect;
-}
-
 glm::vec3 Camera3D::GetViewDirection() const {
     return glm::normalize(m_Target - m_Position);
+}
+
+glm::vec3 Camera3D::ScreenToWorld(double x, double y) const {
+    float nx = (2.0f * x / m_VP.x) - 1.0f;
+    float ny = 1.0f - (2.0f * y / m_VP.y);
+    glm::vec4 cRayStart(nx, ny, -1.0f, 1.0f);
+    glm::vec4 cRayEnd(nx, ny, 1.0f, 1.0f);
+
+    glm::mat4 invVP = glm::inverse(GetProjectionMatrix() * GetViewMatrix());
+    glm::vec4 rayStartWorld = invVP * cRayStart;
+    rayStartWorld /= rayStartWorld.w;
+    glm::vec4 rayEndWorld = invVP * cRayEnd;
+    rayEndWorld /= rayEndWorld.w;
+
+    glm::vec3 rayOrigin = glm::vec3(rayStartWorld);
+    glm::vec3 rayDir = glm::normalize(glm::vec3(rayEndWorld - rayStartWorld));
+
+    // Schnittebene = XY Ebene (z = 0)
+    float denom = rayDir.z;
+    if (fabs(denom) < 1e-6f)
+        return glm::vec3(0, 0, 0);  // Ray parallel!
+
+    float t = -rayOrigin.z / rayDir.z;
+    return rayOrigin + t * rayDir;
 }
 
 }  // namespace nc::vis

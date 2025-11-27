@@ -62,6 +62,7 @@ void Editor::OnInput(const InputEvent& ev) {
 
     // Send events to active tool
     if (m_ActiveTool) {
+        m_Ctx.SetCamera(m_ViewController.GetActiveCamera());  // ensure correct camera
         m_ActiveTool->OnInput(ev, m_Ctx);
     }
 }
