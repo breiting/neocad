@@ -15,14 +15,6 @@ using namespace nc::editor;
 
 const glm::vec3 SUN_LIGHT = {1.0f, 0.95f, 0.9f};
 
-/**
- * Make sure to convert all geometry into our coordinate system where +z is the height. Therefore we just flip Y and Z
- */
-const glm::mat4 GLOBAL_WORLD_TRANSFORM = glm::mat4(1, 0, 0, 0,   // X stays
-                                                   0, 0, -1, 0,  // Z will get -Y
-                                                   0, 1, 0, 0,   // Y will get Z
-                                                   0, 0, 0, 1);
-
 namespace nc::vis {
 
 RenderingSystem::RenderingSystem(std::unique_ptr<IRenderer> r) : m_Renderer(std::move(r)) {
@@ -141,17 +133,17 @@ void RenderingSystem::Render(ICamera* cam) {
     m_Renderer->BeginFrame(cam->GetViewMatrix(), cam->GetProjectionMatrix(), m_Light);
 
     if (m_Axis)
-        m_Axis->Render(GLOBAL_WORLD_TRANSFORM, cam->GetViewMatrix(), cam->GetProjectionMatrix());
+        m_Axis->Render(glm::mat4(1.0f), cam->GetViewMatrix(), cam->GetProjectionMatrix());
 
     for (auto& [e, mesh] : m_Meshes) {
-        m_Renderer->DrawMesh(mesh, m_Material[e], GLOBAL_WORLD_TRANSFORM * glm::mat4(1.0f));
+        m_Renderer->DrawMesh(mesh, m_Material[e], glm::mat4(1.0f));
     }
     for (auto& [e, lines] : m_Lines) {
-        m_Renderer->DrawLineSet(lines, m_Material[e], GLOBAL_WORLD_TRANSFORM * glm::mat4(1.0f));
+        m_Renderer->DrawLineSet(lines, m_Material[e], glm::mat4(1.0f));
     }
     // Batch render points
     if (m_Points && m_PointSetMaterial)
-        m_Renderer->DrawPoints(m_Points, m_PointSetMaterial, GLOBAL_WORLD_TRANSFORM * glm::mat4(1.0f));
+        m_Renderer->DrawPoints(m_Points, m_PointSetMaterial, glm::mat4(1.0f));
 
     m_Renderer->EndFrame();
 }
