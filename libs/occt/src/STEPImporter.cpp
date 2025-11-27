@@ -1,5 +1,7 @@
 #include <BRepMesh_IncrementalMesh.hxx>
 #include <BRep_Tool.hxx>
+#include <Geom_Circle.hxx>
+#include <Geom_Curve.hxx>
 #include <IFSelect_ReturnStatus.hxx>
 #include <Poly_Triangle.hxx>
 #include <Poly_Triangulation.hxx>
@@ -59,10 +61,6 @@ Entity STEPImporter::Load(const std::string& filename, Registry& registry) {
     return meshEntity;
 }
 
-// ---------------------------
-//  Topology → ECS
-// ---------------------------
-
 void STEPImporter::ExtractTopology(const TopoDS_Shape& shape, Registry& registry) {
     TopTools_IndexedMapOfShape vertexMap;
     TopTools_IndexedMapOfShape edgeMap;
@@ -98,25 +96,51 @@ void STEPImporter::ExtractTopology(const TopoDS_Shape& shape, Registry& registry
     // 2) Alle Edges → EdgeComponent-Entities (p0/p1 verweisen auf Position-Entities)
     std::vector<Entity> edgeEntities(nbE + 1, INVALID_ENTITY);
     for (int i = 1; i <= nbE; ++i) {
-        TopoDS_Edge ed = TopoDS::Edge(edgeMap(i));
+        TopoDS_Edge edge = TopoDS::Edge(edgeMap(i));
 
+        Standard_Real first, last;
+        Handle(Geom_Curve) geomCurve = BRep_Tool::Curve(edge, first, last);
+
+        // --- Circle?
+        if (!geomCurve.IsNull()) {
+            Handle(Geom_Circle) circle = Handle(Geom_Circle)::DownCast(geomCurve);
+            if (!circle.IsNull()) {
+                gp_Ax2 axis = circle->Position();
+                gp_Pnt center = axis.Location();
+                double r = circle->Radius();
+
+                Entity e = registry.CreateEntity();
+                RadiusComponent rc;
+                rc.radius = r;
+                registry.AddComponent<RadiusComponent>(e, rc);
+                PositionComponent pc;
+                pc.position = vec3(static_cast<float>(center.X()), static_cast<float>(center.Y()),
+                                   static_cast<float>(center.Z()));
+                registry.AddComponent<PositionComponent>(e, pc);
+
+                edgeEntities[i] = e;
+                continue;  // KEINE EdgeComponent notwendig!
+            }
+        }
+
+        // --- Edge hat 2 Eckpunkte → Line/EdgeComponent ---
         TopoDS_Vertex v1, v2;
-        TopExp::Vertices(ed, v1, v2);
-        if (v1.IsNull() || v2.IsNull())
-            continue;
+        TopExp::Vertices(edge, v1, v2);
+        if (!v1.IsNull() && !v2.IsNull()) {
+            int idx1 = vertexMap.FindIndex(v1);
+            int idx2 = vertexMap.FindIndex(v2);
+            if (idx1 > 0 && idx2 > 0) {
+                Entity e = registry.CreateEntity();
+                registry.AddComponent<EdgeComponent>(e, {vertexEntities[idx1], vertexEntities[idx2]});
+                edgeEntities[i] = e;
+                continue;
+            }
+        }
 
-        int idx1 = vertexMap.FindIndex(v1);
-        int idx2 = vertexMap.FindIndex(v2);
-        if (idx1 <= 0 || idx2 <= 0)
-            continue;
-
-        EdgeComponent ec;
-        ec.p0 = vertexEntities[idx1];
-        ec.p1 = vertexEntities[idx2];
-
-        Entity e = registry.CreateEntity();
-        registry.AddComponent<EdgeComponent>(e, ec);
-        edgeEntities[i] = e;
+        // --- Unknown?
+        if (!geomCurve.IsNull()) {
+            LOG(WARN) << "Not supported curve found";
+        }
     }
 
     // 3) Faces → FaceComponent-Entities (mit Liste von Vertex & Edge-Entities)
