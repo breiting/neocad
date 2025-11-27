@@ -16,11 +16,15 @@ double ExtrudeCommand::GetHeight() const {
     return m_Height;
 }
 
-void ExtrudeCommand::Execute(Registry& registry, GeometrySystem& geom) {
-    Entity bodyEntity = geom.ExtrudeFace(m_Face, m_Height);
+void ExtrudeCommand::Execute(domain::Registry& registry, domain::GeometrySystem& geom) {
+    m_ResultEntity = geom.ExtrudeFace(m_Face, m_Height);
+}
 
-    if (bodyEntity == INVALID_ENTITY) {
-        LOG(ERROR) << "Error in extruding face";
+void ExtrudeCommand::Undo(domain::Registry& registry, domain::GeometrySystem& geom) {
+    if (m_ResultEntity != domain::INVALID_ENTITY) {
+        registry.RemoveComponent<domain::BodyComponent>(m_ResultEntity);
+        registry.RemoveComponent<domain::NameComponent>(m_ResultEntity);
+        // Note: We don't destroy the entity ID itself, just the data.
     }
 }
 

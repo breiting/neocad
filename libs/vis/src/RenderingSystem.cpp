@@ -141,15 +141,20 @@ void RenderingSystem::Update(Registry& registry) {
     {
         if (m_PointsDirty) {
             auto entities = HasComponentQuery<PositionComponent>().Execute(registry);
-            LOG(INFO) << "Creating PointSet ...";
+            LOG(INFO) << "Creating PointSet (Count: " << entities.size() << ")";
+            
+            std::vector<Vertex> vertices;
+            vertices.reserve(entities.size());
+
             for (Entity e : entities) {
                 if (auto* pc = registry.GetComponent<domain::PositionComponent>(e)) {
                     Vertex v;
                     v.SetPosition(pc->position);
                     v.SetColor({core::Nord12.r, core::Nord12.g, core::Nord12.b});
-                    m_Points->AddVertex(v);
+                    vertices.push_back(v);
                 }
             }
+            m_Points->SetVertices(std::move(vertices));
             m_Points->Upload();
             m_PointsDirty = false;
         }

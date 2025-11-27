@@ -15,4 +15,5 @@ PUBLIC
 	project_settings
 	neocad_core
 	neocad_domain
+	neocad_command
 )

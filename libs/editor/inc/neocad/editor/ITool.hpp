@@ -15,15 +15,12 @@ class ITool {
     virtual void OnEnter(ToolContext&) {
     }
 
-    /// Called when the tool is deactivated.
-    virtual void OnExit(ToolContext&) {
-    }
+    virtual void OnExit(ToolContext& ctx) = 0;
 
-    /// Called for every incoming input event while this tool is active.
-    virtual void OnInput(const InputEvent& event, ToolContext& ctx) = 0;
+    /// Handle input event. Return true if consumed.
+    virtual bool OnInput(const InputEvent& ev, ToolContext& ctx) = 0;
 
-    virtual void Update(ToolContext&, double) {
-    }
+    virtual void Update(ToolContext& /*ctx*/, double /*dt*/) {}
 };
 
 }  // namespace nc::editor

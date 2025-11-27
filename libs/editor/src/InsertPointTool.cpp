@@ -1,33 +1,30 @@
 #include <neocad/domain/Components.hpp>
 #include <neocad/domain/Registry.hpp>
+#include <neocad/editor/InputEvent.hpp>
 #include <neocad/editor/InsertPointTool.hpp>
 #include <neocad/editor/ToolContext.hpp>
+#include <neocad/core/Logger.hpp>
 
 using namespace nc::domain;
 
 namespace nc::editor {
 
-void InsertPointTool::OnInput(const InputEvent& ev, ToolContext& ctx) {
+bool InsertPointTool::OnInput(const InputEvent& ev, ToolContext& ctx) {
     if (auto* m = AsMouseButton(ev)) {
-        if (m->button != MouseButton::Left)
-            return;
+        if (m->button == MouseButton::Left && m->pressed) {
+            auto* cam = ctx.GetCamera();
+            glm::vec3 pos = cam->ScreenToWorld(m->position.x, m->position.y);
 
-        if (!m->pressed)
-            return;
+            auto& reg = ctx.GetRegistry();
+            Entity e = reg.CreateEntity();
+            reg.AddComponent<PositionComponent>(e, {pos});
+            reg.AddComponent<NameComponent>(e, {"Point"});
 
-        ICamera* cam = ctx.GetCamera();
-        if (!cam)
-            return;
-
-        glm::vec3 world = cam->ScreenToWorld(m->position.x, m->position.y);
-        printf("%f %f %f\n", world.x, world.y, world.z);
-
-        auto& reg = ctx.GetRegistry();
-        Entity e = reg.CreateEntity();
-        PositionComponent pc;
-        pc.position = world;
-        reg.AddComponent(e, pc);
+            LOG(INFO) << "Inserted Point at " << pos.x << ", " << pos.y << ", " << pos.z;
+            return true; // Consumed
+        }
     }
+    return false; // Not consumed
 }
 
 }  // namespace nc::editor

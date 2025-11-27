@@ -7,15 +7,11 @@ namespace nc::editor {
 
 class InsertCircleTool : public ITool {
    public:
-    void OnEnter(ToolContext&) override {
-        m_Center.reset();
-    }
-    void OnExit(ToolContext&) override {
-        m_Center.reset();
-    }
-    void OnInput(const InputEvent& event, ToolContext& ctx) override;
+    void OnEnter(ToolContext& ctx) override;
+    void OnExit(ToolContext& ctx) override;
+    bool OnInput(const InputEvent& event, ToolContext& ctx) override;
 
-    void Update(ToolContext& /*m_Ctx*/, double /*dt*/) override {
+    void Update(ToolContext& /*ctx*/, double /*dt*/) override {
     }
 
    private:

@@ -11,7 +11,7 @@ class InsertPointTool : public ITool {
     void OnExit(ToolContext&) override {
     }
 
-    void OnInput(const InputEvent& event, ToolContext& ctx) override;
+    bool OnInput(const InputEvent& ev, ToolContext& ctx) override;
 };
 
 }  // namespace nc::editor

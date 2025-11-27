@@ -10,6 +10,7 @@ class ExtrudeCommand : public ICommand {
     explicit ExtrudeCommand(domain::Entity face, double height);
 
     void Execute(domain::Registry& registry, domain::GeometrySystem& geom) override;
+    void Undo(domain::Registry& registry, domain::GeometrySystem& geom) override;
 
     domain::Entity GetFace() const;
     double GetHeight() const;
@@ -17,6 +18,7 @@ class ExtrudeCommand : public ICommand {
    private:
     domain::Entity m_Face{domain::INVALID_ENTITY};
     double m_Height{0.0};
+    domain::Entity m_ResultEntity{domain::INVALID_ENTITY};
 };
 
 }  // namespace nc::cmd

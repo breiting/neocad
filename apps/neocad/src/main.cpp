@@ -147,6 +147,7 @@ int main(int argc, char* argv[]) {
     Registry registry;
     OCCTBackend backend;
     GeometrySystem geom(registry, backend);
+    CommandStack cmdStack(registry, geom);
 
     if (loadCube) {
         Entity cube = PrimitiveFactory::MakeUnitCube(registry, "UnitCube");
@@ -175,7 +176,7 @@ int main(int argc, char* argv[]) {
     }
 
     // Editor
-    ToolContext ctx(registry, geom);
+    ToolContext ctx(registry, geom, cmdStack);
     Editor editor(ctx);
     editor.RegisterTool(EditorMode::InsertPoint, std::make_unique<InsertPointTool>());
     editor.RegisterTool(EditorMode::InsertLine,

@@ -8,11 +8,13 @@
 #include <neocad/editor/Editor.hpp>
 #include <neocad/editor/InsertPointTool.hpp>
 #include <neocad/editor/SketchCurveTool.hpp>
+#include <neocad/command/CommandStack.hpp>
 
 #include "neocad/editor/InputEvent.hpp"
 
 using namespace nc::editor;
 using namespace nc::domain;
+using namespace nc::cmd;
 
 // --- Minimal mock backend for GeometrySystem --------------------------------
 class DummyBackend : public IGeometryBackend {
@@ -63,7 +65,8 @@ TEST(EditorBasics, StartsInNormalMode) {
     Registry reg;
     DummyBackend backend;
     GeometrySystem geom(reg, backend);
-    ToolContext ctx(reg, geom);
+    CommandStack cmdStack(reg, geom);
+    ToolContext ctx(reg, geom, cmdStack);
 
     Editor editor(ctx);
     EXPECT_EQ(editor.GetMode(), EditorMode::Normal);
@@ -82,8 +85,9 @@ class TestTool : public ITool {
     void OnExit(ToolContext&) override {
         ++exitCount;
     }
-    void OnInput(const InputEvent&, ToolContext&) override {
+    bool OnInput(const InputEvent&, ToolContext&) override {
         ++inputCount;
+        return false;
     }
     void Update(ToolContext&, double) override {
     }
@@ -93,7 +97,8 @@ TEST(EditorBasics, ModeSwitchCallsEnterExit) {
     Registry reg;
     DummyBackend backend;
     GeometrySystem geom(reg, backend);
-    ToolContext ctx(reg, geom);
+    CommandStack cmdStack(reg, geom);
+    ToolContext ctx(reg, geom, cmdStack);
 
     Editor editor(ctx);
 
@@ -141,7 +146,8 @@ TEST(InsertPointToolTests, CreatesPointOnClick) {
     Registry reg;
     DummyBackend backend;
     GeometrySystem geom(reg, backend);
-    ToolContext ctx(reg, geom);
+    CommandStack cmdStack(reg, geom);
+    ToolContext ctx(reg, geom, cmdStack);
 
     Editor editor(ctx);
     editor.RegisterTool(EditorMode::InsertPoint, std::make_unique<InsertPointTool>());
@@ -157,7 +163,8 @@ TEST(SketchCurveTool, FaceCreation) {
     Registry reg;
     DummyBackend backend;
     GeometrySystem geom(reg, backend);
-    ToolContext ctx{reg, geom};
+    CommandStack cmdStack(reg, geom);
+    ToolContext ctx{reg, geom, cmdStack};
 
     SketchCurveTool tool{SketchCurveTool::CurveMode::Face};
     tool.OnEnter(ctx);

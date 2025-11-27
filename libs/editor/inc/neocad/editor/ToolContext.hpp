@@ -2,6 +2,7 @@
 #include <neocad/domain/GeometrySystem.hpp>
 #include <neocad/domain/Registry.hpp>
 #include <neocad/editor/ICamera.hpp>
+#include <neocad/command/CommandStack.hpp>
 
 namespace nc::editor {
 
@@ -9,8 +10,8 @@ namespace nc::editor {
 /// and geometry services without knowing about UI or rendering.
 class ToolContext {
    public:
-    ToolContext(domain::Registry& registry, domain::GeometrySystem& geometrySystem)
-        : m_Registry(registry), m_GeometrySystem(geometrySystem) {
+    ToolContext(domain::Registry& registry, domain::GeometrySystem& geometrySystem, cmd::CommandStack& cmdStack)
+        : m_Registry(registry), m_GeometrySystem(geometrySystem), m_CommandStack(cmdStack) {
     }
 
     domain::Registry& GetRegistry() {
@@ -27,6 +28,10 @@ class ToolContext {
         return m_GeometrySystem;
     }
 
+    cmd::CommandStack& GetCommandStack() {
+        return m_CommandStack;
+    }
+
     void SetCamera(ICamera* cam) {
         m_Camera = cam;
     }
@@ -38,6 +43,7 @@ class ToolContext {
    private:
     domain::Registry& m_Registry;
     domain::GeometrySystem& m_GeometrySystem;
+    cmd::CommandStack& m_CommandStack;
     ICamera* m_Camera;
 };
 

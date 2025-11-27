@@ -21,7 +21,7 @@ class SketchCurveTool : public ITool {
 
     void OnEnter(ToolContext& ctx) override;
     void OnExit(ToolContext& ctx) override;
-    void OnInput(const InputEvent& ev, ToolContext& ctx) override;
+    bool OnInput(const InputEvent& ev, ToolContext& ctx) override;
 
    private:
     CurveMode m_Mode;
@@ -30,6 +30,8 @@ class SketchCurveTool : public ITool {
     nc::domain::Entity m_PreviewPoint = domain::INVALID_ENTITY;
     nc::domain::Entity m_LastPreviewLine = domain::INVALID_ENTITY;
     bool m_WaitingSecondPoint = false;
+    
+    size_t m_StartCmdIndex{0};
 
     using Clock = std::chrono::steady_clock;
     Clock::time_point m_LastClickTime = Clock::now();

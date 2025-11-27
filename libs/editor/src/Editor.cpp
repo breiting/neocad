@@ -53,17 +53,21 @@ ICamera* Editor::GetActiveCamera() {
 }
 
 void Editor::OnInput(const InputEvent& ev) {
-    m_ViewController.OnInput(ev);
-
     // Global keyboard shortcuts
     if (auto* key = AsKey(ev)) {
         HandleKey(*key);
     }
 
-    // Send events to active tool
+    // 1. Send events to active tool FIRST
+    bool handled = false;
     if (m_ActiveTool) {
-        m_Ctx.SetCamera(m_ViewController.GetActiveCamera());  // ensure correct camera
-        m_ActiveTool->OnInput(ev, m_Ctx);
+        m_Ctx.SetCamera(m_ViewController.GetActiveCamera());
+        handled = m_ActiveTool->OnInput(ev, m_Ctx);
+    }
+
+    // 2. If not handled by tool, pass to Camera Controller
+    if (!handled) {
+        m_ViewController.OnInput(ev);
     }
 }
 
