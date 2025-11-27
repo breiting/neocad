@@ -1,5 +1,6 @@
 add_library(neocad_occt STATIC
 	src/OCCTBackend.cpp
+	src/STEPImporter.cpp
 )
 
 target_include_directories(neocad_occt PUBLIC
@@ -39,5 +40,6 @@ target_include_directories(neocad_occt PUBLIC ${OpenCASCADE_INCLUDE_DIR})
 
 target_link_libraries(neocad_occt
 PUBLIC
+	neocad_core
 	neocad_domain
 )

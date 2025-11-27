@@ -43,7 +43,6 @@ Entity GeometrySystem::ExtrudeFace(Entity face, double height) {
     auto bodyEntity = m_Registry.CreateEntity();
     BodyComponent component;
     component.handle = bodyHandle;
-    component.sourceFace = face;
     m_Registry.AddComponent(bodyEntity, component);
 
     m_Registry.AddComponent<NameComponent>(bodyEntity, {"ExtrudedBody"});

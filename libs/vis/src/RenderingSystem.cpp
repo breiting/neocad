@@ -125,9 +125,9 @@ void RenderingSystem::Update(Registry& registry) {
                     v.SetColor({core::Nord12.r, core::Nord12.g, core::Nord12.b});
                     m_Points->AddVertex(v);
                 }
-                m_Points->Upload();
-                m_PointsDirty = false;
             }
+            m_Points->Upload();
+            m_PointsDirty = false;
         }
     }
 }

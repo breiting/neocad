@@ -15,6 +15,7 @@
 #include <neocad/editor/SketchCurveTool.hpp>
 #include <neocad/editor/ToolContext.hpp>
 #include <neocad/occt/OCCTBackend.hpp>
+#include <neocad/occt/STEPImporter.hpp>
 #include <neocad/ui/Window.hpp>
 #include <neocad/vis/Camera2D.hpp>
 #include <neocad/vis/Camera3D.hpp>
@@ -127,8 +128,10 @@ Entity CreateTestFace5(Registry& ecs) {
 
 int main(int argc, char* argv[]) {
     CLI::App app{"Desc"};
-    std::string model;
-    app.add_option("--load", model, "Load STL model");
+    std::string stlFile;
+    app.add_option("--stl", stlFile, "Load STL model");
+    std::string stepFile;
+    app.add_option("--step", stepFile, "Load STEP model");
     bool loadCube = false;
     app.add_flag("--cube", loadCube, "Load unit cube");
     bool loadFace = false;
@@ -154,10 +157,19 @@ int main(int argc, char* argv[]) {
         LOG(INFO) << "Loaded face with ID: " << face;
     }
 
-    if (!model.empty()) {
-        Entity stl = LoadSTLtoECS(model, registry);
+    if (!stlFile.empty()) {
+        Entity stl = LoadSTLtoECS(stlFile, registry);
         if (stl == INVALID_ENTITY) {
             LOG(ERROR) << "Error loading STL file";
+            return -1;
+        }
+    }
+
+    if (!stepFile.empty()) {
+        STEPImporter step;
+        Entity mesh = step.Load(stepFile, registry);
+        if (mesh == INVALID_ENTITY) {
+            LOG(ERROR) << "Error loading STEP file";
             return -1;
         }
     }
