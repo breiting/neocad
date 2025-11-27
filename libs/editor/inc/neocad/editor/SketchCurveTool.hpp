@@ -1,5 +1,4 @@
 #pragma once
-#include <neocad/domain/Components.hpp>
 #include <neocad/domain/Entity.hpp>
 #include <neocad/domain/Registry.hpp>
 #include <neocad/editor/ITool.hpp>
@@ -8,31 +7,36 @@
 namespace nc::editor {
 
 enum class CurveMode {
-    Line,      // 2 points, immediate line
-    Polyline,  // ESC ends, open curve
-    Face       // ENTER closes & makes FaceComponent
+    Line,
+    Polyline,
+    Face
 };
 
 class SketchCurveTool : public ITool {
    public:
+    SketchCurveTool() = default;
     explicit SketchCurveTool(CurveMode mode) : m_Mode(mode) {
     }
 
-    void OnEnter(ToolContext&) override;
-    void OnExit(ToolContext&) override;
-    void OnInput(const InputEvent&, ToolContext&) override;
-
-    void Update(ToolContext& /*m_Ctx*/, double /*dt*/) override {
-    }
+    // --- Interface from ITool ---
+    void OnEnter(ToolContext& ctx) override;
+    void OnExit(ToolContext& ctx) override;
+    void OnInput(const InputEvent& ev, ToolContext& ctx) override;
 
    private:
-    CurveMode m_Mode;
-    std::vector<domain::Entity> m_Points;  // captured dynamic points
-    bool m_WaitingSecondPoint = false;     // only relevant in Line mode
+    void CreateLine(domain::Entity a, domain::Entity b, domain::Registry& reg);
+    void FinalizePolyline(ToolContext& ctx);
+    void FinalizeFace(ToolContext& ctx);
 
-    void CreateLine(domain::Entity a, domain::Entity b, domain::Registry&);
-    void FinalizePolyline(ToolContext&);
-    void FinalizeFace(ToolContext&);
+   private:
+    CurveMode m_Mode = CurveMode::Line;
+
+    std::vector<domain::Entity> m_Points;
+    bool m_WaitingSecondPoint = false;
+
+    // --- Live Preview ---
+    domain::Entity m_PreviewPoint = domain::INVALID_ENTITY;     // "hovering" point
+    domain::Entity m_LastPreviewLine = domain::INVALID_ENTITY;  // rubberband
 };
 
 }  // namespace nc::editor

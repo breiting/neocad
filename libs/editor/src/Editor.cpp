@@ -114,6 +114,7 @@ void Editor::ProcessCommandBuffer() {
         LOG(INFO) << "InsertPoint mode ...";
         SetMode(EditorMode::InsertPoint);
     } else if (cmd == "il") {
+        LOG(INFO) << "InsertLine mode ...";
         SetMode(EditorMode::InsertLine);
     } else if (cmd == "ic") {
         SetMode(EditorMode::InsertCircle);

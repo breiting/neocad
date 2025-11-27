@@ -25,8 +25,6 @@ class RenderingSystem {
 
     void SetShowAxis(bool b);
 
-    void MarkPointsDirty();
-
    private:
     std::unique_ptr<IRenderer> m_Renderer;
     std::shared_ptr<DirectionalLight> m_Light;

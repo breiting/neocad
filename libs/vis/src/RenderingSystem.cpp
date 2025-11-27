@@ -42,6 +42,10 @@ bool RenderingSystem::Init(Registry& registry) {
         m_PointsDirty = true;
     });
 
+    registry.OnComponentRemoved<EdgeComponent>([&](Entity e) {
+        m_Lines.erase(e);
+    });
+
     return m_Axis->Init();
 }
 
@@ -85,7 +89,7 @@ void RenderingSystem::Update(Registry& registry) {
             auto& lines = m_Lines[e];
             auto& material = m_Material[e];
             if (!lines) {
-                LOG(INFO) << "Creating LineSet ...";
+                LOG(INFO) << "Creating Face edges ...";
                 lines = std::make_shared<LineSet>();
                 material = std::make_shared<LineSetMaterial>();
 
@@ -101,6 +105,34 @@ void RenderingSystem::Update(Registry& registry) {
                     }
                 }
                 lines->SetVertices(vertices);
+                lines->Upload();
+            }
+        }
+    }
+
+    {
+        auto entities = HasComponentQuery<EdgeComponent>().Execute(registry);
+        for (Entity e : entities) {
+            auto* comp = registry.GetComponent<EdgeComponent>(e);
+            if (!comp)
+                continue;
+
+            auto& lines = m_Lines[e];
+            auto& material = m_Material[e];
+            if (!lines) {
+                LOG(INFO) << "Creating LineSet ...";
+                lines = std::make_shared<LineSet>();
+                material = std::make_shared<LineSetMaterial>();
+
+                Vertex v0, v1;
+                auto p0 = registry.GetComponent<PositionComponent>(comp->p0);
+                auto p1 = registry.GetComponent<PositionComponent>(comp->p1);
+                v0.SetPosition(p0->position);
+                v0.SetColor({core::Nord13.r, core::Nord13.g, core::Nord13.b});
+                v1.SetPosition(p1->position);
+                v1.SetColor({core::Nord13.r, core::Nord13.g, core::Nord13.b});
+
+                lines->SetVertices({v0, v1});
                 lines->Upload();
             }
         }
@@ -146,10 +178,6 @@ void RenderingSystem::Render(ICamera* cam) {
         m_Renderer->DrawPoints(m_Points, m_PointSetMaterial, glm::mat4(1.0f));
 
     m_Renderer->EndFrame();
-}
-
-void RenderingSystem::MarkPointsDirty() {
-    m_PointsDirty = true;
 }
 
 }  // namespace nc::vis

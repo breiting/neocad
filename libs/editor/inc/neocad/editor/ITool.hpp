@@ -22,7 +22,8 @@ class ITool {
     /// Called for every incoming input event while this tool is active.
     virtual void OnInput(const InputEvent& event, ToolContext& ctx) = 0;
 
-    virtual void Update(ToolContext& m_Ctx, double dt) = 0;
+    virtual void Update(ToolContext&, double) {
+    }
 };
 
 }  // namespace nc::editor
