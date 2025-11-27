@@ -39,7 +39,7 @@ struct BodyComponent {
 
 /// Component for defining a circle
 struct RadiusComponent {
-    double radius;
+    double radius = 1.0;
 };
 
 /// 3D Mesh component for rendering

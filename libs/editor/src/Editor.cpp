@@ -88,6 +88,10 @@ void Editor::HandleKey(const KeyEvent& key) {
     if (key.ctrl || key.alt)
         return;
 
+    if (key.text == 'p') {
+        m_Ctx.GetRegistry().Dump();
+    }
+
     char c = static_cast<char>(std::tolower(static_cast<unsigned char>(key.text)));
     m_CommandBuffer.push_back(c);
 

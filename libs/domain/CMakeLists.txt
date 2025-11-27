@@ -10,6 +10,7 @@ target_include_directories(neocad_domain PUBLIC
 
 target_link_libraries(neocad_domain
 PUBLIC
+	neocad_core
 	glm::glm
 	Eigen3::Eigen
 )

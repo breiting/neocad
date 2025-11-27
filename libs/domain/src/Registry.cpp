@@ -1,217 +1,85 @@
 #include <algorithm>
+#include <iostream>
 #include <neocad/domain/Components.hpp>
 #include <neocad/domain/Registry.hpp>
 
 namespace nc::domain {
 
-Entity Registry::CreateEntity() {
-    return m_NextId++;
-}
-
-// ---------- NAME ----------
-
-template <>
-void Registry::AddComponent<NameComponent>(Entity e, const NameComponent& tag) {
-    m_Names[e] = tag;
-}
-
-template <>
-void Registry::RemoveComponent<NameComponent>(Entity e) {
-    m_Names.erase(e);
-}
-
-template <>
-NameComponent* Registry::GetComponent<NameComponent>(Entity e) {
-    auto it = m_Names.find(e);
-    return (it != m_Names.end()) ? &it->second : nullptr;
-}
-
-template <>
-bool Registry::HasComponent<NameComponent>(Entity e) const {
-    return m_Names.count(e) > 0;
-}
-
-// ---------- POSITION ----------
-
-template <>
-void Registry::AddComponent<PositionComponent>(Entity e, const PositionComponent& comp) {
-    m_Positions[e] = comp;
-    TriggerAdded<PositionComponent>(e);
-}
-
-template <>
-void Registry::RemoveComponent<PositionComponent>(Entity e) {
-    m_Names.erase(e);
-}
-
-template <>
-PositionComponent* Registry::GetComponent<PositionComponent>(Entity e) {
-    auto it = m_Positions.find(e);
-    return (it != m_Positions.end()) ? &it->second : nullptr;
-}
-
-template <>
-bool Registry::HasComponent<PositionComponent>(Entity e) const {
-    return m_Positions.count(e) > 0;
-}
-
-// ---------- CIRCLES ----------
-
-template <>
-void Registry::AddComponent<RadiusComponent>(Entity e, const RadiusComponent& comp) {
-    m_Circles[e] = comp;
-}
-
-template <>
-void Registry::RemoveComponent<RadiusComponent>(Entity e) {
-    m_Names.erase(e);
-}
-
-template <>
-RadiusComponent* Registry::GetComponent<RadiusComponent>(Entity e) {
-    auto it = m_Circles.find(e);
-    return (it != m_Circles.end()) ? &it->second : nullptr;
-}
-
-template <>
-bool Registry::HasComponent<RadiusComponent>(Entity e) const {
-    return m_Circles.count(e) > 0;
-}
-
-// ---------- LINE ----------
-
-template <>
-void Registry::AddComponent<EdgeComponent>(Entity e, const EdgeComponent& comp) {
-    m_Lines[e] = comp;
-}
-
-template <>
-void Registry::RemoveComponent<EdgeComponent>(Entity e) {
-    m_Names.erase(e);
-}
-
-template <>
-EdgeComponent* Registry::GetComponent<EdgeComponent>(Entity e) {
-    auto it = m_Lines.find(e);
-    return (it != m_Lines.end()) ? &it->second : nullptr;
-}
-
-template <>
-bool Registry::HasComponent<EdgeComponent>(Entity e) const {
-    return m_Lines.count(e) > 0;
-}
-
-// ---------- FACE ----------
-template <>
-void Registry::AddComponent<FaceComponent>(Entity e, const FaceComponent& comp) {
-    m_Faces[e] = comp;
-}
-
-template <>
-void Registry::RemoveComponent<FaceComponent>(Entity e) {
-    m_Names.erase(e);
-}
-
-template <>
-FaceComponent* Registry::GetComponent<FaceComponent>(Entity e) {
-    auto it = m_Faces.find(e);
-    return (it != m_Faces.end()) ? &it->second : nullptr;
-}
-
-template <>
-bool Registry::HasComponent<FaceComponent>(Entity e) const {
-    return m_Faces.count(e) > 0;
-}
-
-// ---------- MESH ----------
-template <>
-void Registry::AddComponent<MeshComponent>(Entity e, const MeshComponent& comp) {
-    m_Meshes[e] = comp;
-}
-
-template <>
-void Registry::RemoveComponent<MeshComponent>(Entity e) {
-    m_Names.erase(e);
-}
-
-template <>
-MeshComponent* Registry::GetComponent<MeshComponent>(Entity e) {
-    auto it = m_Meshes.find(e);
-    return (it != m_Meshes.end()) ? &it->second : nullptr;
-}
-
-template <>
-bool Registry::HasComponent<MeshComponent>(Entity e) const {
-    return m_Meshes.count(e) > 0;
-}
-
-// ---------- SKETCHPLANE ----------
-template <>
-void Registry::AddComponent<SketchPlaneComponent>(Entity e, const SketchPlaneComponent& comp) {
-    m_SketchPlanes[e] = comp;
-}
-
-template <>
-void Registry::RemoveComponent<SketchPlaneComponent>(Entity e) {
-    m_Names.erase(e);
-}
-
-template <>
-SketchPlaneComponent* Registry::GetComponent<SketchPlaneComponent>(Entity e) {
-    auto it = m_SketchPlanes.find(e);
-    return (it != m_SketchPlanes.end()) ? &it->second : nullptr;
-}
-
-template <>
-bool Registry::HasComponent<SketchPlaneComponent>(Entity e) const {
-    return m_SketchPlanes.count(e) > 0;
-}
-
-// ---------- BODY ----------
-template <>
-void Registry::AddComponent<BodyComponent>(Entity e, const BodyComponent& comp) {
-    m_Bodies[e] = comp;
-}
-
-template <>
-void Registry::RemoveComponent<BodyComponent>(Entity e) {
-    m_Names.erase(e);
-}
-
-template <>
-BodyComponent* Registry::GetComponent<BodyComponent>(Entity e) {
-    auto it = m_Bodies.find(e);
-    return (it != m_Bodies.end()) ? &it->second : nullptr;
-}
-
-template <>
-bool Registry::HasComponent<BodyComponent>(Entity e) const {
-    return m_Bodies.count(e) > 0;
-}
-
-// ---------- METHODS ----------
-//
 std::vector<Entity> Registry::Entities() const {
     std::vector<Entity> result;
 
     auto collect = [&](const auto& map) {
-        for (const auto& [e, _] : map)
+        for (auto& [e, _] : map)
             result.push_back(e);
     };
 
-    collect(m_Names);
-    collect(m_Positions);
-    collect(m_Lines);
-    collect(m_Faces);
-    collect(m_Bodies);
-    collect(m_Meshes);
-    collect(m_SketchPlanes);
+    // WICHTIG: hier ALLE Component-Typen auflisten, die es aktuell gibt
+    collect(StorageConst<NameComponent>());
+    collect(StorageConst<PositionComponent>());
+    collect(StorageConst<RadiusComponent>());
+    collect(StorageConst<EdgeComponent>());
+    collect(StorageConst<FaceComponent>());
+    collect(StorageConst<MeshComponent>());
+    collect(StorageConst<SketchPlaneComponent>());
+    collect(StorageConst<BodyComponent>());
 
-    // remove duplicate
     std::sort(result.begin(), result.end());
     result.erase(std::unique(result.begin(), result.end()), result.end());
-
     return result;
+}
+
+void Registry::Dump() const {
+    std::cout << "\n=== REGISTRY DUMP ===\n";
+
+    for (Entity e : Entities()) {
+        std::cout << "Entity " << e << "\n";
+
+        if (HasComponent<NameComponent>(e)) {
+            auto* c = GetComponent<NameComponent>(e);
+            std::cout << "  Name        = " << c->name << "\n";
+        }
+
+        if (HasComponent<PositionComponent>(e)) {
+            auto* c = GetComponent<PositionComponent>(e);
+            std::cout << "  Position    = (" << c->position.x << ", " << c->position.y << ", " << c->position.z
+                      << ")\n";
+        }
+
+        if (HasComponent<RadiusComponent>(e)) {
+            auto* c = GetComponent<RadiusComponent>(e);
+            std::cout << "  Radius      = " << c->radius << "\n";
+        }
+
+        if (HasComponent<EdgeComponent>(e)) {
+            auto* c = GetComponent<EdgeComponent>(e);
+            std::cout << "  Edge        = p0=" << c->p0 << ", p1=" << c->p1 << "\n";
+        }
+
+        if (HasComponent<FaceComponent>(e)) {
+            auto* c = GetComponent<FaceComponent>(e);
+            std::cout << "  Face        = vertices=" << c->vertices.size() << ", edges=" << c->edges.size() << "\n";
+        }
+
+        if (HasComponent<MeshComponent>(e)) {
+            auto* c = GetComponent<MeshComponent>(e);
+            std::cout << "  Mesh        = vtx=" << c->mesh.vertices.size() << ", idx=" << c->mesh.indices.size()
+                      << "\n";
+        }
+
+        if (HasComponent<SketchPlaneComponent>(e)) {
+            auto* c = GetComponent<SketchPlaneComponent>(e);
+            std::cout << "  SketchPlane = origin=(" << c->origin.x << ", " << c->origin.y << ", " << c->origin.z << ")"
+                      << " normal=(" << c->normal.x << ", " << c->normal.y << ", " << c->normal.z << ")\n";
+        }
+
+        if (HasComponent<BodyComponent>(e)) {
+            std::cout << "  Body        = [OCCT handle present]\n";
+        }
+
+        std::cout << "\n";
+    }
+
+    std::cout << "=== END REGISTRY ===\n\n";
 }
 
 }  // namespace nc::domain
