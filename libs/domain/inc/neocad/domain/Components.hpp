@@ -35,7 +35,6 @@ using BackendShapeHandle = std::uint64_t;
 /// 3D body (solid) referencing a backend shape.
 struct BodyComponent {
     BackendShapeHandle handle{0};
-    Entity sourceFace{INVALID_ENTITY};  ///< originating face entity (optional)
 };
 
 /// Component for defining a circle
