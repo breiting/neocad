@@ -27,6 +27,34 @@ namespace nc::occt {
 
 using namespace nc::domain;
 
+void FixNormals(domain::MeshComponent& mc) {
+    auto& verts = mc.mesh.vertices;
+    auto& idx = mc.mesh.indices;
+
+    std::vector<glm::vec3> normals(verts.size(), glm::vec3(0.0f));
+
+    for (size_t i = 0; i < idx.size(); i += 3) {
+        uint32_t i0 = idx[i];
+        uint32_t i1 = idx[i + 1];
+        uint32_t i2 = idx[i + 2];
+
+        glm::vec3 p0 = verts[i0].GetPosition();
+        glm::vec3 p1 = verts[i1].GetPosition();
+        glm::vec3 p2 = verts[i2].GetPosition();
+
+        glm::vec3 n = glm::normalize(glm::cross(p1 - p0, p2 - p0));
+
+        normals[i0] += n;
+        normals[i1] += n;
+        normals[i2] += n;
+    }
+
+    // Average & assign
+    for (size_t i = 0; i < verts.size(); ++i) {
+        verts[i].SetNormal(glm::normalize(normals[i]));
+    }
+}
+
 Entity STEPImporter::Load(const std::string& filename, Registry& registry) {
     LOG(INFO) << "STEPImporter: loading file: " << filename;
 
@@ -222,25 +250,35 @@ void STEPImporter::TriangulateShape(const TopoDS_Shape& shape, MeshComponent& ou
         if (tri.IsNull())
             continue;
 
+        // Transformation berücksichtigen (z.B. bei Assemblies)
         gp_Trsf trsf = loc.Transformation();
 
-        std::size_t baseIndex = mesh.vertices.size();
+        // ⚠ Orientation check – WICHTIG!
+        bool flipWinding = (face.Orientation() == TopAbs_REVERSED);
+
+        // --- 1) VERTICES ---
+        std::size_t baseIndex = mesh.vertices.size();  // Startindex dieses Faces
 
         const int nbV = tri->NbNodes();
         for (int i = 1; i <= nbV; ++i) {
             gp_Pnt p = tri->Node(i).Transformed(trsf);
+
             Vertex v;
             v.SetPosition(glm::vec3(static_cast<float>(p.X()), static_cast<float>(p.Y()), static_cast<float>(p.Z())));
-            // Farbe erstmal neutral, kann später per Face-ID gesetzt werden
             v.SetColor(glm::vec3(0.7f, 0.7f, 0.8f));
+
             mesh.vertices.push_back(v);
         }
 
+        // --- 2) TRIANGLES (mit Face Orientation fixen!) ---
         const int nbT = tri->NbTriangles();
         for (int i = 1; i <= nbT; ++i) {
             Poly_Triangle t = tri->Triangle(i);
             int i1, i2, i3;
             t.Get(i1, i2, i3);
+
+            if (flipWinding)
+                std::swap(i2, i3);
 
             mesh.indices.push_back(static_cast<uint32_t>(baseIndex + i1 - 1));
             mesh.indices.push_back(static_cast<uint32_t>(baseIndex + i2 - 1));
@@ -274,6 +312,8 @@ void STEPImporter::TriangulateShape(const TopoDS_Shape& shape, MeshComponent& ou
             mesh.vertices[i].SetNormal(n);
         }
     }
+
+    FixNormals(outMesh);
 
     LOG(INFO) << "STEPImporter: triangulation → " << mesh.vertices.size() << " vertices, " << mesh.indices.size() / 3
               << " triangles.";

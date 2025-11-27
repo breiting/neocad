@@ -14,7 +14,7 @@ PointSetMaterial::PointSetMaterial() {
 void PointSetMaterial::Apply(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection,
                              std::shared_ptr<Light> /*light*/) {
     m_Shader->Bind();
-    m_Shader->SetMat4("u_View", view * model);
+    m_Shader->SetMat4("u_ViewModel", view * model);
     m_Shader->SetMat4("u_Proj", projection);
 
     // uniforms
