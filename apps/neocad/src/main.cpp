@@ -202,7 +202,7 @@ int main(int argc, char* argv[]) {
     editor.SetViewportSize(window.GetWidth(), window.GetHeight());
 
     // INPUT MAPPING
-    window.SetKeyPressedCallback([&](int key, int action) {
+    window.SetKeyPressedCallback([&](int key, int /*scancode*/, int action, int /*mods*/) {
         InputEvent ev;
         ev.type = InputEventType::Key;
         ev.data = MakeKeyEventFromGLFW(key, action, 0);
