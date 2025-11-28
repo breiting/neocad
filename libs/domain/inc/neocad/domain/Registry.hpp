@@ -72,7 +72,6 @@ class Registry {
 
     template <typename T>
     void AddComponent(Entity e, const T& comp) {
-        // std::cout << "Registry: Adding component type " << typeid(T).name() << " to entity " << e << "\n";
         GetStorage<T>().Set(e, comp);
         TriggerAdded<T>(e);
     }

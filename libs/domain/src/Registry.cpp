@@ -1,5 +1,5 @@
 #include <algorithm>
-#include <iostream>
+#include <neocad/core/Logger.hpp>
 #include <neocad/domain/Components.hpp>
 #include <neocad/domain/Registry.hpp>
 
@@ -22,57 +22,54 @@ std::vector<Entity> Registry::Entities() const {
 }
 
 void Registry::Dump() const {
-    std::cout << "\n=== REGISTRY DUMP ===\n";
+    LOG(Info) << "\n=== REGISTRY DUMP ===";
 
     for (Entity e : Entities()) {
-        std::cout << "Entity " << e << "\n";
+        LOG(Info) << "Entity " << e;
 
         if (HasComponent<NameComponent>(e)) {
             auto* c = GetComponent<NameComponent>(e);
-            std::cout << "  Name        = " << c->name << "\n";
+            LOG(Info) << "  Name        = " << c->name;
         }
 
         if (HasComponent<PositionComponent>(e)) {
             auto* c = GetComponent<PositionComponent>(e);
-            std::cout << "  Position    = (" << c->position.x << ", " << c->position.y << ", " << c->position.z
-                      << ")\n";
+            LOG(Info) << "  Position    = (" << c->position.x << ", " << c->position.y << ", " << c->position.z
+                      << ")";
         }
 
         if (HasComponent<RadiusComponent>(e)) {
             auto* c = GetComponent<RadiusComponent>(e);
-            std::cout << "  Radius      = " << c->radius << "\n";
+            LOG(Info) << "  Radius      = " << c->radius;
         }
 
         if (HasComponent<EdgeComponent>(e)) {
             auto* c = GetComponent<EdgeComponent>(e);
-            std::cout << "  Edge        = p0=" << c->p0 << ", p1=" << c->p1 << "\n";
+            LOG(Info) << "  Edge        = p0=" << c->p0 << ", p1=" << c->p1;
         }
 
         if (HasComponent<FaceComponent>(e)) {
             auto* c = GetComponent<FaceComponent>(e);
-            std::cout << "  Face        = vertices=" << c->vertices.size() << ", edges=" << c->edges.size() << "\n";
+            LOG(Info) << "  Face        = vertices=" << c->vertices.size() << ", edges=" << c->edges.size();
         }
 
         if (HasComponent<MeshComponent>(e)) {
             auto* c = GetComponent<MeshComponent>(e);
-            std::cout << "  Mesh        = vtx=" << c->mesh.vertices.size() << ", idx=" << c->mesh.indices.size()
-                      << "\n";
+            LOG(Info) << "  Mesh        = vtx=" << c->mesh.vertices.size() << ", idx=" << c->mesh.indices.size();
         }
 
         if (HasComponent<SketchPlaneComponent>(e)) {
             auto* c = GetComponent<SketchPlaneComponent>(e);
-            std::cout << "  SketchPlane = origin=(" << c->origin.x << ", " << c->origin.y << ", " << c->origin.z << ")"
-                      << " normal=(" << c->normal.x << ", " << c->normal.y << ", " << c->normal.z << ")\n";
+            LOG(Info) << "  SketchPlane = origin=(" << c->origin.x << ", " << c->origin.y << ", " << c->origin.z << ")"
+                      << " normal=(" << c->normal.x << ", " << c->normal.y << ", " << c->normal.z << ")";
         }
 
         if (HasComponent<BodyComponent>(e)) {
-            std::cout << "  Body        = [OCCT handle present]\n";
+            LOG(Info) << "  Body        = [OCCT handle present]";
         }
-
-        std::cout << "\n";
     }
 
-    std::cout << "=== END REGISTRY ===\n\n";
+    LOG(Info) << "=== END REGISTRY ===\n";
 }
 
 }  // namespace nc::domain
