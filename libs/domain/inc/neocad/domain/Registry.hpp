@@ -1,13 +1,12 @@
 #pragma once
 
 #include <functional>
+#include <memory>
 #include <neocad/domain/Components.hpp>
 #include <neocad/domain/Entity.hpp>
 #include <typeindex>
 #include <unordered_map>
 #include <vector>
-#include <memory>
-#include <algorithm>
 
 namespace nc::domain {
 
@@ -28,14 +27,19 @@ template <typename T>
 struct ComponentStorage : public IComponentStorage {
     std::unordered_map<Entity, T> map;
 
-    void Remove(Entity e) override { map.erase(e); }
-    
-    bool Has(Entity e) const override { return map.find(e) != map.end(); }
-    
+    void Remove(Entity e) override {
+        map.erase(e);
+    }
+
+    bool Has(Entity e) const override {
+        return map.find(e) != map.end();
+    }
+
     std::vector<Entity> GetEntities() const override {
         std::vector<Entity> res;
         res.reserve(map.size());
-        for(auto& [e, _] : map) res.push_back(e);
+        for (auto& [e, _] : map)
+            res.push_back(e);
         return res;
     }
 
@@ -48,7 +52,7 @@ struct ComponentStorage : public IComponentStorage {
         auto it = map.find(e);
         return (it != map.end()) ? &it->second : nullptr;
     }
-    
+
     void Set(Entity e, const T& val) {
         map[e] = val;
     }
@@ -93,15 +97,25 @@ class Registry {
         // BUT wait: if missing, GetComponent should return nullptr, NOT create storage.
         // So for const access, we must check existence first.
         auto* storage = GetStorageRaw<T>();
-        if (!storage) return nullptr;
+        if (!storage)
+            return nullptr;
         return storage->Get(e);
     }
 
     template <typename T>
     bool HasComponent(Entity e) const {
         auto* storage = GetStorageRaw<T>();
-        if (!storage) return false;
+        if (!storage)
+            return false;
         return storage->Has(e);
+    }
+
+    template <typename T>
+    std::vector<Entity> GetEntitiesWith() const {
+        auto* storage = GetStorageRaw<T>();
+        if (!storage)
+            return {};
+        return storage->GetEntities();
     }
 
     // --------- ENTITIES ----------
@@ -146,13 +160,14 @@ class Registry {
         }
         return *static_cast<ComponentStorage<T>*>(m_Storages[type].get());
     }
-    
+
     // Helper to get storage (const safe, no creation)
     template <typename T>
     const ComponentStorage<T>* GetStorageRaw() const {
         std::type_index type = std::type_index(typeid(T));
         auto it = m_Storages.find(type);
-        if (it == m_Storages.end()) return nullptr;
+        if (it == m_Storages.end())
+            return nullptr;
         return static_cast<const ComponentStorage<T>*>(it->second.get());
     }
 

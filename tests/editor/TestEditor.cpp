@@ -28,6 +28,10 @@ class DummyBackend : public IGeometryBackend {
         return ++lastHandle;
     }
 
+    BackendShapeHandle CreateBox(double width, double length, double height) override {
+        return ++lastHandle;
+    }
+
     bool ExportShapeToSTEP(BackendShapeHandle, const std::string&) const override {
         return true;
     }

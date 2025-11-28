@@ -13,6 +13,9 @@ class IGeometryBackend {
     /// Create a solid body by extruding a planar polygon along its normal.
     virtual BackendShapeHandle CreateExtrudedBody(const Polygon& profile, double height) = 0;
 
+    /// Create a solid box.
+    virtual BackendShapeHandle CreateBox(double width, double length, double height) = 0;
+
     /// Export an existing backend shape as STEP.
     virtual bool ExportShapeToSTEP(BackendShapeHandle handle, const std::string& filePath) const = 0;
 

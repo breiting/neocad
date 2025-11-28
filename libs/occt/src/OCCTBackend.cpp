@@ -2,6 +2,7 @@
 #include <BRepBuilderAPI_MakeFace.hxx>
 #include <BRepBuilderAPI_MakeWire.hxx>
 #include <BRepMesh_IncrementalMesh.hxx>
+#include <BRepPrimAPI_MakeBox.hxx>
 #include <BRepPrimAPI_MakePrism.hxx>
 #include <STEPControl_StepModelType.hxx>
 #include <STEPControl_Writer.hxx>
@@ -19,7 +20,7 @@ namespace nc::occt {
 
 OCCTBackend::OCCTBackend() = default;
 
-OCCTBackend::~OCCTBackend() = default; // Unique_ptr handles cleanup
+OCCTBackend::~OCCTBackend() = default;  // Unique_ptr handles cleanup
 
 BackendShapeHandle OCCTBackend::StoreShape(const TopoDS_Shape& shape) {
     BackendShapeHandle handle = m_NextHandle++;
@@ -33,6 +34,16 @@ TopoDS_Shape* OCCTBackend::GetShape(BackendShapeHandle handle) const {
         return nullptr;
     }
     return it->second.get();
+}
+
+BackendShapeHandle OCCTBackend::CreateBox(double width, double length, double height) {
+    BRepPrimAPI_MakeBox box(width, length, height);
+    box.Build();
+    if (!box.IsDone()) {
+        LOG(Error) << "CreateBox: Failed to create box.";
+        return 0;
+    }
+    return StoreShape(box.Shape());
 }
 
 BackendShapeHandle OCCTBackend::CreateExtrudedBody(const Polygon& profile, double height) {
@@ -50,15 +61,15 @@ BackendShapeHandle OCCTBackend::CreateExtrudedBody(const Polygon& profile, doubl
         const auto& b = v[(i + 1) % n];
         BRepBuilderAPI_MakeEdge edge(gp_Pnt(a.x, a.y, a.z), gp_Pnt(b.x, b.y, b.z));
         if (!edge.IsDone()) {
-             LOG(Error) << "CreateExtrudedBody: Failed to create edge " << i;
-             return 0;
+            LOG(Error) << "CreateExtrudedBody: Failed to create edge " << i;
+            return 0;
         }
         wireBuilder.Add(edge.Edge());
     }
 
     if (!wireBuilder.IsDone()) {
-         LOG(Error) << "CreateExtrudedBody: Wire builder failed.";
-         return 0;
+        LOG(Error) << "CreateExtrudedBody: Wire builder failed.";
+        return 0;
     }
 
     TopoDS_Wire wire = wireBuilder.Wire();
@@ -72,8 +83,8 @@ BackendShapeHandle OCCTBackend::CreateExtrudedBody(const Polygon& profile, doubl
     gp_Vec dir(0.0, 0.0, height);
     BRepPrimAPI_MakePrism prism(face, dir);
     if (!prism.IsDone()) {
-         LOG(Error) << "CreateExtrudedBody: Prism (extrusion) failed.";
-         return 0;
+        LOG(Error) << "CreateExtrudedBody: Prism (extrusion) failed.";
+        return 0;
     }
     TopoDS_Shape body = prism.Shape();
 
@@ -104,15 +115,17 @@ bool OCCTBackend::ExportShapeToSTEP(BackendShapeHandle handle, const std::string
         LOG(Error) << "ExportSTEP: Write failed with status " << (int)status;
         return false;
     }
-    
+
     return true;
 }
 
 bool OCCTBackend::ExportShapeToSTL(BackendShapeHandle handle, const std::string& filePath, double deflection) const {
     TopoDS_Shape* shape = GetShape(handle);
-    if (!shape) return false;
+    if (!shape)
+        return false;
 
-    if (shape->IsNull()) return false;
+    if (shape->IsNull())
+        return false;
 
     BRepMesh_IncrementalMesh mesher(*shape, deflection);
     StlAPI_Writer stlWriter;

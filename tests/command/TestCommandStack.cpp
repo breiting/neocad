@@ -13,6 +13,7 @@ using namespace nc::domain;
 class MockBackend : public IGeometryBackend {
 public:
     BackendShapeHandle CreateExtrudedBody(const Polygon&, double) override { return 0; }
+    BackendShapeHandle CreateBox(double, double, double) override { return 0; }
     bool ExportShapeToSTEP(BackendShapeHandle, const std::string&) const override { return true; }
     bool ExportShapeToSTL(BackendShapeHandle, const std::string&, double) const override { return true; }
 };

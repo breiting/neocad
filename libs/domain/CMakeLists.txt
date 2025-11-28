@@ -2,6 +2,8 @@ add_library(neocad_domain STATIC
 	src/GeometrySystem.cpp
 	src/Registry.cpp
 	src/PrimitiveFactory.cpp
+	src/ExpressionSystem.cpp
+	src/FeatureEvaluationSystem.cpp
 )
 
 target_include_directories(neocad_domain PUBLIC

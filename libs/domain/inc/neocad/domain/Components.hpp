@@ -3,6 +3,7 @@
 #include <neocad/domain/Entity.hpp>
 #include <neocad/domain/Types.hpp>
 #include <string>
+#include <variant>
 #include <vector>
 
 namespace nc::domain {
@@ -10,6 +11,32 @@ namespace nc::domain {
 /// Name/tag
 struct NameComponent {
     std::string name;
+};
+
+struct GlobalParameterComponent final {
+    std::string name;
+    double value = 0.0;
+    std::uint64_t version = 0;
+};
+
+struct ExpressionComponent final {
+    double evaluatedValue = 0.0;
+    std::uint64_t version = 0;
+
+    enum class SourceType {
+        STATIC_VALUE,
+        ENTITY_REFERENCE
+    };
+    SourceType sourceType = SourceType::STATIC_VALUE;
+
+    std::variant<double, EntityID> sourceData;
+};
+
+/// Solid Box definition
+struct BoxComponent final {
+    EntityID widthExpressionId;
+    EntityID lengthExpressionId;
+    EntityID heightExpressionId;
 };
 
 /// 3D position
@@ -35,6 +62,7 @@ using BackendShapeHandle = std::uint64_t;
 /// 3D body (solid) referencing a backend shape.
 struct BodyComponent {
     BackendShapeHandle handle{0};
+    std::uint64_t lastRebuildVersion = 0;
 };
 
 /// Component for defining a circle

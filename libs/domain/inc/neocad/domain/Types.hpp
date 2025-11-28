@@ -1,9 +1,11 @@
 #pragma once
+#include <neocad/domain/Entity.hpp>
 #include <neocad/domain/Vertex.hpp>
 #include <vector>
 
 namespace nc::domain {
 
+using EntityID = Entity;
 using vec3 = glm::dvec3;  // double precision for geometry
 using vec2 = glm::dvec2;
 

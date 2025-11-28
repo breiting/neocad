@@ -16,6 +16,7 @@ class OCCTBackend : public domain::IGeometryBackend {
     ~OCCTBackend() override;
 
     domain::BackendShapeHandle CreateExtrudedBody(const domain::Polygon& profile, double height) override;
+    domain::BackendShapeHandle CreateBox(double width, double length, double height) override;
 
     bool ExportShapeToSTEP(domain::BackendShapeHandle handle, const std::string& filePath) const override;
     bool ExportShapeToSTL(domain::BackendShapeHandle handle, const std::string& filePath,
