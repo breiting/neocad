@@ -16,4 +16,5 @@ PUBLIC
 	neocad_core
 	neocad_domain
 	neocad_command
+	neocad_ui
 )

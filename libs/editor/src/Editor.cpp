@@ -1,6 +1,9 @@
+#include <imnodes.h>
+
 #include <cctype>
 #include <neocad/core/Logger.hpp>
 #include <neocad/editor/Editor.hpp>
+#include <neocad/ui/GraphEditorSystem.hpp>
 
 namespace nc::editor {
 
@@ -9,7 +12,39 @@ namespace nc::editor {
  * \param ctx A reference to the ToolContext, providing access to core services.
  */
 Editor::Editor(ToolContext& ctx) : m_Ctx(ctx) {
-    m_Ctx.SetEditor(this); // Set this Editor instance into the ToolContext
+    m_Ctx.SetEditor(this);  // Set this Editor instance into the ToolContext
+
+    // Initialize ImNodes
+    ImNodes::CreateContext();
+    ImNodes::StyleColorsDark();
+
+    m_GraphEditorSystem = std::make_unique<ui::GraphEditorSystem>(ctx.GetRegistry());
+
+    // Setup Demo Data
+    auto& reg = ctx.GetRegistry();
+    auto param = reg.CreateEntity();
+    reg.AddComponent(param, domain::GlobalParameterComponent{"Width", 10.0, 1});
+    reg.AddComponent(param, domain::UINodeComponent{50, 50});
+
+    auto box = reg.CreateEntity();
+    reg.AddComponent(box, domain::NameComponent{"MyBox"});
+    reg.AddComponent(box, domain::BoxComponent{});
+    reg.AddComponent(box, domain::UINodeComponent{250, 50});
+
+    auto cyl = reg.CreateEntity();
+    reg.AddComponent(cyl, domain::NameComponent{"MyCylinder"});
+    reg.AddComponent(cyl, domain::CylinderComponent{});
+    reg.AddComponent(cyl, domain::UINodeComponent{450, 50});
+}
+
+Editor::~Editor() {
+    ImNodes::DestroyContext();
+}
+
+void Editor::DrawUI() {
+    if (m_GraphEditorSystem) {
+        m_GraphEditorSystem->DrawPanel();
+    }
 }
 
 /**
@@ -25,7 +60,7 @@ void Editor::RegisterTool(EditorMode mode, std::unique_ptr<ITool> tool) {
 /**
  * \brief Explicitly switches the editor to a new mode.
  * Informs the currently active tool (OnExit) and the new tool (OnEnter).
- * 
+ *
  * \param mode The target EditorMode.
  */
 void Editor::SetMode(EditorMode mode) {
@@ -115,7 +150,7 @@ void Editor::OnInput(const InputEvent& ev) {
     // 1. Send events to active tool FIRST
     bool handled = false;
     if (m_ActiveTool) {
-        m_Ctx.SetCamera(m_ViewController.GetActiveCamera()); // Ensure tool has access to active camera
+        m_Ctx.SetCamera(m_ViewController.GetActiveCamera());  // Ensure tool has access to active camera
         handled = m_ActiveTool->OnInput(ev, m_Ctx);
     }
 
@@ -158,12 +193,19 @@ void Editor::HandleKey(const KeyEvent& key) {
         m_Ctx.GetRegistry().Dump();
     }
 
+    // 'g' to toggle graph editor
+    if (key.text == 'g' && m_GraphEditorSystem) {
+        LOG(Info) << "Editor: 'g' pressed, toggling graph editor...";
+        m_GraphEditorSystem->ToggleVisibility();
+    }
+
     char c = static_cast<char>(std::tolower(static_cast<unsigned char>(key.text)));
     m_CommandBuffer.push_back(c);
 
     // Keep only the last 2 characters in the command buffer (for commands like "ip", "il", "ic", "is")
     if (m_CommandBuffer.size() > 2)
-        m_CommandBuffer.erase(0, m_CommandBuffer.size() - 2); // Erase from beginning, keeping only the last 2 characters
+        m_CommandBuffer.erase(0,
+                              m_CommandBuffer.size() - 2);  // Erase from beginning, keeping only the last 2 characters
 
     ProcessCommandBuffer();
 }
@@ -174,7 +216,7 @@ void Editor::HandleKey(const KeyEvent& key) {
  */
 void Editor::ProcessCommandBuffer() {
     if (m_CommandBuffer.size() < 2)
-        return; // Need at least 2 characters for known commands
+        return;  // Need at least 2 characters for known commands
 
     const std::string cmd = m_CommandBuffer;
 

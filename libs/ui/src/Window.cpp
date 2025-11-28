@@ -2,6 +2,9 @@
 #include <neocad/ui/Window.hpp>
 
 #include "GLFW/glfw3.h"
+#include "imgui.h"
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
 
 // Global texture for preventing shader warnings when no texture is bound
 static GLuint g_DefaultTexture = 0;
@@ -75,6 +78,21 @@ bool Window::Create(const CreateInfo& ci) {
     glfwSwapInterval(1);  // VSync
     InitCallbacks();
 
+    // ImGui Setup
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    // io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking (Not available in master yet)
+    // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+
+    ImGui::StyleColorsDark();
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplGlfw_InitForOpenGL(m_Window, true);
+    ImGui_ImplOpenGL3_Init("#version 410");
+
     // Get initial framebuffer size and set viewport
     glfwGetFramebufferSize(m_Window, &m_FramebufferWidth, &m_FramebufferHeight);
     glViewport(0, 0, m_FramebufferWidth, m_FramebufferHeight);
@@ -88,6 +106,11 @@ bool Window::Create(const CreateInfo& ci) {
  * This should be called once when the application shuts down.
  */
 void Window::Destroy() {
+    // ImGui Cleanup
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
     DestroyDefaultTexture(); // Clean up the global default texture
     if (m_Window) {
         glfwDestroyWindow(m_Window);
@@ -95,6 +118,17 @@ void Window::Destroy() {
     }
     glfwTerminate();
     LOG(Info) << "Window destroyed and GLFW terminated.";
+}
+
+void Window::BeginFrame() {
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+}
+
+void Window::EndFrame() {
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 /**

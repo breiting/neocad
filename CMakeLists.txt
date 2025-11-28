@@ -88,6 +88,42 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(sol2)
 
 # ----------------------------------------------------------
+# ImNodes
+# ----------------------------------------------------------
+FetchContent_Declare(
+		imnodes
+		GIT_REPOSITORY https://github.com/Nelarius/imnodes.git
+		GIT_TAG v0.5
+)
+FetchContent_MakeAvailable(imnodes)
+
+add_library(imnodes STATIC
+    ${imnodes_SOURCE_DIR}/imnodes.cpp
+)
+target_include_directories(imnodes PUBLIC ${imnodes_SOURCE_DIR})
+target_link_libraries(imnodes PUBLIC imgui)
+target_compile_definitions(imnodes PUBLIC IMGUI_DEFINE_MATH_OPERATORS)
+
+# ----------------------------------------------------------
+# ImGui
+# ----------------------------------------------------------
+FetchContent_Declare(
+        imgui
+        GIT_REPOSITORY https://github.com/ocornut/imgui.git
+        GIT_TAG v1.91.5
+)
+FetchContent_MakeAvailable(imgui)
+
+add_library(imgui STATIC
+    ${imgui_SOURCE_DIR}/imgui.cpp
+    ${imgui_SOURCE_DIR}/imgui_draw.cpp
+    ${imgui_SOURCE_DIR}/imgui_tables.cpp
+    ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+    ${imgui_SOURCE_DIR}/imgui_demo.cpp
+)
+target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR})
+
+# ----------------------------------------------------------
 # Lua 5.4
 # ----------------------------------------------------------
 find_package(Lua 5.4 QUIET)

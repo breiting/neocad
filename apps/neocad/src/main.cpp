@@ -257,6 +257,11 @@ int main(int argc, char* argv[]) {
         assert(cam);
         renderingSystem.Render(cam);
 
+        // UI RENDER
+        window.BeginFrame();
+        editor.DrawUI();
+        window.EndFrame();
+
         window.SwapBuffers();
     }
 

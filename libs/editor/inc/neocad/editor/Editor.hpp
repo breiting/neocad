@@ -9,6 +9,9 @@
 
 #include "neocad/editor/ViewController.hpp" // Fully includes ViewController, instead of just forward declaring if used.
 
+// Forward declaration
+namespace nc::ui { class GraphEditorSystem; }
+
 namespace nc::editor {
 
 /**
@@ -25,12 +28,18 @@ class Editor {
      * \param ctx A reference to the ToolContext, providing access to core services.
      */
     explicit Editor(ToolContext& ctx);
+    ~Editor(); // Destructor needed for unique_ptr forward declaration
 
     /**
      * \brief Called once per frame (or simulation step) to update active tools and camera.
      * \param dt Time delta since last frame.
      */
     void Update(double dt);
+
+    /**
+     * \brief Draws the UI panels.
+     */
+    void DrawUI();
 
     /**
      * \brief Feeds an input event into the editor for processing.
@@ -113,6 +122,8 @@ class Editor {
     ITool* m_ActiveTool{nullptr}; ///< Pointer to the currently active tool.
 
     std::string m_CommandBuffer; ///< Buffer for Vim-like key sequences.
+    
+    std::unique_ptr<ui::GraphEditorSystem> m_GraphEditorSystem; ///< The graph editor system.
 
     /**
      * \brief Handles keyboard events, including global shortcuts and command buffer input.

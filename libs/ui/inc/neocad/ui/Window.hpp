@@ -55,6 +55,18 @@ class Window {
     void SwapBuffers();
 
     /**
+     * \brief Starts a new ImGui frame.
+     * Call this before any ImGui calls.
+     */
+    void BeginFrame();
+
+    /**
+     * \brief Ends the ImGui frame and renders it.
+     * Call this after all ImGui calls and before SwapBuffers.
+     */
+    void EndFrame();
+
+    /**
      * \brief Returns the aspect ratio of the window's framebuffer.
      * \return The width divided by the height.
      */

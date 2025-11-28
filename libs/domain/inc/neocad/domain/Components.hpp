@@ -45,6 +45,13 @@ struct CylinderComponent final {
     EntityID heightExpressionId;
 };
 
+/// Stores the position of the node in the 2D graph editor window (for persistence).
+struct UINodeComponent final {
+    float positionX = 0.0f;
+    float positionY = 0.0f;
+    bool isCollapsed = false;
+};
+
 /// 3D position
 struct PositionComponent {
     vec3 position;
