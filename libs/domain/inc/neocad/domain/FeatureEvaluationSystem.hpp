@@ -15,6 +15,7 @@ class FeatureEvaluationSystem final {
     IGeometryBackend& m_backend;
 
     void EvaluateBoxFeature(EntityID boxEntityId);
+    void EvaluateCylinderFeature(EntityID cylinderEntityId);
 
     uint64_t GetHighestExpressionVersion(std::initializer_list<EntityID> expressionIds);
 };

@@ -16,6 +16,12 @@ class IGeometryBackend {
     /// Create a solid box.
     virtual BackendShapeHandle CreateBox(double width, double length, double height) = 0;
 
+    /// Create a solid cylinder.
+    /// \param radius Radius of the cylinder.
+    /// \param height Height of the cylinder.
+    /// \return Handle to the created shape.
+    virtual BackendShapeHandle CreateCylinder(double radius, double height) = 0;
+
     /// Export an existing backend shape as STEP.
     virtual bool ExportShapeToSTEP(BackendShapeHandle handle, const std::string& filePath) const = 0;
 

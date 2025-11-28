@@ -1,5 +1,7 @@
 add_library(neocad_command STATIC
 	src/ExtrudeCommand.cpp
+	src/InsertBoxCommand.cpp
+	src/InsertCylinderCommand.cpp
 )
 
 target_include_directories(neocad_command PUBLIC

@@ -22,6 +22,10 @@ class FakeBackend : public IGeometryBackend {
         return ++lastHandle;
     }
 
+    BackendShapeHandle CreateCylinder(double radius, double height) override {
+        return ++lastHandle;
+    }
+
     bool ExportShapeToSTEP(BackendShapeHandle, const std::string&) const override {
         return true;
     }

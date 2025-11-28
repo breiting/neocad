@@ -3,6 +3,7 @@
 #include <BRepBuilderAPI_MakeWire.hxx>
 #include <BRepMesh_IncrementalMesh.hxx>
 #include <BRepPrimAPI_MakeBox.hxx>
+#include <BRepPrimAPI_MakeCylinder.hxx>
 #include <BRepPrimAPI_MakePrism.hxx>
 #include <STEPControl_StepModelType.hxx>
 #include <STEPControl_Writer.hxx>
@@ -20,7 +21,7 @@ namespace nc::occt {
 
 OCCTBackend::OCCTBackend() = default;
 
-OCCTBackend::~OCCTBackend() = default;  // Unique_ptr handles cleanup
+OCCTBackend::~OCCTBackend() = default; // Unique_ptr handles cleanup
 
 BackendShapeHandle OCCTBackend::StoreShape(const TopoDS_Shape& shape) {
     BackendShapeHandle handle = m_NextHandle++;
@@ -44,6 +45,16 @@ BackendShapeHandle OCCTBackend::CreateBox(double width, double length, double he
         return 0;
     }
     return StoreShape(box.Shape());
+}
+
+BackendShapeHandle OCCTBackend::CreateCylinder(double radius, double height) {
+    BRepPrimAPI_MakeCylinder cyl(radius, height);
+    cyl.Build();
+    if (!cyl.IsDone()) {
+        LOG(Error) << "CreateCylinder: Failed to create cylinder.";
+        return 0;
+    }
+    return StoreShape(cyl.Shape());
 }
 
 BackendShapeHandle OCCTBackend::CreateExtrudedBody(const Polygon& profile, double height) {

@@ -1,6 +1,6 @@
 #pragma once
-#include <neocad/domain/IGeometryBackend.hpp>
 #include <memory>
+#include <neocad/domain/IGeometryBackend.hpp>
 #include <unordered_map>
 
 // Forward declare OCCT types
@@ -17,6 +17,7 @@ class OCCTBackend : public domain::IGeometryBackend {
 
     domain::BackendShapeHandle CreateExtrudedBody(const domain::Polygon& profile, double height) override;
     domain::BackendShapeHandle CreateBox(double width, double length, double height) override;
+    domain::BackendShapeHandle CreateCylinder(double radius, double height) override;
 
     bool ExportShapeToSTEP(domain::BackendShapeHandle handle, const std::string& filePath) const override;
     bool ExportShapeToSTL(domain::BackendShapeHandle handle, const std::string& filePath,

@@ -32,10 +32,16 @@ struct ExpressionComponent final {
     std::variant<double, EntityID> sourceData;
 };
 
-/// Solid Box definition
+/// Component defining a parametric box.
 struct BoxComponent final {
     EntityID widthExpressionId;
     EntityID lengthExpressionId;
+    EntityID heightExpressionId;
+};
+
+/// Component defining a parametric cylinder.
+struct CylinderComponent final {
+    EntityID radiusExpressionId;
     EntityID heightExpressionId;
 };
 

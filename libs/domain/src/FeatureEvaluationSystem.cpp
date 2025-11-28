@@ -10,9 +10,18 @@ FeatureEvaluationSystem::FeatureEvaluationSystem(Registry& registry, IGeometryBa
 
 void FeatureEvaluationSystem::EvaluateFeatures() {
     auto boxes = m_registry.GetEntitiesWith<BoxComponent>();
+
     for (auto entity : boxes) {
         if (m_registry.HasComponent<BodyComponent>(entity)) {
             EvaluateBoxFeature(entity);
+        }
+    }
+
+    auto cylinders = m_registry.GetEntitiesWith<CylinderComponent>();
+
+    for (auto entity : cylinders) {
+        if (m_registry.HasComponent<BodyComponent>(entity)) {
+            EvaluateCylinderFeature(entity);
         }
     }
 }
@@ -34,6 +43,26 @@ void FeatureEvaluationSystem::EvaluateBoxFeature(EntityID boxEntityId) {
 
         if (wExpr && lExpr && hExpr) {
             body->handle = m_backend.CreateBox(wExpr->evaluatedValue, lExpr->evaluatedValue, hExpr->evaluatedValue);
+            body->lastRebuildVersion = maxVersion;
+        }
+    }
+}
+
+void FeatureEvaluationSystem::EvaluateCylinderFeature(EntityID cylinderEntityId) {
+    auto* cyl = m_registry.GetComponent<CylinderComponent>(cylinderEntityId);
+    auto* body = m_registry.GetComponent<BodyComponent>(cylinderEntityId);
+
+    if (!cyl || !body)
+        return;
+
+    uint64_t maxVersion = GetHighestExpressionVersion({cyl->radiusExpressionId, cyl->heightExpressionId});
+
+    if (body->lastRebuildVersion < maxVersion) {
+        auto* rExpr = m_registry.GetComponent<ExpressionComponent>(cyl->radiusExpressionId);
+        auto* hExpr = m_registry.GetComponent<ExpressionComponent>(cyl->heightExpressionId);
+
+        if (rExpr && hExpr) {
+            body->handle = m_backend.CreateCylinder(rExpr->evaluatedValue, hExpr->evaluatedValue);
             body->lastRebuildVersion = maxVersion;
         }
     }

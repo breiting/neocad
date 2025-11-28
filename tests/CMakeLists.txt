@@ -3,6 +3,7 @@ add_executable(test_neocad
 	domain/TestGeometrySystem.cpp
     domain/TestRegistry.cpp
     domain/TestMRA.cpp
+    domain/TestCylinder.cpp
     occt/TestOCCTBackend.cpp
 	lua/TestLuaBasic.cpp
 	editor/TestEditor.cpp
