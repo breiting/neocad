@@ -1,12 +1,16 @@
 #include <fstream>
-#include <iostream>
+#include <neocad/core/Logger.hpp>
 #include <neocad/vis/Shader.hpp>
 #include <sstream>
 
 namespace nc::vis {
 
-Shader::Shader(const std::string& vert, const std::string& frag) {
-    compileShader(std::string(vert), std::string(frag));
+Shader::Shader(const std::string& vertexSource, const std::string& fragmentSource) {
+    compileShader(vertexSource, fragmentSource);
+}
+
+Shader::~Shader() {
+    glDeleteProgram(m_ID);
 }
 
 std::string Shader::readShaderFile(const std::string& path) {
@@ -14,7 +18,7 @@ std::string Shader::readShaderFile(const std::string& path) {
     std::stringstream fileStream;
 
     if (!file.is_open()) {
-        std::cerr << "Fehler beim Öffnen der Datei: " << path << std::endl;
+        LOG(Error) << "Shader: Failed to open file: " << path;
         return "";
     }
 
@@ -37,7 +41,7 @@ void Shader::compileShader(const std::string& vertexCode, const std::string& fra
     glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
     if (!success) {
         glGetShaderInfoLog(vertex, 512, nullptr, infoLog);
-        std::cerr << "Error compiling vertex shader: " << infoLog << std::endl;
+        LOG(Error) << "Shader: Error compiling vertex shader: " << infoLog;
     }
 
     // Fragment Shader
@@ -47,18 +51,18 @@ void Shader::compileShader(const std::string& vertexCode, const std::string& fra
     glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
     if (!success) {
         glGetShaderInfoLog(fragment, 512, nullptr, infoLog);
-        std::cerr << "Error compiling fragment shader: " << infoLog << std::endl;
+        LOG(Error) << "Shader: Error compiling fragment shader: " << infoLog;
     }
 
     // Shader-Programm creation
-    ID = glCreateProgram();
-    glAttachShader(ID, vertex);
-    glAttachShader(ID, fragment);
-    glLinkProgram(ID);
-    glGetProgramiv(ID, GL_LINK_STATUS, &success);
+    m_ID = glCreateProgram();
+    glAttachShader(m_ID, vertex);
+    glAttachShader(m_ID, fragment);
+    glLinkProgram(m_ID);
+    glGetProgramiv(m_ID, GL_LINK_STATUS, &success);
     if (!success) {
-        glGetProgramInfoLog(ID, 512, nullptr, infoLog);
-        std::cerr << "Error binding shader: " << infoLog << std::endl;
+        glGetProgramInfoLog(m_ID, 512, nullptr, infoLog);
+        LOG(Error) << "Shader: Error linking shader program: " << infoLog;
     }
 
     glDeleteShader(vertex);
@@ -66,34 +70,34 @@ void Shader::compileShader(const std::string& vertexCode, const std::string& fra
 }
 
 void Shader::Bind() {
-    glUseProgram(ID);
+    glUseProgram(m_ID);
 }
 
 void Shader::SetMat4(const std::string& name, const glm::mat4& matrix) {
-    glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &matrix[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(m_ID, name.c_str()), 1, GL_FALSE, &matrix[0][0]);
 }
 
 void Shader::SetVec2(const std::string& name, const glm::vec2& value) {
-    glUniform2fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
+    glUniform2fv(glGetUniformLocation(m_ID, name.c_str()), 1, &value[0]);
 }
 
 void Shader::SetVec3(const std::string& name, const glm::vec3& value) {
-    glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
+    glUniform3fv(glGetUniformLocation(m_ID, name.c_str()), 1, &value[0]);
 }
 
 void Shader::SetVec4(const std::string& name, const glm::vec4& value) {
-    glUniform4fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
+    glUniform4fv(glGetUniformLocation(m_ID, name.c_str()), 1, &value[0]);
 }
 
 void Shader::SetFloat(const std::string& name, float value) {
-    glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+    glUniform1f(glGetUniformLocation(m_ID, name.c_str()), value);
 }
 
 void Shader::SetBool(const std::string& name, bool value) {
-    glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+    glUniform1i(glGetUniformLocation(m_ID, name.c_str()), static_cast<int>(value));
 }
 
-unsigned int Shader::GetInt(const std::string& name) const {
-    return glGetUniformLocation(ID, name.c_str());
+int Shader::GetUniformLocation(const std::string& name) const {
+    return glGetUniformLocation(m_ID, name.c_str());
 }
 }  // namespace nc::vis

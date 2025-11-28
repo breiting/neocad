@@ -9,18 +9,37 @@ using namespace nc::domain;
 
 namespace nc::vis {
 
+/**
+ * \brief Constructs an empty Mesh object.
+ * Initializes OpenGL buffer IDs to zero.
+ */
 Mesh::Mesh() : BaseGeometry(), m_Vao(0), m_Vbo(0), m_Ebo(0) {
 }
 
+/**
+ * \brief Destructor. Deletes the associated OpenGL VAO, VBO, and EBO.
+ */
 Mesh::~Mesh() {
     deleteBuffers();
 }
 
+/**
+ * \brief Adds an index to the mesh's index buffer.
+ * Marks the mesh as dirty, requiring re-upload to GPU.
+ * \param idx The vertex index to add.
+ */
 void Mesh::AddIndex(unsigned int idx) {
     m_Indices.push_back(idx);
     m_Dirty = true;
 }
 
+/**
+ * \brief Adds a triangle to the mesh using three vertex indices.
+ * Marks the mesh as dirty, requiring re-upload to GPU.
+ * \param v1 Index of the first vertex.
+ * \param v2 Index of the second vertex.
+ * \param v3 Index of the third vertex.
+ */
 void Mesh::AddTriangle(unsigned int v1, unsigned int v2, unsigned int v3) {
     m_Indices.push_back(v1);
     m_Indices.push_back(v2);
@@ -28,6 +47,10 @@ void Mesh::AddTriangle(unsigned int v1, unsigned int v2, unsigned int v3) {
     m_Dirty = true;
 }
 
+/**
+ * \brief Uploads the mesh's vertex and index data to the GPU.
+ * This method creates/updates VAO, VBO, and EBOs if the mesh is dirty.
+ */
 void Mesh::Upload() {
     // ignore if the data has not changed
     if (!m_Dirty)
@@ -67,24 +90,46 @@ void Mesh::Upload() {
     m_Dirty = false;
 }
 
+/**
+ * \brief Returns a constant reference to the mesh's index buffer.
+ * \return A const vector of unsigned integers representing the indices.
+ */
 const std::vector<unsigned int>& Mesh::GetIndices() const {
     return m_Indices;
 }
 
+/**
+ * \brief Renders the mesh using indexed triangles.
+ * Assumes the appropriate shader is bound and uniforms are set.
+ */
 void Mesh::Render() const {
     glBindVertexArray(m_Vao);
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_Indices.size()), GL_UNSIGNED_INT, 0);
 }
 
+/**
+ * \brief Deletes the OpenGL buffer objects (VAO, VBO, EBO).
+ */
 void Mesh::deleteBuffers() {
-    if (m_Vao)
+    if (m_Vao) {
         glDeleteVertexArrays(1, &m_Vao);
-    if (m_Vbo)
+        m_Vao = 0;
+    }
+    if (m_Vbo) {
         glDeleteBuffers(1, &m_Vbo);
-    if (m_Ebo)
+        m_Vbo = 0;
+    }
+    if (m_Ebo) {
         glDeleteBuffers(1, &m_Ebo);
+        m_Ebo = 0;
+    }
 }
 
+/**
+ * \brief Recalculates the vertex normals for the mesh.
+ * This method computes face normals and assigns them to vertices.
+ * Marks the mesh as dirty.
+ */
 void Mesh::RecalculateNormals() {
     for (auto& v : m_Vertices) {
         v.SetNormal(glm::vec3(0.0f));

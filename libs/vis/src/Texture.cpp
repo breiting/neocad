@@ -3,7 +3,7 @@
 // clang-format on
 #include <stb_image.h>
 
-#include <iostream>
+#include <neocad/core/Logger.hpp> // Include Logger
 #include <neocad/vis/Texture.hpp>
 #include <string>
 
@@ -26,7 +26,7 @@ Texture::Texture(const std::string& path) {
 
         stbi_image_free(data);
     } else {
-        std::cerr << "Cannot load texture from file: " << path << std::endl;
+        LOG(Error) << "Texture: Cannot load texture from file: " << path;
     }
 }
 

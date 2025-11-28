@@ -8,8 +8,7 @@
 
 namespace nc::vis {
 
-FlatShadedMaterial::FlatShadedMaterial(glm::vec3 materialColor)
-    : m_MaterialColor(materialColor), m_LightDirection(10.0, 10.0, 10.0), m_LightColor(0.3f, 0.3f, 0.3f) {
+FlatShadedMaterial::FlatShadedMaterial(glm::vec3 materialColor) : m_MaterialColor(materialColor) {
     m_Shader = std::make_shared<Shader>(flat_vert_glsl, flat_frag_glsl);
 }
 
@@ -37,20 +36,12 @@ std::shared_ptr<Shader> FlatShadedMaterial::GetShader() const {
     return m_Shader;
 }
 
-void FlatShadedMaterial::SetLightDirection(const glm::vec3& dir) {
-    m_LightDirection = dir;
-}
-
-void FlatShadedMaterial::SetLightColor(const glm::vec3& color) {
-    m_LightColor = color;
-}
-
 void FlatShadedMaterial::SetMaterialColor(const glm::vec3& color) {
     m_MaterialColor = color;
 }
 
 void FlatShadedMaterial::SetTexture(std::shared_ptr<Texture> texture) {
     m_Texture = texture;
-    m_TextureLocation = m_Shader->GetInt("u_Texture");
+    m_TextureLocation = m_Shader->GetUniformLocation("u_Texture");
 }
 }  // namespace nc::vis

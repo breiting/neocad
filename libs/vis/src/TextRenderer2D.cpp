@@ -1,4 +1,5 @@
 #include <glm/gtc/type_ptr.hpp>
+#include <neocad/core/Logger.hpp> // Include Logger
 #include <neocad/vis/TextRenderer2D.hpp>
 
 namespace nc::vis {
@@ -41,24 +42,51 @@ void main() {
 // -------------------------------------------------
 // Internal helpers
 // -------------------------------------------------
+/**
+ * \brief Creates and links the shader program for text rendering.
+ * Uses hardcoded vertex and fragment shader sources.
+ */
 void TextRenderer2D::CreateShader() {
     GLuint vs = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vs, 1, &kTextVS, nullptr);
     glCompileShader(vs);
 
+    int success;
+    char infoLog[512];
+    glGetShaderiv(vs, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(vs, 512, nullptr, infoLog);
+        LOG(Error) << "TextRenderer2D Shader: Error compiling vertex shader: " << infoLog;
+    }
+
     GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fs, 1, &kTextFS, nullptr);
     glCompileShader(fs);
+
+    glGetShaderiv(fs, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(fs, 512, nullptr, infoLog);
+        LOG(Error) << "TextRenderer2D Shader: Error compiling fragment shader: " << infoLog;
+    }
 
     m_Shader = glCreateProgram();
     glAttachShader(m_Shader, vs);
     glAttachShader(m_Shader, fs);
     glLinkProgram(m_Shader);
 
+    glGetProgramiv(m_Shader, GL_LINK_STATUS, &success);
+    if (!success) {
+        glGetProgramInfoLog(m_Shader, 512, nullptr, infoLog);
+        LOG(Error) << "TextRenderer2D Shader: Error linking shader program: " << infoLog;
+    }
+
     glDeleteShader(vs);
     glDeleteShader(fs);
 }
 
+/**
+ * \brief Creates and configures the OpenGL vertex buffer objects (VAO, VBO).
+ */
 void TextRenderer2D::CreateBuffers() {
     glGenVertexArrays(1, &m_Vao);
     glGenBuffers(1, &m_Vbo);
@@ -89,6 +117,40 @@ void TextRenderer2D::CreateBuffers() {
 // -------------------------------------------------
 // Public API
 // -------------------------------------------------
+/**
+ * \brief Constructs a TextRenderer2D object.
+ * Initializes internal OpenGL resource IDs to zero.
+ */
+TextRenderer2D::TextRenderer2D() : m_Atlas(nullptr), m_Vao(0), m_Vbo(0), m_Shader(0) {
+    m_Vertices.reserve(2048); // Pre-allocate some capacity
+}
+
+/**
+ * \brief Destructor. Deletes the associated OpenGL VAO, VBO, and Shader program.
+ */
+TextRenderer2D::~TextRenderer2D() {
+    if (m_Shader) {
+        glDeleteProgram(m_Shader);
+        m_Shader = 0;
+    }
+    if (m_Vao) {
+        glDeleteVertexArrays(1, &m_Vao);
+        m_Vao = 0;
+    }
+    if (m_Vbo) {
+        glDeleteBuffers(1, &m_Vbo);
+        m_Vbo = 0;
+    }
+}
+
+/**
+ * \brief Initializes the text renderer with a glyph atlas and font metrics.
+ * Must be called before any text rendering operations.
+ * \param atlas A constant reference to the GlyphAtlas to use.
+ * \param ascent The font's ascent metric.
+ * \param descent The font's descent metric.
+ * \param lineGap The font's line gap metric.
+ */
 void TextRenderer2D::Init(const GlyphAtlas& atlas, float ascent, float descent, float lineGap) {
     m_Atlas = &atlas;
     m_Ascent = ascent;
@@ -96,16 +158,31 @@ void TextRenderer2D::Init(const GlyphAtlas& atlas, float ascent, float descent, 
     m_LineGap = lineGap;
     CreateShader();
     CreateBuffers();
-    m_Vertices.reserve(2048);  // some default capacity
 }
 
+/**
+ * \brief Starts a new text batch.
+ * Clears the internal CPU vertex buffer, preparing for new text strings.
+ */
 void TextRenderer2D::BeginBatch() {
     m_Vertices.clear();
 }
 
+/**
+ * \brief Adds one text string to the current batch.
+ * The text is buffered on the CPU and will be rendered on `Flush()`.
+ * (x, y) is the baseline position in screen space.
+ * \param text The string to add.
+ * \param x X-coordinate of the baseline start in screen space.
+ * \param y Y-coordinate of the baseline start in screen space.
+ * \param scale Scaling factor for the text.
+ * \param color The RGB color of the text.
+ */
 void TextRenderer2D::AddText(const std::string& text, float x, float y, float scale, const glm::vec3& color) {
-    if (!m_Atlas)
+    if (!m_Atlas) {
+        LOG(Error) << "TextRenderer2D: No glyph atlas initialized. Cannot add text.";
         return;
+    }
 
     m_StartX = x;
     float penX = x;
@@ -120,17 +197,16 @@ void TextRenderer2D::AddText(const std::string& text, float x, float y, float sc
             continue;
         }
 
-        if (c == '\n') {
-        } else if (!g || g->size.x <= 0.0f || g->size.y <= 0.0f) {
-            // Glyph exists, but is blank (e.g. space) → still advance!
-            penX += g ? (g->advance * scale) : (10.0f * scale);  // fallback advance
+        if (!g || g->size.x <= 0.0f || g->size.y <= 0.0f) {
+            // Glyph exists, but is blank (e.g. space) or not found: still advance!
+            penX += g ? (g->advance * scale) : (10.0f * scale);  // Fallback advance for unknown/blank glyphs
             continue;
         }
 
         float gw = g->size.x * scale;
         float gh = g->size.y * scale;
 
-        // bearing (x0, y0) kommt aus stbtt_GetCodepointBitmapBox, relativ zur Baseline
+        // bearing (x0, y0) comes from stbtt_GetCodepointBitmapBox, relative to baseline
         float xpos = penX + g->bearing.x * scale;
         float ypos = baselineY + g->bearing.y * scale;
 
@@ -144,19 +220,25 @@ void TextRenderer2D::AddText(const std::string& text, float x, float y, float sc
         float u1 = g->uv.z;
         float v1 = g->uv.w;
 
-        // Zwei Dreiecke (CCW)
-        Vertex v[6] = {{x0, y0, u0, v0, color.r, color.g, color.b}, {x1, y0, u1, v0, color.r, color.g, color.b},
-                       {x1, y1, u1, v1, color.r, color.g, color.b},
-
-                       {x0, y0, u0, v0, color.r, color.g, color.b}, {x1, y1, u1, v1, color.r, color.g, color.b},
-                       {x0, y1, u0, v1, color.r, color.g, color.b}};
-
-        m_Vertices.insert(m_Vertices.end(), std::begin(v), std::end(v));
+        // Two triangles (CCW) forming a quad
+        // Triangle 1
+        m_Vertices.push_back({x0, y0, u0, v0, color.r, color.g, color.b});
+        m_Vertices.push_back({x1, y0, u1, v0, color.r, color.g, color.b});
+        m_Vertices.push_back({x1, y1, u1, v1, color.r, color.g, color.b});
+        // Triangle 2
+        m_Vertices.push_back({x0, y0, u0, v0, color.r, color.g, color.b});
+        m_Vertices.push_back({x1, y1, u1, v1, color.r, color.g, color.b});
+        m_Vertices.push_back({x0, y1, u0, v1, color.r, color.g, color.b});
 
         penX += g->advance * scale;
     }
 }
 
+/**
+ * \brief Uploads batched vertices to the GPU and draws them in a single draw call.
+ * Requires the appropriate projection matrix.
+ * \param proj The projection matrix (e.g., orthographic for screen space).
+ */
 void TextRenderer2D::Flush(const glm::mat4& proj) {
     if (!m_Atlas || m_Vertices.empty())
         return;
@@ -179,6 +261,16 @@ void TextRenderer2D::Flush(const glm::mat4& proj) {
     glBindVertexArray(0);
 }
 
+/**
+ * \brief Convenience wrapper for one-off text drawing.
+ * Internally calls `BeginBatch()`, `AddText()`, and `Flush()`.
+ * \param text The string to draw.
+ * \param x X-coordinate of the baseline start in screen space.
+ * \param y Y-coordinate of the baseline start in screen space.
+ * \param scale Scaling factor for the text.
+ * \param color The RGB color of the text.
+ * \param proj The projection matrix.
+ */
 void TextRenderer2D::DrawText(const std::string& text, float x, float y, float scale, const glm::vec3& color,
                               const glm::mat4& proj) {
     BeginBatch();

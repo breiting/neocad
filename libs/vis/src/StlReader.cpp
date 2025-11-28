@@ -2,8 +2,8 @@
 #include <array>
 #include <cstdint>
 #include <fstream>
-#include <iostream>
 #include <limits>
+#include <neocad/core/Logger.hpp> // Include Logger
 #include <neocad/vis/StlReader.hpp>
 #include <sstream>
 #include <string>
@@ -23,6 +23,11 @@ enum class StlFormat {
     Ascii
 };
 
+/**
+ * \brief Gets the size of a file.
+ * \param file The ifstream object.
+ * \return The size of the file in bytes.
+ */
 [[nodiscard]] std::streamoff GetFileSize(std::ifstream& file) {
     const auto currentPos = file.tellg();
     file.seekg(0, std::ios::end);
@@ -33,10 +38,13 @@ enum class StlFormat {
 
 /// \brief Tries to decide whether a file is binary or ASCII STL.
 ///
-/// Heuristik:
-/// 1. Dateigröße mit (80 + 4 + n * 50) vergleichen.
-/// 2. Falls das nicht passt, als ASCII behandeln.
-///    (Das deckt 99% der Fälle vernünftig ab.)
+/// Heuristic:
+/// 1. Compare file size with (80 + 4 + n * 50) for binary format.
+/// 2. If it doesn't match, treat as ASCII.
+/// 3. If header starts with "solid" and doesn't match binary size, it's ASCII.
+///    (This covers 99% of cases reasonably well.)
+/// \param file The ifstream object of the STL file.
+/// \return The detected StlFormat (Binary or Ascii).
 [[nodiscard]] StlFormat DetectFormat(std::ifstream& file) {
     file.clear();
     file.seekg(0, std::ios::beg);
@@ -53,7 +61,7 @@ enum class StlFormat {
     if (!file.good()) {
         file.clear();
         file.seekg(0, std::ios::beg);
-        return StlFormat::Ascii;
+        return StlFormat::Ascii; // If cannot read enough, probably ASCII
     }
 
     const std::streamoff expectedSize = kStlBinaryHeaderSize + static_cast<std::streamoff>(sizeof(triangleCount)) +
@@ -66,17 +74,23 @@ enum class StlFormat {
         return StlFormat::Binary;
     }
 
-    // Heuristik: wenn Header mit "solid" beginnt und nicht exakt
-    // zur Binary-Größe passt, ist ASCII sehr wahrscheinlich.
+    // Heuristic: if header begins with "solid" and does not exactly
+    // match the binary size, then ASCII is very likely.
     const std::string headerStr(header, header + 5);
     if (headerStr == "solid") {
         return StlFormat::Ascii;
     }
 
-    // Fallback: ASCII, wenn wir der Größe nicht trauen.
+    // Fallback: ASCII, if we don't trust the size.
     return StlFormat::Ascii;
 }
 
+/**
+ * \brief Loads a binary STL file into a Mesh object.
+ * \param file The ifstream object, positioned at the beginning of the file.
+ * \param mesh The Mesh object to populate.
+ * \return True on success, false on failure.
+ */
 [[nodiscard]] bool LoadBinaryStl(std::ifstream& file, Mesh& mesh) {
     mesh.Clear();
 
@@ -91,7 +105,7 @@ enum class StlFormat {
     std::uint32_t triangleCount = 0;
     file.read(reinterpret_cast<char*>(&triangleCount), sizeof(triangleCount));
     if (!file.good()) {
-        std::cerr << "[StlReader] Failed to read triangle count in binary STL.\n";
+        LOG(Error) << "StlReader: Failed to read triangle count in binary STL.";
         return false;
     }
 
@@ -113,7 +127,7 @@ enum class StlFormat {
         file.read(reinterpret_cast<char*>(&attributeByteCount), sizeof(attributeByteCount));
 
         if (!file.good()) {
-            std::cerr << "[StlReader] Unexpected EOF while reading binary STL.\n";
+            LOG(Error) << "StlReader: Unexpected EOF while reading binary STL. Triangle " << i << "/" << triangleCount;
             return false;
         }
 
@@ -136,6 +150,12 @@ enum class StlFormat {
     return true;
 }
 
+/**
+ * \brief Loads an ASCII STL file into a Mesh object.
+ * \param file The ifstream object, positioned at the beginning of the file.
+ * \param mesh The Mesh object to populate.
+ * \return True on success, false on failure.
+ */
 [[nodiscard]] bool LoadAsciiStl(std::ifstream& file, Mesh& mesh) {
     mesh.Clear();
 
@@ -173,7 +193,7 @@ enum class StlFormat {
     }
 
     if (!file.eof() && file.fail()) {
-        std::cerr << "[StlReader] Error while reading ASCII STL.\n";
+        LOG(Error) << "StlReader: Error while reading ASCII STL (badbit or failbit set).";
         return false;
     }
 
@@ -182,10 +202,16 @@ enum class StlFormat {
 
 }  // namespace
 
-bool StlReader::LoadFromFile(const std::string& filePath, Mesh& outMesh) const {
+/**
+ * \brief Load an STL file (ASCII or binary) into a TriMesh.
+ * \param filePath Path to the STL file.
+ * \param outMesh  Target mesh. Will be overwritten on success.
+ * \return true on success, false on failure.
+ */
+[[nodiscard]] bool StlReader::LoadFromFile(const std::string& filePath, Mesh& outMesh) const {
     std::ifstream file(filePath, std::ios::binary);
     if (!file.is_open()) {
-        std::cerr << "[StlReader] Could not open file: " << filePath << '\n';
+        LOG(Error) << "StlReader: Could not open file: " << filePath;
         return false;
     }
 
@@ -193,11 +219,13 @@ bool StlReader::LoadFromFile(const std::string& filePath, Mesh& outMesh) const {
 
     switch (format) {
         case StlFormat::Binary:
+            LOG(Info) << "StlReader: Loading binary STL from " << filePath;
             return LoadBinaryStl(file, outMesh);
         case StlFormat::Ascii:
+            LOG(Info) << "StlReader: Loading ASCII STL from " << filePath;
             return LoadAsciiStl(file, outMesh);
         default:
-            std::cerr << "[StlReader] Unknown STL format for file: " << filePath << '\n';
+            LOG(Error) << "StlReader: Unknown STL format for file: " << filePath;
             return false;
     }
 }

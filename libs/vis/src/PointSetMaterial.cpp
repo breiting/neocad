@@ -7,10 +7,22 @@
 
 namespace nc::vis {
 
+/**
+ * \brief Constructs a PointSetMaterial.
+ * Initializes a shader program internally.
+ */
 PointSetMaterial::PointSetMaterial() {
     m_Shader = std::make_shared<Shader>(pointset_vert_glsl, pointset_frag_glsl);
 }
 
+/**
+ * \brief Applies the material's properties to the bound shader program.
+ * Sets view-model and projection matrices, along with point-specific uniforms.
+ * \param model The model matrix.
+ * \param view The view matrix.
+ * \param projection The projection matrix.
+ * \param light A shared pointer to the current light source (ignored by this material).
+ */
 void PointSetMaterial::Apply(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection,
                              std::shared_ptr<Light> /*light*/) {
     m_Shader->Bind();
