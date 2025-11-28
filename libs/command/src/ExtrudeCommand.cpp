@@ -1,6 +1,7 @@
 #include <neocad/command/ExtrudeCommand.hpp>
 #include <neocad/core/Logger.hpp>
 #include <neocad/domain/Entity.hpp>
+#include <neocad/domain/Components.hpp> // Required for BodyComponent/NameComponent in Undo
 
 using namespace nc::domain;
 
@@ -17,14 +18,21 @@ double ExtrudeCommand::GetHeight() const {
 }
 
 void ExtrudeCommand::Execute(domain::Registry& registry, domain::GeometrySystem& geom) {
+    LOG(Info) << "Executing ExtrudeCommand: face=" << m_Face << ", height=" << m_Height;
     m_ResultEntity = geom.ExtrudeFace(m_Face, m_Height);
+    if (m_ResultEntity == domain::INVALID_ENTITY) {
+        LOG(Error) << "ExtrudeCommand: Failed to extrude face " << m_Face;
+    } else {
+        LOG(Info) << "ExtrudeCommand: Created body " << m_ResultEntity;
+    }
 }
 
 void ExtrudeCommand::Undo(domain::Registry& registry, domain::GeometrySystem& geom) {
     if (m_ResultEntity != domain::INVALID_ENTITY) {
+        LOG(Info) << "Undoing ExtrudeCommand: removing body " << m_ResultEntity;
         registry.RemoveComponent<domain::BodyComponent>(m_ResultEntity);
         registry.RemoveComponent<domain::NameComponent>(m_ResultEntity);
-        // Note: We don't destroy the entity ID itself, just the data.
+        m_ResultEntity = domain::INVALID_ENTITY; // Mark as undone
     }
 }
 
