@@ -64,10 +64,10 @@ void RenderingSystem::Update(Registry& registry) {
             auto& mesh = m_Meshes[e];
             auto& material = m_Material[e];
             if (!mesh && !material) {
-                LOG(INFO) << "Creating Mesh ...";
+                LOG(Info) << "Creating Mesh ...";
                 mesh = std::make_shared<Mesh>();
                 material =
-                    std::make_shared<FlatShadedMaterial>(glm::vec3(core::Nord11.r, core::Nord11.g, core::Nord11.b));
+                    std::make_shared<FlatShadedMaterial>(glm::vec3(core::nord::Nord11.r, core::nord::Nord11.g, core::nord::Nord11.b));
 
                 mesh->SetVertices(comp->mesh.vertices);
                 for (size_t i = 0; i + 2 < comp->mesh.indices.size(); i += 3) {
@@ -89,7 +89,7 @@ void RenderingSystem::Update(Registry& registry) {
             auto& lines = m_Lines[e];
             auto& material = m_Material[e];
             if (!lines) {
-                LOG(INFO) << "Creating Face edges ...";
+                LOG(Info) << "Creating Face edges ...";
                 lines = std::make_shared<LineSet>();
                 material = std::make_shared<LineSetMaterial>();
 
@@ -100,7 +100,7 @@ void RenderingSystem::Update(Registry& registry) {
                     if (auto* pos = registry.GetComponent<PositionComponent>(vEnt)) {
                         Vertex v;
                         v.SetPosition(pos->position);
-                        v.SetColor({core::Nord12.r, core::Nord12.g, core::Nord12.b});
+                        v.SetColor({core::nord::Nord12.r, core::nord::Nord12.g, core::nord::Nord12.b});
                         vertices.push_back(v);
                     }
                 }
@@ -120,7 +120,7 @@ void RenderingSystem::Update(Registry& registry) {
             auto& lines = m_Lines[e];
             auto& material = m_Material[e];
             if (!lines) {
-                LOG(INFO) << "Creating LineSet ...";
+                LOG(Info) << "Creating LineSet ...";
                 lines = std::make_shared<LineSet>();
                 material = std::make_shared<LineSetMaterial>();
 
@@ -128,9 +128,9 @@ void RenderingSystem::Update(Registry& registry) {
                 auto p0 = registry.GetComponent<PositionComponent>(comp->p0);
                 auto p1 = registry.GetComponent<PositionComponent>(comp->p1);
                 v0.SetPosition(p0->position);
-                v0.SetColor({core::Nord13.r, core::Nord13.g, core::Nord13.b});
+                v0.SetColor({core::nord::Nord13.r, core::nord::Nord13.g, core::nord::Nord13.b});
                 v1.SetPosition(p1->position);
-                v1.SetColor({core::Nord13.r, core::Nord13.g, core::Nord13.b});
+                v1.SetColor({core::nord::Nord13.r, core::nord::Nord13.g, core::nord::Nord13.b});
 
                 lines->SetVertices({v0, v1});
                 lines->Upload();
@@ -141,7 +141,7 @@ void RenderingSystem::Update(Registry& registry) {
     {
         if (m_PointsDirty) {
             auto entities = HasComponentQuery<PositionComponent>().Execute(registry);
-            LOG(INFO) << "Creating PointSet (Count: " << entities.size() << ")";
+            LOG(Info) << "Creating PointSet (Count: " << entities.size() << ")";
             
             std::vector<Vertex> vertices;
             vertices.reserve(entities.size());
@@ -150,7 +150,7 @@ void RenderingSystem::Update(Registry& registry) {
                 if (auto* pc = registry.GetComponent<domain::PositionComponent>(e)) {
                     Vertex v;
                     v.SetPosition(pc->position);
-                    v.SetColor({core::Nord12.r, core::Nord12.g, core::Nord12.b});
+                    v.SetColor({core::nord::Nord12.r, core::nord::Nord12.g, core::nord::Nord12.b});
                     vertices.push_back(v);
                 }
             }

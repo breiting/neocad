@@ -36,7 +36,7 @@ bool InsertCircleTool::OnInput(const InputEvent& ev, ToolContext& ctx) {
                 PositionComponent pc;
                 pc.position = worldPos;
                 Entity center = reg.CreateEntity();
-                LOG(INFO) << "[CircleTool] Added center at " << pc.position.x << " " << pc.position.y;
+                LOG(Info) << "[CircleTool] Added center at " << pc.position.x << " " << pc.position.y;
                 reg.AddComponent(center, pc);
 
                 m_Center = center;
@@ -57,7 +57,7 @@ bool InsertCircleTool::OnInput(const InputEvent& ev, ToolContext& ctx) {
             rc.radius = radius;
             reg.AddComponent(center, rc);
 
-            LOG(INFO) << "[CircleTool] Finalized circle r=" << radius;
+            LOG(Info) << "[CircleTool] Finalized circle r=" << radius;
 
             // DONE – reset for next circle
             m_Center.reset();

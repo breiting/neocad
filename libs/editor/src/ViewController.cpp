@@ -39,12 +39,12 @@ void ViewController::OnInput(const InputEvent& ev) {
     if (ev.type == InputEventType::Key) {
         const auto& key = std::get<KeyEvent>(ev.data);
         if (key.text == '1') {
-            LOG(INFO) << "Switch to 3D";
+            LOG(Info) << "Switch to 3D";
             SwitchMode(ViewMode::View3D);
         }
         if (key.text == '2') {
             SwitchMode(ViewMode::Sketch2D);
-            LOG(INFO) << "Switch to 2D";
+            LOG(Info) << "Switch to 2D";
         }
         return;
     }

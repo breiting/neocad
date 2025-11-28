@@ -76,7 +76,7 @@ public:
      * \param targetIndex The index to undo to. Commands at and before this index will remain executed.
      */
     void UndoTo(size_t targetIndex) {
-        LOG(INFO) << "UndoTo: target=" << targetIndex << ", current=" << m_Index;
+        LOG(Info) << "UndoTo: target=" << targetIndex << ", current=" << m_Index;
         while (m_Index > targetIndex) {
             Undo();
         }

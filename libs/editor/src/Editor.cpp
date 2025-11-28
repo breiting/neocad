@@ -116,10 +116,10 @@ void Editor::ProcessCommandBuffer() {
     const std::string cmd = m_CommandBuffer;
 
     if (cmd == "ip") {
-        LOG(INFO) << "InsertPoint mode ...";
+        LOG(Info) << "InsertPoint mode ...";
         SetMode(EditorMode::InsertPoint);
     } else if (cmd == "il") {
-        LOG(INFO) << "InsertLine mode ...";
+        LOG(Info) << "InsertLine mode ...";
         SetMode(EditorMode::InsertLine);
     } else if (cmd == "ic") {
         SetMode(EditorMode::InsertCircle);

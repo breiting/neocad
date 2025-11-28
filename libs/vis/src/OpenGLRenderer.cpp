@@ -25,7 +25,7 @@ OpenGLRenderer::~OpenGLRenderer() {
 }
 
 void OpenGLRenderer::SetViewportSize(int w, int h) {
-    LOG(INFO) << "Setting viewport to " << w << "x" << h;
+    LOG(Info) << "Setting viewport to " << w << "x" << h;
     glViewport(0, 0, w, h);
 }
 
@@ -39,7 +39,7 @@ void OpenGLRenderer::BeginFrame(const glm::mat4& view, const glm::mat4& proj, st
     m_Proj = proj;
     m_Light = light;
 
-    auto bg = core::Nord0;
+    auto bg = core::nord::Nord0;
     glClearColor(bg.r, bg.g, bg.b, bg.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }

@@ -56,12 +56,12 @@ void FixNormals(domain::MeshComponent& mc) {
 }
 
 Entity STEPImporter::Load(const std::string& filename, Registry& registry) {
-    LOG(INFO) << "STEPImporter: loading file: " << filename;
+    LOG(Info) << "STEPImporter: loading file: " << filename;
 
     STEPControl_Reader reader;
     IFSelect_ReturnStatus stat = reader.ReadFile(filename.c_str());
     if (stat != IFSelect_ReturnStatus::IFSelect_RetDone) {
-        LOG(ERROR) << "STEPImporter: failed to read STEP file: " << filename;
+        LOG(Error) << "STEPImporter: failed to read STEP file: " << filename;
         return INVALID_ENTITY;
     }
 
@@ -77,7 +77,7 @@ Entity STEPImporter::Load(const std::string& filename, Registry& registry) {
     TriangulateShape(shape, meshComp);
 
     if (meshComp.mesh.vertices.empty() || meshComp.mesh.indices.empty()) {
-        LOG(WARN) << "STEPImporter: triangulation produced no mesh.";
+        LOG(Warn) << "STEPImporter: triangulation produced no mesh.";
         return INVALID_ENTITY;
     }
 
@@ -85,7 +85,7 @@ Entity STEPImporter::Load(const std::string& filename, Registry& registry) {
     registry.AddComponent<MeshComponent>(meshEntity, meshComp);
     registry.AddComponent<NameComponent>(meshEntity, NameComponent{"STEP_Mesh"});
 
-    LOG(INFO) << "STEPImporter: done. Mesh entity = " << meshEntity;
+    LOG(Info) << "STEPImporter: done. Mesh entity = " << meshEntity;
     return meshEntity;
 }
 
@@ -103,7 +103,7 @@ void STEPImporter::ExtractTopology(const TopoDS_Shape& shape, Registry& registry
     const int nbF = faceMap.Extent();
 
     if (nbV == 0 && nbE == 0 && nbF == 0) {
-        LOG(WARN) << "STEPImporter: no topological data found.";
+        LOG(Warn) << "STEPImporter: no topological data found.";
         return;
     }
 
@@ -167,7 +167,7 @@ void STEPImporter::ExtractTopology(const TopoDS_Shape& shape, Registry& registry
 
         // --- Unknown?
         if (!geomCurve.IsNull()) {
-            LOG(WARN) << "Not supported curve found";
+            LOG(Warn) << "Not supported curve found";
         }
     }
 
@@ -231,7 +231,7 @@ void STEPImporter::ExtractTopology(const TopoDS_Shape& shape, Registry& registry
         // registry.AddComponent<NameComponent>(fEnt, NameComponent{"STEP_Face"});
     }
 
-    LOG(INFO) << "STEPImporter: topology extracted: " << nbV << " vertices, " << nbE << " edges, " << nbF << " faces.";
+    LOG(Info) << "STEPImporter: topology extracted: " << nbV << " vertices, " << nbE << " edges, " << nbF << " faces.";
 }
 
 void STEPImporter::TriangulateShape(const TopoDS_Shape& shape, MeshComponent& outMesh) {
@@ -315,7 +315,7 @@ void STEPImporter::TriangulateShape(const TopoDS_Shape& shape, MeshComponent& ou
 
     FixNormals(outMesh);
 
-    LOG(INFO) << "STEPImporter: triangulation → " << mesh.vertices.size() << " vertices, " << mesh.indices.size() / 3
+    LOG(Info) << "STEPImporter: triangulation → " << mesh.vertices.size() << " vertices, " << mesh.indices.size() / 3
               << " triangles.";
 }
 }  // namespace nc::occt

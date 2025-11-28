@@ -22,7 +22,7 @@ void CreateDefaultTexture() {
 namespace nc::ui {
 bool Window::Create(const CreateInfo& ci) {
     if (!glfwInit()) {
-        LOG(ERROR) << "GLFW init failed.\n";
+        LOG(Error) << "GLFW init failed.\n";
         return false;
     }
 
@@ -36,14 +36,14 @@ bool Window::Create(const CreateInfo& ci) {
 
     m_Window = glfwCreateWindow(ci.width, ci.height, ci.title.c_str(), nullptr, nullptr);
     if (!m_Window) {
-        LOG(ERROR) << "Failed to create GLFW window.\n";
+        LOG(Error) << "Failed to create GLFW window.\n";
         glfwTerminate();
         return false;
     }
 
     glfwMakeContextCurrent(m_Window);
     if (!gladLoadGL((GLADloadfunc)glfwGetProcAddress)) {
-        LOG(ERROR) << "Failed to init GLAD.\n";
+        LOG(Error) << "Failed to init GLAD.\n";
         return false;
     }
 

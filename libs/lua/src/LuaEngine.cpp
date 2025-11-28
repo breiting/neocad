@@ -67,7 +67,7 @@ void LuaEngine::PrintTable(const std::string& tableName) {
 
 bool LuaEngine::RunFile(const std::string& scriptPath) {
     if (!m_Initialized) {
-        LOG(ERROR) << "CoreEngine is not initialized";
+        LOG(Error) << "CoreEngine is not initialized";
         return false;
     }
 
@@ -77,7 +77,7 @@ bool LuaEngine::RunFile(const std::string& scriptPath) {
     sol::load_result chunk = m_Lua.load_file(scriptPath);
     if (!chunk.valid()) {
         sol::error err = chunk;
-        LOG(ERROR) << "Lua load error: " << err.what();
+        LOG(Error) << "Lua load error: " << err.what();
         return false;
     }
 
@@ -91,19 +91,19 @@ bool LuaEngine::RunFile(const std::string& scriptPath) {
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
     std::filesystem::path partFile{scriptPath};
-    LOG(INFO) << "[LuaEngine] " << partFile.filename() << " processing time: " << ms << "ms";
+    LOG(Info) << "[LuaEngine] " << partFile.filename() << " processing time: " << ms << "ms";
     return true;
 }
 
 bool LuaEngine::RunString(const std::string& script) {
     if (!m_Initialized) {
-        LOG(ERROR) << "CoreEngine is not initialized";
+        LOG(Error) << "CoreEngine is not initialized";
         return false;
     }
     sol::load_result chunk = m_Lua.load(script.c_str());
     if (!chunk.valid()) {
         sol::error err = chunk;
-        LOG(ERROR) << "Lua load error: " << err.what();
+        LOG(Error) << "Lua load error: " << err.what();
         return false;
     }
 

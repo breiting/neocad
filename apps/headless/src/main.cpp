@@ -13,9 +13,9 @@ using namespace nc::occt;
 using namespace nc::cmd;
 
 int main() {
-    LOG(INFO) << "================================";
-    LOG(INFO) << "neoCAD headless testing";
-    LOG(INFO) << "================================";
+    LOG(Info) << "================================";
+    LOG(Info) << "neoCAD headless testing";
+    LOG(Info) << "================================";
 
     Registry registry;
     OCCTBackend backend;
@@ -54,23 +54,23 @@ int main() {
     Entity bodyEntity = INVALID_ENTITY;
     auto res = HasComponentQuery<BodyComponent>().Execute(registry);
     if (res.empty()) {
-        LOG(ERROR) << "Cannot find created body.";
+        LOG(Error) << "Cannot find created body.";
         return 1;
     }
     bodyEntity = res.front();
-    LOG(INFO) << "Found body entity: " << bodyEntity;
+    LOG(Info) << "Found body entity: " << bodyEntity;
 
     // Export
     if (!geom.ExportSTEP(bodyEntity, "test_body.step")) {
-        LOG(ERROR) << "Failed to export STEP.\n";
+        LOG(Error) << "Failed to export STEP.\n";
     } else {
-        LOG(INFO) << "Exported STEP: test_body.step\n";
+        LOG(Info) << "Exported STEP: test_body.step\n";
     }
 
     if (!geom.ExportSTL(bodyEntity, "test_body.stl", 0.5)) {
-        LOG(ERROR) << "Failed to export STL.\n";
+        LOG(Error) << "Failed to export STL.\n";
     } else {
-        LOG(INFO) << "Exported STL: test_body.stl\n";
+        LOG(Info) << "Exported STL: test_body.stl\n";
     }
 
     return 0;

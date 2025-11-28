@@ -24,7 +24,7 @@ void SketchCurveTool::OnEnter(ToolContext& ctx) {
 // -------------------------------------------------
 void SketchCurveTool::OnExit(ToolContext& ctx) {
     auto& reg = ctx.GetRegistry();
-    LOG(INFO) << "SketchCurveTool::OnExit - Points: " << m_Points.size();
+    LOG(Info) << "SketchCurveTool::OnExit - Points: " << m_Points.size();
 
     // 1. Clean up purely visual preview elements (not on stack)
     if (m_LastPreviewLine != INVALID_ENTITY) {
@@ -47,7 +47,7 @@ void SketchCurveTool::OnExit(ToolContext& ctx) {
     // Let's change logic: Explicitly call UndoTo if m_Points is NOT empty (meaning we are aborting).
     
     if (!m_Points.empty()) {
-         LOG(INFO) << "Cancelling operation -> UndoTo " << m_StartCmdIndex;
+         LOG(Info) << "Cancelling operation -> UndoTo " << m_StartCmdIndex;
          ctx.GetCommandStack().UndoTo(m_StartCmdIndex);
     }
 

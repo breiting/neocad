@@ -47,7 +47,7 @@ class CreateComponentCommand : public ICommand {
      * \param geom Not used in this command.
      */
     void Undo(domain::Registry& registry, domain::GeometrySystem& /*geom*/) override {
-        LOG(INFO) << "Undo CreateComponent: Removing component from Entity " << m_Entity;
+        LOG(Info) << "Undo CreateComponent: Removing component from Entity " << m_Entity;
         registry.RemoveComponent<T>(m_Entity);
         // Note: If m_CreatedEntity is true, we leave the "shell" entity in registry.
         // A proper system would mark it dead or use a CreateEntityCommand separately.

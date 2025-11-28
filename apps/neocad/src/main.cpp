@@ -75,14 +75,14 @@ Entity LoadSTLtoECS(const std::string& file, Registry& ecs) {
     StlReader reader;
 
     if (!reader.LoadFromFile(file, mesh)) {
-        LOG(ERROR) << "Failed to load STL: " << file << "\n";
+        LOG(Error) << "Failed to load STL: " << file << "\n";
         return INVALID_ENTITY;
     }
 
     Entity e = ecs.CreateEntity();
     ecs.AddComponent<MeshComponent>(e, MeshComponent{mesh});
     ecs.AddComponent<NameComponent>(e, NameComponent{"ImportedSTL"});
-    LOG(INFO) << "Successfully added entity: " << e;
+    LOG(Info) << "Successfully added entity: " << e;
 
     return e;
 }
@@ -139,9 +139,9 @@ int main(int argc, char* argv[]) {
 
     CLI11_PARSE(app, argc, argv);
 
-    LOG(INFO) << "================================";
-    LOG(INFO) << APP_NAME;
-    LOG(INFO) << "================================";
+    LOG(Info) << "================================";
+    LOG(Info) << APP_NAME;
+    LOG(Info) << "================================";
 
     // ECS + Backend
     Registry registry;
@@ -151,17 +151,17 @@ int main(int argc, char* argv[]) {
 
     if (loadCube) {
         Entity cube = PrimitiveFactory::MakeUnitCube(registry, "UnitCube");
-        LOG(INFO) << "Loaded unit cube with ID: " << cube;
+        LOG(Info) << "Loaded unit cube with ID: " << cube;
     }
     if (loadFace) {
         Entity face = CreateTestFace5(registry);
-        LOG(INFO) << "Loaded face with ID: " << face;
+        LOG(Info) << "Loaded face with ID: " << face;
     }
 
     if (!stlFile.empty()) {
         Entity stl = LoadSTLtoECS(stlFile, registry);
         if (stl == INVALID_ENTITY) {
-            LOG(ERROR) << "Error loading STL file";
+            LOG(Error) << "Error loading STL file";
             return -1;
         }
     }
@@ -170,7 +170,7 @@ int main(int argc, char* argv[]) {
         STEPImporter step;
         Entity mesh = step.Load(stepFile, registry);
         if (mesh == INVALID_ENTITY) {
-            LOG(ERROR) << "Error loading STEP file";
+            LOG(Error) << "Error loading STEP file";
             return -1;
         }
     }
