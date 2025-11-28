@@ -20,7 +20,7 @@ bool InsertPointTool::OnInput(const InputEvent& ev, ToolContext& ctx) {
             reg.AddComponent<PositionComponent>(e, {pos});
             reg.AddComponent<NameComponent>(e, {"Point"});
 
-            LOG(INFO) << "Inserted Point at " << pos.x << ", " << pos.y << ", " << pos.z;
+            // LOG(INFO) << "Inserted Point at " << pos.x << ", " << pos.y << ", " << pos.z;
             return true; // Consumed
         }
     }

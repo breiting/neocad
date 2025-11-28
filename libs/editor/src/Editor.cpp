@@ -12,7 +12,8 @@ void Editor::RegisterTool(EditorMode mode, std::unique_ptr<ITool> tool) {
 }
 
 void Editor::SetMode(EditorMode mode) {
-    if (m_Mode == mode)
+    // Skip only if mode is same AND we have an active tool running
+    if (m_Mode == mode && m_ActiveTool != nullptr)
         return;
 
     // inform old tool

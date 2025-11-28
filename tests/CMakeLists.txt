@@ -2,6 +2,7 @@ add_executable(test_neocad
 	domain/TestGeometrySystem.cpp
 	lua/TestLuaBasic.cpp
 	editor/TestEditor.cpp
+    command/TestCommandStack.cpp
 )
 
 target_include_directories(test_neocad PUBLIC
@@ -15,6 +16,8 @@ target_link_libraries(test_neocad PRIVATE
 	neocad_lua
 	neocad_occt
 	neocad_editor
+    neocad_command
+    neocad_vis
 )
 
 add_test(

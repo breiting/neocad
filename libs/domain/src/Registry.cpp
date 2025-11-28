@@ -8,20 +8,13 @@ namespace nc::domain {
 std::vector<Entity> Registry::Entities() const {
     std::vector<Entity> result;
 
-    auto collect = [&](const auto& map) {
-        for (auto& [e, _] : map)
-            result.push_back(e);
-    };
-
-    // WICHTIG: hier ALLE Component-Typen auflisten, die es aktuell gibt
-    collect(StorageConst<NameComponent>());
-    collect(StorageConst<PositionComponent>());
-    collect(StorageConst<RadiusComponent>());
-    collect(StorageConst<EdgeComponent>());
-    collect(StorageConst<FaceComponent>());
-    collect(StorageConst<MeshComponent>());
-    collect(StorageConst<SketchPlaneComponent>());
-    collect(StorageConst<BodyComponent>());
+    for (const auto& kv : m_Storages) {
+        // kv.second is unique_ptr<IComponentStorage>
+        if (kv.second) {
+            std::vector<Entity> ents = kv.second->GetEntities();
+            result.insert(result.end(), ents.begin(), ents.end());
+        }
+    }
 
     std::sort(result.begin(), result.end());
     result.erase(std::unique(result.begin(), result.end()), result.end());

@@ -109,7 +109,7 @@ bool SketchCurveTool::OnInput(const InputEvent& ev, ToolContext& ctx) {
             glm::vec3 world = ctx.GetCamera()->ScreenToWorld(m->position.x, m->position.y);
             
             Entity p = reg.CreateEntity();
-            auto pCmd = std::make_unique<cmd::CreateComponentCommand<PositionComponent>>(reg, p, PositionComponent{world}, true);
+            auto pCmd = std::make_unique<cmd::CreateComponentCommand<PositionComponent>>(p, PositionComponent{world}, true);
             ctx.GetCommandStack().Push(std::move(pCmd));
             
             m_Points.push_back(p);
@@ -117,7 +117,7 @@ bool SketchCurveTool::OnInput(const InputEvent& ev, ToolContext& ctx) {
             // Create persistent line from last real point
             if (m_Points.size() >= 2) {
                 Entity l = reg.CreateEntity();
-                auto lCmd = std::make_unique<cmd::CreateComponentCommand<EdgeComponent>>(reg, l, EdgeComponent{m_Points[m_Points.size() - 2], m_Points.back()}, true);
+                auto lCmd = std::make_unique<cmd::CreateComponentCommand<EdgeComponent>>(l, EdgeComponent{m_Points[m_Points.size() - 2], m_Points.back()}, true);
                 ctx.GetCommandStack().Push(std::move(lCmd));
             }
 
@@ -190,7 +190,7 @@ void SketchCurveTool::FinalizeFace(ToolContext& ctx) {
 
     // Close the loop
     Entity l = reg.CreateEntity();
-    auto lCmd = std::make_unique<cmd::CreateComponentCommand<EdgeComponent>>(reg, l, EdgeComponent{m_Points.back(), m_Points.front()}, true);
+    auto lCmd = std::make_unique<cmd::CreateComponentCommand<EdgeComponent>>(l, EdgeComponent{m_Points.back(), m_Points.front()}, true);
     ctx.GetCommandStack().Push(std::move(lCmd));
 
     Entity face = reg.CreateEntity();
@@ -200,7 +200,7 @@ void SketchCurveTool::FinalizeFace(ToolContext& ctx) {
     // Re-collect edges? The commands created them. 
     // The FaceComponent stores Entity IDs.
     
-    auto fCmd = std::make_unique<cmd::CreateComponentCommand<FaceComponent>>(reg, face, fc, true);
+    auto fCmd = std::make_unique<cmd::CreateComponentCommand<FaceComponent>>(face, fc, true);
     ctx.GetCommandStack().Push(std::move(fCmd));
 
     m_Points.clear(); // Mark as success

@@ -9,12 +9,15 @@
 #include <neocad/editor/InsertPointTool.hpp>
 #include <neocad/editor/SketchCurveTool.hpp>
 #include <neocad/command/CommandStack.hpp>
+#include <neocad/vis/Camera2D.hpp>
+#include <neocad/vis/Camera3D.hpp>
 
 #include "neocad/editor/InputEvent.hpp"
 
 using namespace nc::editor;
 using namespace nc::domain;
 using namespace nc::cmd;
+using namespace nc::vis; // for Camera2D
 
 // --- Minimal mock backend for GeometrySystem --------------------------------
 class DummyBackend : public IGeometryBackend {
@@ -94,36 +97,39 @@ class TestTool : public ITool {
 };
 
 TEST(EditorBasics, ModeSwitchCallsEnterExit) {
+    std::cout << "DEBUG: Test start\n";
     Registry reg;
     DummyBackend backend;
     GeometrySystem geom(reg, backend);
     CommandStack cmdStack(reg, geom);
     ToolContext ctx(reg, geom, cmdStack);
 
+    std::cout << "DEBUG: Editor init\n";
     Editor editor(ctx);
 
     auto toolNormal = std::make_unique<TestTool>();
     auto* ptrNormal = toolNormal.get();
+    std::cout << "DEBUG: Register Normal\n";
     editor.RegisterTool(EditorMode::Normal, std::move(toolNormal));
 
     auto toolInsert = std::make_unique<TestTool>();
     auto* ptrInsert = toolInsert.get();
     editor.RegisterTool(EditorMode::InsertPoint, std::move(toolInsert));
-
-    // Initially in Normal, so Normal's OnEnter should have been called once
-    editor.SetMode(EditorMode::InsertPoint);
-    EXPECT_EQ(toolInsert->enterCount, 1);
-    EXPECT_EQ(toolInsert->exitCount, 0);
+    
+    // Explicitly start in Normal mode to activate the tool
+    editor.SetMode(EditorMode::Normal);
+    EXPECT_EQ(ptrNormal->enterCount, 1);
 
     // Switch to InsertPoint
     editor.SetMode(EditorMode::InsertPoint);
     EXPECT_EQ(ptrNormal->exitCount, 1);
     EXPECT_EQ(ptrInsert->enterCount, 1);
-
+    EXPECT_EQ(ptrInsert->exitCount, 0);
+    
     // Switch back to Normal
     editor.SetMode(EditorMode::Normal);
     EXPECT_EQ(ptrInsert->exitCount, 1);
-    EXPECT_EQ(ptrNormal->enterCount, 2);  // entered again
+    EXPECT_EQ(ptrNormal->enterCount, 2);
 }
 
 TEST(InputEvent, DetectMouseClick) {
@@ -143,6 +149,7 @@ TEST(InputEvent, KeyPress) {
 
 // 3) InsertPointTool creates one point per click
 TEST(InsertPointToolTests, CreatesPointOnClick) {
+    std::cout << "DEBUG: InsertPointToolTests start\n";
     Registry reg;
     DummyBackend backend;
     GeometrySystem geom(reg, backend);
@@ -150,13 +157,25 @@ TEST(InsertPointToolTests, CreatesPointOnClick) {
     ToolContext ctx(reg, geom, cmdStack);
 
     Editor editor(ctx);
+    
+    // Fix: Set camera so tool doesn't crash
+    auto cam = std::make_shared<Camera3D>();
+    cam->SetViewport(100, 100);
+    editor.SetCamera3D(cam);
+    editor.SetViewportSize(100, 100);
+
     editor.RegisterTool(EditorMode::InsertPoint, std::make_unique<InsertPointTool>());
     editor.SetMode(EditorMode::InsertPoint);
 
     MouseButtonEvent e{MouseButton::Left, true, {10, 20}};
     InputEvent evt({InputEventType::MouseButton, e});
+    
+    std::cout << "DEBUG: Sending Input\n";
     editor.OnInput(evt);
+    
+    std::cout << "DEBUG: Checking Count\n";
     EXPECT_EQ(CountPoints(reg), 1u);
+    std::cout << "DEBUG: InsertPointToolTests done\n";
 }
 
 TEST(SketchCurveTool, FaceCreation) {
