@@ -8,13 +8,24 @@ using namespace nc::domain;
 
 namespace nc::vis {
 
+/**
+ * \brief Constructs an empty LineSet object.
+ * Initializes OpenGL buffer IDs to zero.
+ */
 LineSet::LineSet() : BaseGeometry(), m_Vao(0), m_Vbo(0) {
 }
 
+/**
+ * \brief Destructor. Deletes the associated OpenGL VAO and VBO.
+ */
 LineSet::~LineSet() {
     deleteBuffers();
 }
 
+/**
+ * \brief Uploads the line set's vertex data to the GPU.
+ * This method creates/updates VAO and VBOs if the line set is dirty.
+ */
 void LineSet::Upload() {
     // ignore if the data has not changed
     if (!m_Dirty)
@@ -42,15 +53,27 @@ void LineSet::Upload() {
     m_Dirty = false;
 }
 
+/**
+ * \brief Renders the line set.
+ * Assumes the appropriate shader is bound and uniforms are set.
+ * Renders using GL_LINE_LOOP, connecting the last vertex to the first.
+ */
 void LineSet::Render() const {
     glBindVertexArray(m_Vao);
-    glDrawArrays(GL_LINE_LOOP, 0, m_Vertices.size());
+    glDrawArrays(GL_LINE_LOOP, 0, static_cast<GLsizei>(m_Vertices.size()));
 }
 
+/**
+ * \brief Deletes the OpenGL buffer objects (VAO, VBO).
+ */
 void LineSet::deleteBuffers() {
-    if (m_Vao)
+    if (m_Vao) {
         glDeleteVertexArrays(1, &m_Vao);
-    if (m_Vbo)
+        m_Vao = 0; // Reset to 0 after deletion
+    }
+    if (m_Vbo) {
         glDeleteBuffers(1, &m_Vbo);
+        m_Vbo = 0; // Reset to 0 after deletion
+    }
 }
 }  // namespace nc::vis

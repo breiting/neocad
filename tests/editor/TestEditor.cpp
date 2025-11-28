@@ -52,15 +52,6 @@ static size_t CountPoints(const Registry& reg) {
     return count;
 }
 
-static size_t CountLines(const Registry& reg) {
-    size_t count = 0;
-    for (Entity e : reg.Entities()) {
-        if (reg.HasComponent<EdgeComponent>(e))
-            ++count;
-    }
-    return count;
-}
-
 // --- Tests ------------------------------------------------------------------
 
 // 1) Editor starts in Normal mode
@@ -92,24 +83,20 @@ class TestTool : public ITool {
         ++inputCount;
         return false;
     }
-    void Update(ToolContext&, double) override {
-    }
+    std::string GetName() const override { return "TestTool"; }
 };
 
 TEST(EditorBasics, ModeSwitchCallsEnterExit) {
-    std::cout << "DEBUG: Test start\n";
     Registry reg;
     DummyBackend backend;
     GeometrySystem geom(reg, backend);
     CommandStack cmdStack(reg, geom);
     ToolContext ctx(reg, geom, cmdStack);
 
-    std::cout << "DEBUG: Editor init\n";
     Editor editor(ctx);
 
     auto toolNormal = std::make_unique<TestTool>();
     auto* ptrNormal = toolNormal.get();
-    std::cout << "DEBUG: Register Normal\n";
     editor.RegisterTool(EditorMode::Normal, std::move(toolNormal));
 
     auto toolInsert = std::make_unique<TestTool>();
@@ -149,7 +136,6 @@ TEST(InputEvent, KeyPress) {
 
 // 3) InsertPointTool creates one point per click
 TEST(InsertPointToolTests, CreatesPointOnClick) {
-    std::cout << "DEBUG: InsertPointToolTests start\n";
     Registry reg;
     DummyBackend backend;
     GeometrySystem geom(reg, backend);
@@ -170,12 +156,9 @@ TEST(InsertPointToolTests, CreatesPointOnClick) {
     MouseButtonEvent e{MouseButton::Left, true, {10, 20}};
     InputEvent evt({InputEventType::MouseButton, e});
     
-    std::cout << "DEBUG: Sending Input\n";
     editor.OnInput(evt);
     
-    std::cout << "DEBUG: Checking Count\n";
     EXPECT_EQ(CountPoints(reg), 1u);
-    std::cout << "DEBUG: InsertPointToolTests done\n";
 }
 
 TEST(SketchCurveTool, FaceCreation) {
@@ -184,6 +167,14 @@ TEST(SketchCurveTool, FaceCreation) {
     GeometrySystem geom(reg, backend);
     CommandStack cmdStack(reg, geom);
     ToolContext ctx{reg, geom, cmdStack};
+    
+    // We need an editor attached to context because SketchCurveTool calls GetEditor()->SetMode
+    Editor editor(ctx);
+    // Setup camera
+    auto cam = std::make_shared<Camera3D>();
+    cam->SetViewport(100, 100);
+    editor.SetCamera3D(cam);
+    editor.SetViewportSize(100, 100);
 
     SketchCurveTool tool{SketchCurveTool::CurveMode::Face};
     tool.OnEnter(ctx);
@@ -209,4 +200,5 @@ TEST(SketchCurveTool, FaceCreation) {
 
     // EXPECT_EQ(CountEntitiesWith<FaceComponent>(reg), 1u);
     // EXPECT_EQ(CountEntitiesWith<LineComponent>(reg), 4u);
+    tool.OnExit(ctx);
 }

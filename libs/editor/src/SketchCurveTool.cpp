@@ -1,16 +1,22 @@
 #include <neocad/domain/Registry.hpp>
 #include <neocad/editor/SketchCurveTool.hpp>
 #include <neocad/editor/ToolContext.hpp>
+#include <neocad/editor/Editor.hpp> // Required for SetMode
 #include <neocad/command/BasicCommands.hpp>
+#include <neocad/core/Logger.hpp> // Include Logger
 
 using namespace nc::domain;
 using Clock = std::chrono::steady_clock;
 
 namespace nc::editor {
 
-constexpr double DEBOUNCE_TIME = 0.05;
+constexpr double DEBOUNCE_TIME = 0.05; // Time in seconds to debounce mouse clicks
 
-// -------------------------------------------------
+/**
+ * \brief Called when the tool becomes active.
+ * Resets internal state and records the current command stack index for potential undo.
+ * \param ctx The ToolContext for accessing core services.
+ */
 void SketchCurveTool::OnEnter(ToolContext& ctx) {
     m_Points.clear();
     m_WaitingSecondPoint = false;
@@ -19,14 +25,19 @@ void SketchCurveTool::OnEnter(ToolContext& ctx) {
     
     // Record the start of this session on the command stack
     m_StartCmdIndex = ctx.GetCommandStack().GetCurrentIndex();
+    LOG(Info) << "SketchCurveTool: Entered mode " << static_cast<int>(m_Mode) << ", StartCmdIndex: " << m_StartCmdIndex;
 }
 
-// -------------------------------------------------
+/**
+ * \brief Called when the tool becomes inactive.
+ * Cleans up preview geometry and undoes any uncommitted operations if not finalized.
+ * \param ctx The ToolContext for accessing core services.
+ */
 void SketchCurveTool::OnExit(ToolContext& ctx) {
     auto& reg = ctx.GetRegistry();
-    LOG(Info) << "SketchCurveTool::OnExit - Points: " << m_Points.size();
+    LOG(Info) << "SketchCurveTool: Exiting. Points captured: " << m_Points.size();
 
-    // 1. Clean up purely visual preview elements (not on stack)
+    // 1. Clean up purely visual preview elements (not part of the command stack)
     if (m_LastPreviewLine != INVALID_ENTITY) {
         if (reg.HasComponent<EdgeComponent>(m_LastPreviewLine)) {
             reg.RemoveComponent<EdgeComponent>(m_LastPreviewLine);
@@ -40,95 +51,107 @@ void SketchCurveTool::OnExit(ToolContext& ctx) {
     m_PreviewPoint = INVALID_ENTITY;
     m_LastPreviewLine = INVALID_ENTITY;
 
-    // 2. If we didn't finish successfully (e.g. Escape), undo everything done in this session.
-    // We detect "finished" by checking if m_Points was cleared by Finalize* methods?
-    // OR simpler: Finalize methods should commit, Cancel (Escape) calls Undo.
-    // BUT OnExit is called in both cases.
-    // Let's change logic: Explicitly call UndoTo if m_Points is NOT empty (meaning we are aborting).
-    
+    // 2. If we didn't finish successfully (e.g. Escape was pressed), undo everything done in this session.
+    // We check if m_Points is NOT empty, which implies the operation was not finalized.
     if (!m_Points.empty()) {
-         LOG(Info) << "Cancelling operation -> UndoTo " << m_StartCmdIndex;
+         LOG(Info) << "SketchCurveTool: Cancelling operation. Undoing commands to index " << m_StartCmdIndex;
          ctx.GetCommandStack().UndoTo(m_StartCmdIndex);
     }
 
     m_Points.clear();
     m_WaitingSecondPoint = false;
+    LOG(Info) << "SketchCurveTool: Exited.";
 }
 
-// -------------------------------------------------
+/**
+ * \brief Handles input events for the tool.
+ * Processes mouse clicks to place points, mouse moves for preview, and keyboard for finalization/cancel.
+ * \param ev The input event to process.
+ * \param ctx The ToolContext for accessing core services.
+ * \return True if the event was consumed by the tool, false otherwise.
+ */
 bool SketchCurveTool::OnInput(const InputEvent& ev, ToolContext& ctx) {
     auto& reg = ctx.GetRegistry();
 
     // ----- MOUSE MOVE → Preview -----
     if (auto* m = AsMouseMove(ev)) {
+        // Only update preview if we've already placed at least one point
         if (m_Points.empty())
-            return false; // Let camera handle move if we aren't sketching yet? No, if points exist, we are sketching.
-        
-        // Actually, if we are just moving mouse, we usually DON'T want to block camera orbit 
-        // unless we are "dragging" something. 
-        // But here we are just moving the preview.
-        // The user might want to rotate view while sketching!
-        // So we return FALSE for MouseMove, unless we strictly want to own it.
-        // Let's return FALSE for MouseMove so Orbit works while sketching.
-        
+            return false; // Event not handled for mode change
+
+        // Debounce mouse move to avoid excessive updates
         double elapsed = std::chrono::duration<double>(Clock::now() - m_LastClickTime).count();
         if (elapsed < DEBOUNCE_TIME)
-            return false;
+            return false; // Event handled (debounced), no mode change
 
-        glm::vec3 world = ctx.GetCamera()->ScreenToWorld(m->position.x, m->position.y);
+        ICamera* cam = ctx.GetCamera();
+        if (!cam) {
+            LOG(Error) << "SketchCurveTool: No active camera for screen-to-world conversion.";
+            return false; // Event not handled for mode change
+        }
+        glm::vec3 world = cam->ScreenToWorld(m->position.x, m->position.y);
 
+        // Create or update the preview point
         if (m_PreviewPoint == INVALID_ENTITY) {
             m_PreviewPoint = reg.CreateEntity();
             reg.AddComponent(m_PreviewPoint, PositionComponent{world});
         } else {
-            // Use AddComponent to overwrite and trigger rendering update (Dirty flag)
-            reg.AddComponent(m_PreviewPoint, PositionComponent{world});
+            reg.AddComponent(m_PreviewPoint, PositionComponent{world}); // Update, triggers dirty flag
         }
 
+        // Remove old preview line if exists
         if (m_LastPreviewLine != INVALID_ENTITY) {
-            reg.RemoveComponent<EdgeComponent>(m_LastPreviewLine);
+            if (reg.HasComponent<EdgeComponent>(m_LastPreviewLine)) {
+                reg.RemoveComponent<EdgeComponent>(m_LastPreviewLine);
+            }
         }
 
+        // Create new preview line from last committed point to current preview point
         m_LastPreviewLine = reg.CreateEntity();
         reg.AddComponent(m_LastPreviewLine, EdgeComponent{m_Points.back(), m_PreviewPoint});
 
-        return false; // Allow camera to see mouse move
+        return false; // Event handled (preview updated), no mode change
     }
 
     // ----- LEFT MOUSE → Commit Point -----
     if (auto* m = AsMouseButton(ev)) {
         if (m->button == MouseButton::Left && m->pressed) {
-            // Debounce check
+            // Debounce click to prevent double-clicks
             double elapsed = std::chrono::duration<double>(Clock::now() - m_LastClickTime).count();
             if (elapsed < DEBOUNCE_TIME) {
-                return true; // Ignore bouncing click
+                return true; // Event handled (debounced), no mode change
             }
-
             m_LastClickTime = Clock::now();
 
-            glm::vec3 world = ctx.GetCamera()->ScreenToWorld(m->position.x, m->position.y);
+            ICamera* cam = ctx.GetCamera();
+            if (!cam) {
+                LOG(Error) << "SketchCurveTool: No active camera for screen-to-world conversion.";
+                return false; // Event not handled for mode change
+            }
+            glm::vec3 world = cam->ScreenToWorld(m->position.x, m->position.y);
             
+            // Create new point entity and add it to registry via command
             Entity p = reg.CreateEntity();
-            auto pCmd = std::make_unique<cmd::CreateComponentCommand<PositionComponent>>(p, PositionComponent{world}, true);
+            auto pCmd = std::make_unique<cmd::CreateComponentCommand<PositionComponent>>(p, PositionComponent{world});
             ctx.GetCommandStack().Push(std::move(pCmd));
-            
             m_Points.push_back(p);
-
-            // Create persistent line from last real point
+            LOG(Info) << "SketchCurveTool: Added point " << p << " at (" << world.x << ", " << world.y << ", " << world.z << ")";
+            
+            // If more than one point, create a persistent line segment via command
             if (m_Points.size() >= 2) {
                 Entity l = reg.CreateEntity();
-                auto lCmd = std::make_unique<cmd::CreateComponentCommand<EdgeComponent>>(l, EdgeComponent{m_Points[m_Points.size() - 2], m_Points.back()}, true);
+                auto lCmd = std::make_unique<cmd::CreateComponentCommand<EdgeComponent>>(l, EdgeComponent{m_Points[m_Points.size() - 2], m_Points.back()});
                 ctx.GetCommandStack().Push(std::move(lCmd));
+                LOG(Info) << "SketchCurveTool: Added line " << l << " between " << m_Points[m_Points.size() - 2] << " and " << m_Points.back();
             }
 
-            // Reset preview
+            // Clean up preview elements which will be replaced by persistent ones
             if (m_LastPreviewLine != INVALID_ENTITY) {
                 if (reg.HasComponent<EdgeComponent>(m_LastPreviewLine)) {
                     reg.RemoveComponent<EdgeComponent>(m_LastPreviewLine);
                 }
                 m_LastPreviewLine = INVALID_ENTITY;
             }
-            
             if (m_PreviewPoint != INVALID_ENTITY) {
                  if (reg.HasComponent<PositionComponent>(m_PreviewPoint)) {
                     reg.RemoveComponent<PositionComponent>(m_PreviewPoint);
@@ -136,74 +159,91 @@ bool SketchCurveTool::OnInput(const InputEvent& ev, ToolContext& ctx) {
                 m_PreviewPoint = INVALID_ENTITY;
             }
 
+            // Handle specific CurveMode logic
             if (m_Mode == CurveMode::Line) {
                 if (!m_WaitingSecondPoint) {
-                    m_WaitingSecondPoint = true;
+                    m_WaitingSecondPoint = true; // Waiting for the second point to complete the line
                 } else {
-                    // Finished Line
-                    m_Points.clear(); // Clear points so OnExit doesn't Undo
-                    OnExit(ctx);
+                    // Finished single line - tool completes
+                    m_Points.clear(); // Mark as success so OnExit doesn't Undo
+                    ctx.GetEditor()->SetMode(EditorMode::Normal); // Switch back to normal mode
+                    return true;
                 }
             }
-            return true; // CONSUMED! Camera does NOT orbit.
+            return true; // Event handled, no mode change
         }
     }
 
-    // ----- KEYS -----
+    // ----- KEYBOARD INPUT -----
     if (auto* k = AsKey(ev)) {
+        if (!k->pressed) return false;
+
+        // ESCAPE key cancels the current sketching operation
         if (k->code == KeyCode::Escape) {
-            OnExit(ctx);
-            return true; // Consumed
+            LOG(Info) << "SketchCurveTool: ESC pressed. Cancelling current sketch.";
+            ctx.GetEditor()->SetMode(EditorMode::Normal); // Switch back to normal mode
+            return true;
         }
+
+        // ENTER key finalizes the curve/face
         if (k->code == KeyCode::Enter) {
-            if (m_Mode == CurveMode::Polyline)
-                FinalizePolyline(ctx);
-            else if (m_Mode == CurveMode::Face)
-                FinalizeFace(ctx);
-            
-            OnExit(ctx);
-            return true; // Consumed
+            LOG(Info) << "SketchCurveTool: ENTER pressed. Finalizing sketch.";
+            if (m_Points.size() >= 2) { // Need at least two points for polyline/face
+                if (m_Mode == CurveMode::Polyline) {
+                    FinalizePolyline(ctx);
+                } else if (m_Mode == CurveMode::Face) {
+                    FinalizeFace(ctx);
+                }
+            } else {
+                LOG(Warn) << "SketchCurveTool: Not enough points to finalize current sketch.";
+            }
+            m_Points.clear(); // Mark as success so OnExit doesn't Undo
+            ctx.GetEditor()->SetMode(EditorMode::Normal); // Switch back to normal mode
+            return true;
         }
     }
     
-    return false;
+    return false; // Event not handled for mode change
 }
 
-// -------------------------------------------------
-void SketchCurveTool::CreateLine(Entity /*a*/, Entity /*b*/, Registry& /*reg*/) {
-   // Helper unused now, logic moved to OnInput for stack support
-}
-
-// -------------------------------------------------
+/**
+ * \brief Finalizes a polyline sketch.
+ * For a polyline, the segments are already committed. This just clears state.
+ * \param ctx The ToolContext.
+ */
 void SketchCurveTool::FinalizePolyline(ToolContext& /*ctx*/) {
-    // Polyline is already built step-by-step. Just commit.
-    m_Points.clear(); // Mark as success
+    LOG(Info) << "SketchCurveTool: Finalizing Polyline.";
+    // For a polyline, segments are added as points are placed. No extra action needed here.
 }
 
-// -------------------------------------------------
+/**
+ * \brief Finalizes a face sketch.
+ * Closes the loop and creates a FaceComponent.
+ * \param ctx The ToolContext.
+ */
 void SketchCurveTool::FinalizeFace(ToolContext& ctx) {
     if (m_Points.size() < 3) {
-        m_Points.clear(); // Abort
-        return;
+        LOG(Warn) << "SketchCurveTool: Cannot finalize face, fewer than 3 points.";
+        return; // Not enough points for a face
     }
     auto& reg = ctx.GetRegistry();
 
-    // Close the loop
+    // Close the loop with an additional edge from last point to first point
     Entity l = reg.CreateEntity();
-    auto lCmd = std::make_unique<cmd::CreateComponentCommand<EdgeComponent>>(l, EdgeComponent{m_Points.back(), m_Points.front()}, true);
+    auto lCmd = std::make_unique<cmd::CreateComponentCommand<EdgeComponent>>(l, EdgeComponent{m_Points.back(), m_Points.front()});
     ctx.GetCommandStack().Push(std::move(lCmd));
+    LOG(Info) << "SketchCurveTool: Closing face loop with edge " << l << " from " << m_Points.back() << " to " << m_Points.front();
 
+    // Create the FaceComponent
     Entity face = reg.CreateEntity();
     FaceComponent fc;
     fc.vertices = m_Points; 
-    // We need edge list too strictly speaking, but for now just vertices.
-    // Re-collect edges? The commands created them. 
-    // The FaceComponent stores Entity IDs.
+    // The Edges vector in FaceComponent is usually populated by GeometrySystem when creating face entities based on a profile.
+    // For now, only vertices are stored. This might need refinement based on how FaceComponent is truly used.
     
-    auto fCmd = std::make_unique<cmd::CreateComponentCommand<FaceComponent>>(face, fc, true);
+    auto fCmd = std::make_unique<cmd::CreateComponentCommand<FaceComponent>>(face, fc);
     ctx.GetCommandStack().Push(std::move(fCmd));
-
-    m_Points.clear(); // Mark as success
+    LOG(Info) << "SketchCurveTool: Finalized Face entity " << face << " with " << m_Points.size() << " vertices.";
 }
 
 }  // namespace nc::editor
