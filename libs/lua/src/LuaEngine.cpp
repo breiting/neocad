@@ -23,6 +23,7 @@ bool LuaEngine::Initialize(std::string* err) {
         BindConstruct(cad, m_API);
         BindIO(cad, m_API);
 
+        // The following debug functions should ideally be LOG(Debug) and not always active.
         // PrintRegisteredFunctions();
         // PrintTable("cad");
 
@@ -31,12 +32,13 @@ bool LuaEngine::Initialize(std::string* err) {
     } catch (const std::exception& e) {
         if (err)
             *err = e.what();
+        LOG(Error) << "LuaEngine initialization failed: " << e.what();
         return false;
     }
 }
 
 void LuaEngine::PrintRegisteredFunctions() {
-    std::cout << "[Lua Registered Functions]\n";
+    LOG(Info) << "[Lua Registered Functions]";
     sol::table globals = m_Lua.globals();
 
     for (auto& kv : globals) {
@@ -44,7 +46,7 @@ void LuaEngine::PrintRegisteredFunctions() {
         sol::object value = kv.second;
 
         if (value.get_type() == sol::type::function) {
-            std::cout << "  • " << key.as<std::string>() << "\n";
+            LOG(Info) << "  • " << key.as<std::string>();
         }
     }
 }
@@ -52,15 +54,15 @@ void LuaEngine::PrintRegisteredFunctions() {
 void LuaEngine::PrintTable(const std::string& tableName) {
     sol::table tbl = m_Lua[tableName];
     if (!tbl.valid()) {
-        std::cout << "Table '" << tableName << "' not found.\n";
+        LOG(Warn) << "Table '" << tableName << "' not found.";
         return;
     }
-    std::cout << "Functions in table '" << tableName << "':\n";
+    LOG(Info) << "Functions in table '" << tableName << "':";
     for (auto& kv : tbl) {
         sol::object key = kv.first;
         sol::object value = kv.second;
         if (value.get_type() == sol::type::function) {
-            std::cout << "  • " << key.as<std::string>() << "\n";
+            LOG(Info) << "  • " << key.as<std::string>();
         }
     }
 }
@@ -123,8 +125,7 @@ void LuaEngine::Reset() {
     // Re-init with previous config
     std::string err;
     if (!Initialize(&err)) {
-        // If initialization fails here, leave it to caller to handle on next call.
-        std::cerr << "CoreEngine::Reset() init failed: " << err << "\n";
+        LOG(Error) << "LuaEngine::Reset() init failed: " << err;
     }
 }
 

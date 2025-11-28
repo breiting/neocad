@@ -11,21 +11,20 @@ CadAPI::CadAPI(Registry& reg, GeometrySystem& geom) : m_Registry(reg), m_Geometr
 }
 
 Entity CadAPI::CreatePoint(double x, double y, double z) {
+    // Direct add is fine here as GeometrySystem::CreatePoint also directly adds.
     Entity e = m_Registry.CreateEntity();
     m_Registry.AddComponent<PositionComponent>(e, {glm::vec3(x, y, z)});
     return e;
 }
 
 Entity CadAPI::CreateLine(Entity p1, Entity p2) {
-    Entity e = m_Registry.CreateEntity();
-    m_Registry.AddComponent<EdgeComponent>(e, {p1, p2});
-    return e;
+    // Delegate to GeometrySystem for proper validation and logic
+    return m_GeometrySystem.CreateLine(p1, p2);
 }
 
-Entity CadAPI::CreateFace(const std::vector<Entity>& pts) {
-    Entity e = m_Registry.CreateEntity();
-    m_Registry.AddComponent<FaceComponent>(e, {pts});
-    return e;
+Entity CadAPI::CreateFace(const std::vector<Entity>& edges) {
+    // Delegate to GeometrySystem for proper validation and logic
+    return m_GeometrySystem.CreateFace(edges);
 }
 
 Entity CadAPI::ExtrudeFace(Entity face, double height) {

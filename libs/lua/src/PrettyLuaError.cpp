@@ -1,5 +1,5 @@
 #include <fstream>
-#include <iostream>
+#include <neocad/core/Logger.hpp>
 #include <neocad/lua/PrettyLuaError.hpp>
 #include <regex>
 #include <sstream>
@@ -15,6 +15,8 @@ std::string readFile(const std::string& path) {
     return oss.str();
 }
 
+// ANSI escape codes for coloring and styling.
+// These will be printed directly and rely on terminal support.
 std::string color(const char* code, const std::string& s) {
     return std::string("\x1b[") + code + "m" + s + "\x1b[0m";
 }
@@ -99,23 +101,26 @@ LuaErrorPretty FormatLuaError(lua_State* L, const sol::error& e) {
 }
 
 void PrintLuaErrorPretty(const LuaErrorPretty& pe) {
-    std::cerr << "\n" << pe.headline << "\n\n";
+    // Collect all parts into a single string stream for atomic logging
+    std::ostringstream oss;
+    oss << "\n" << pe.headline << "\n\n";
     if (!pe.context.empty()) {
-        std::cerr << bold("\nContext:\n") << pe.context << "\n";
+        oss << bold("\nContext:\n") << pe.context << "\n";
     }
     if (!pe.frames.empty()) {
-        std::cerr << bold("Stack trace:\n");
+        oss << bold("Stack trace:\n");
         for (const auto& f : pe.frames) {
             std::string line = "  at " + f.file + ":" + std::to_string(f.line);
             if (!f.func.empty())
                 line += " in function '" + f.func + "'";
-            std::cerr << (f.isUser ? line : dim(line)) << "\n";
+            oss << (f.isUser ? line : dim(line)) << "\n";
         }
-        std::cerr << "\n";
+        oss << "\n";
     }
     if (!pe.hint.empty()) {
-        std::cerr << yellow(pe.hint) << "\n\n";
+        oss << yellow(pe.hint) << "\n\n";
     }
+    LOG(Error) << oss.str();
 }
 
 }  // namespace nc::lua
