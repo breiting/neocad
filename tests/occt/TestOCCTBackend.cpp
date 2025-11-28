@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include <neocad/domain/Registry.hpp>
 #include <neocad/occt/OCCTBackend.hpp>
+#include <filesystem>
+#include <fstream>
 
 using namespace nc::domain;
 using namespace nc::occt;
@@ -11,6 +13,14 @@ using namespace nc::occt;
 class TestOCCTBackend : public ::testing::Test {
 protected:
     OCCTBackend backend;
+
+    // Helper to get a temporary file path
+    std::string getTempFilePath(const std::string& extension) {
+        // Use std::filesystem::temp_directory_path()
+        std::filesystem::path tempDir = std::filesystem::temp_directory_path();
+        std::filesystem::path tempFile = tempDir / ("temp_occt_test_" + std::to_string(std::rand()) + extension);
+        return tempFile.string();
+    }
 };
 
 TEST_F(TestOCCTBackend, CreateExtrudedBodyBasic) {
@@ -27,15 +37,58 @@ TEST_F(TestOCCTBackend, CreateExtrudedBodyBasic) {
     BackendShapeHandle handle = backend.CreateExtrudedBody(profile, height);
     
     EXPECT_GT(handle, 0u);
-    
-    // Try to export (to dev/null equivalent or temp file) to check if shape is valid
-    // We use a dummy filename, export might fail on I/O but shouldn't crash
-    // Actually, let's try to export to a temp file if possible, or just assume success if handle > 0
-    // For now, just checking handle creation is a good smoke test for OCCT integration.
 }
 
 TEST_F(TestOCCTBackend, CreateExtrudedBodyInvalidProfile) {
     Polygon emptyProfile;
     BackendShapeHandle handle = backend.CreateExtrudedBody(emptyProfile, 10.0);
     EXPECT_EQ(handle, 0u); // Should fail
+}
+
+TEST_F(TestOCCTBackend, ExportSTEP) {
+    Polygon profile;
+    profile.vertices = {
+        {0.0, 0.0, 0.0},
+        {1.0, 0.0, 0.0},
+        {1.0, 1.0, 0.0},
+        {0.0, 1.0, 0.0}
+    };
+    BackendShapeHandle handle = backend.CreateExtrudedBody(profile, 1.0);
+    ASSERT_GT(handle, 0u);
+
+    std::string filePath = getTempFilePath(".step");
+    bool success = backend.ExportShapeToSTEP(handle, filePath);
+    EXPECT_TRUE(success);
+    
+    // Verify file exists and is not empty
+    std::filesystem::path p(filePath);
+    EXPECT_TRUE(std::filesystem::exists(p));
+    EXPECT_GT(std::filesystem::file_size(p), 0u);
+
+    std::filesystem::remove(p); // Clean up
+    EXPECT_FALSE(std::filesystem::exists(p));
+}
+
+TEST_F(TestOCCTBackend, ExportSTL) {
+    Polygon profile;
+    profile.vertices = {
+        {0.0, 0.0, 0.0},
+        {1.0, 0.0, 0.0},
+        {1.0, 1.0, 0.0},
+        {0.0, 1.0, 0.0}
+    };
+    BackendShapeHandle handle = backend.CreateExtrudedBody(profile, 1.0);
+    ASSERT_GT(handle, 0u);
+
+    std::string filePath = getTempFilePath(".stl");
+    bool success = backend.ExportShapeToSTL(handle, filePath, 0.1);
+    EXPECT_TRUE(success);
+    
+    // Verify file exists and is not empty
+    std::filesystem::path p(filePath);
+    EXPECT_TRUE(std::filesystem::exists(p));
+    EXPECT_GT(std::filesystem::file_size(p), 0u);
+
+    std::filesystem::remove(p); // Clean up
+    EXPECT_FALSE(std::filesystem::exists(p));
 }

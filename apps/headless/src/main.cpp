@@ -43,7 +43,8 @@ int main() {
     registry.AddComponent<EdgeComponent>(l4, {p4, p1});
 
     Entity f = registry.CreateEntity();
-    FaceComponent face{{l1, l2, l3, l4}};
+    FaceComponent face;
+    face.edges = {l1, l2, l3, l4};
     registry.AddComponent<FaceComponent>(f, face);
 
     // Use command pattern to extrude
