@@ -1,123 +1,89 @@
-/** To change the standard LogLevel in any function you want to debug/log use
- ** the follwoing syntax : LogSettings::getInstance()->setLogLevel(
- **                          LogSettings::getInstance()->logLevel() & (uint_16t)<LOGLEVEL>)
- ** where <LOGLEVEL> matches one of the following levels:
- ** enum class LoggerLevels : uint16_t {
- **   NONE_ = 0x00,
- **   INFO_ = 0x01,
- **   DEBUG_ = 0x02,
- **   WARN_ = 0x04,
- **   ERROR_ = 0x08
- ** };
- **/
+#include "neocad/core/Logger.hpp"
 
-#include <atomic>
-#include <cstdint>
-#include <cstring>
+#include <chrono>
 #include <ctime>
-#include <mutex>
-#include <neocad/core/Logger.hpp>
+#include <iomanip>
 
-using namespace std::chrono;
-using namespace nc;
+namespace nc::core {
 
-namespace {
-std::atomic<LogSettings *> m_instance;
-std::mutex m_mutex;
-}  // namespace
+Logger& Logger::getInstance() {
+    static Logger instance;
+    return instance;
+}
 
-Log::Log(uint16_t level)
-    :  // Do that for safety reasons - customer shall not be able to turn logging on!
-      m_output((LogSettings::getInstance()->logLevel() & level) > 0),
-      m_endlLast(false) {
-    if (m_output) {
-        std::lock_guard<std::mutex> lock(m_acquisitionLock);
-        LogSettings::getInstance()->stream()
-            << "[" << LogSettings::getInstance()->getLogTime("%Y/%m/%d %X").c_str() << "]";
+Logger::Logger() : m_logLevel(LogLevel::Info | LogLevel::Debug | LogLevel::Warn | LogLevel::Error) {}
+
+Logger::~Logger() {
+    if (m_fout.is_open()) {
+        m_fout.close();
     }
 }
 
-Log::~Log() {
-    if (!m_endlLast && m_output) {
-        std::lock_guard<std::mutex> lock(m_acquisitionLock);
-        LogSettings::getInstance()->stream() << std::endl;
+void Logger::setLogLevel(LogLevel level) {
+    std::lock_guard<std::mutex> lock(m_writeMutex);
+    m_logLevel = level;
+}
+
+LogLevel Logger::getLogLevel() const {
+    return m_logLevel;
+}
+
+void Logger::setLogFile(const std::string& logFilePath) {
+    std::lock_guard<std::mutex> lock(m_writeMutex);
+    if (m_fout.is_open()) {
+        m_fout.close();
+    }
+
+    if (!logFilePath.empty()) {
+        m_fout.open(logFilePath, std::ios::out | std::ios::app);
+        if (!m_fout.is_open()) {
+            std::cerr << "[Error] Failed to open log file: " << logFilePath << std::endl;
+        }
     }
 }
 
-Log &Log::operator<<(EndLine endlFunc) {
-    if (m_output) {
-        // invoke
-        m_endlLast = true;
-        std::lock_guard<std::mutex> lock(m_acquisitionLock);
-        endlFunc(LogSettings::getInstance()->stream());
+void Logger::write(const std::string& message) {
+    std::lock_guard<std::mutex> lock(m_writeMutex);
+    if (m_fout.is_open()) {
+        m_fout << message << std::endl;
+    } else {
+        std::cout << message << std::endl;
+    }
+}
+
+// -----------------------------------------------------------------------------
+
+LogMessage::LogMessage(LogLevel level, const char* levelName) {
+    Logger& logger = Logger::getInstance();
+    m_enabled = (logger.getLogLevel() & level) != LogLevel::None;
+
+    if (m_enabled) {
+        // Get current time
+        auto now = std::chrono::system_clock::now();
+        auto in_time_t = std::chrono::system_clock::to_time_t(now);
+        std::tm tm_buf{};
+#if defined(_WIN32) || defined(_WIN64)
+        localtime_s(&tm_buf, &in_time_t);
+#else
+        localtime_r(&in_time_t, &tm_buf);
+#endif
+
+        m_buffer << "[" << std::put_time(&tm_buf, "%Y-%m-%d %X") << "] "
+                 << "[" << levelName << "] ";
+    }
+}
+
+LogMessage::~LogMessage() {
+    if (m_enabled) {
+        Logger::getInstance().write(m_buffer.str());
+    }
+}
+
+LogMessage& LogMessage::operator<<(std::ostream& (*manip)(std::ostream&)) {
+    if (m_enabled) {
+        manip(m_buffer);
     }
     return *this;
 }
 
-LogSettings *LogSettings::getInstance() {
-    LogSettings *tmp = m_instance.load(std::memory_order_relaxed);
-    std::atomic_thread_fence(std::memory_order_acquire);
-    if (tmp == nullptr) {
-        std::lock_guard<std::mutex> lock(m_mutex);
-        tmp = m_instance.load(std::memory_order_relaxed);
-        if (tmp == nullptr) {
-            tmp = new LogSettings;
-            std::atomic_thread_fence(std::memory_order_release);
-            m_instance.store(tmp, std::memory_order_relaxed);
-        }
-    }
-    return tmp;
-}
-
-LogSettings::LogSettings() : m_logSetting(0) {
-    m_logSetting |= (uint16_t)LoggerLevels::INFO_;
-    m_logSetting |= (uint16_t)LoggerLevels::DEBUG_;
-    m_logSetting |= (uint16_t)LoggerLevels::WARN_;
-    m_logSetting |= (uint16_t)LoggerLevels::ERROR_;
-}
-
-LogSettings::~LogSettings() {
-    if (fout.is_open()) {
-        fout.close();
-    }
-}
-
-void LogSettings::setLogLevel(uint16_t logSetting) {
-    m_logSetting = logSetting;
-}
-
-uint16_t LogSettings::logLevel() const {
-    return m_logSetting;
-}
-
-const std::string LogSettings::getLogTime(const std::string &dateTimeFormat) const {
-    time_t mytime;
-    mytime = time(NULL);
-
-    char mbstr[100];
-    memset(&mbstr, 0, sizeof(mbstr));  // initialize to 0
-    std::strftime(mbstr, sizeof(mbstr), dateTimeFormat.c_str(), std::localtime(&mytime));
-    return mbstr;
-}
-
-void LogSettings::setLogFile(std::string logFilePath) {
-    // Write to File
-    if (fout.is_open()) {
-        fout.close();
-    }
-
-    if (logFilePath.length() > 0) {
-        fout.open(logFilePath.c_str(), std::ios::out);
-        if (!fout.is_open()) {
-            std::cerr << "error: open file for output failed!" << std::endl;
-        }
-    }
-}
-
-std::ostream &LogSettings::stream() {
-    if (fout.is_open()) {
-        return fout;
-    } else {
-        return std::cout;
-    }
-}
+}  // namespace nc::core

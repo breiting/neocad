@@ -7,7 +7,7 @@
 
 #include "neocad/domain/Entity.hpp"
 
-using namespace nc;
+using namespace nc::domain;
 
 /// Simple fake backend for testing without OCCT.
 class FakeBackend : public IGeometryBackend {
@@ -52,13 +52,14 @@ TEST(GeometrySystemTest, ExtrudeFaceCreatesBody) {
     Entity l3 = reg.CreateEntity();
     Entity l4 = reg.CreateEntity();
 
-    reg.AddComponent<LineComponent>(l1, {p1, p2});
-    reg.AddComponent<LineComponent>(l2, {p2, p3});
-    reg.AddComponent<LineComponent>(l3, {p3, p4});
-    reg.AddComponent<LineComponent>(l4, {p4, p1});
+    reg.AddComponent<EdgeComponent>(l1, {p1, p2});
+    reg.AddComponent<EdgeComponent>(l2, {p2, p3});
+    reg.AddComponent<EdgeComponent>(l3, {p3, p4});
+    reg.AddComponent<EdgeComponent>(l4, {p4, p1});
 
     Entity f = reg.CreateEntity();
-    FaceComponent face{{l1, l2, l3, l4}};
+    FaceComponent face;
+    face.edges = {l1, l2, l3, l4};
     reg.AddComponent<FaceComponent>(f, face);
 
     double height = 5.0;
@@ -67,7 +68,6 @@ TEST(GeometrySystemTest, ExtrudeFaceCreatesBody) {
     ASSERT_NE(body, INVALID_ENTITY);
     const BodyComponent* b = reg.GetComponent<BodyComponent>(body);
     ASSERT_NE(b, nullptr);
-    EXPECT_EQ(b->sourceFace, f);
     EXPECT_GT(b->handle, 0u);
 
     // Check backend got correct profile

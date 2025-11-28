@@ -1,10 +1,11 @@
 #include <neocad/command/ExtrudeCommand.hpp>
 #include <neocad/core/Logger.hpp>
 #include <neocad/domain/Entity.hpp>
-#include <neocad/domain/GeometrySystem.hpp>
-#include <neocad/domain/Registry.hpp>
+#include <neocad/domain/Components.hpp> // Required for BodyComponent/NameComponent in Undo
 
-namespace nc {
+using namespace nc::domain;
+
+namespace nc::cmd {
 
 ExtrudeCommand::ExtrudeCommand(Entity face, double height) : m_Face(face), m_Height(height) {
 }
@@ -16,12 +17,23 @@ double ExtrudeCommand::GetHeight() const {
     return m_Height;
 }
 
-void ExtrudeCommand::Execute(Registry& registry, GeometrySystem& geom) {
-    Entity bodyEntity = geom.ExtrudeFace(m_Face, m_Height);
-
-    if (bodyEntity == INVALID_ENTITY) {
-        LOG(ERROR) << "Error in extruding face";
+void ExtrudeCommand::Execute(domain::Registry& registry, domain::GeometrySystem& geom) {
+    LOG(Info) << "Executing ExtrudeCommand: face=" << m_Face << ", height=" << m_Height;
+    m_ResultEntity = geom.ExtrudeFace(m_Face, m_Height);
+    if (m_ResultEntity == domain::INVALID_ENTITY) {
+        LOG(Error) << "ExtrudeCommand: Failed to extrude face " << m_Face;
+    } else {
+        LOG(Info) << "ExtrudeCommand: Created body " << m_ResultEntity;
     }
 }
 
-}  // namespace nc
+void ExtrudeCommand::Undo(domain::Registry& registry, domain::GeometrySystem& geom) {
+    if (m_ResultEntity != domain::INVALID_ENTITY) {
+        LOG(Info) << "Undoing ExtrudeCommand: removing body " << m_ResultEntity;
+        registry.RemoveComponent<domain::BodyComponent>(m_ResultEntity);
+        registry.RemoveComponent<domain::NameComponent>(m_ResultEntity);
+        m_ResultEntity = domain::INVALID_ENTITY; // Mark as undone
+    }
+}
+
+}  // namespace nc::cmd

@@ -3,7 +3,7 @@
 #include <neocad/domain/Types.hpp>
 #include <string>
 
-namespace nc {
+namespace nc::domain {
 
 /// Interface for a geometry backend (OCCT or other).
 class IGeometryBackend {
@@ -20,4 +20,4 @@ class IGeometryBackend {
     virtual bool ExportShapeToSTL(BackendShapeHandle handle, const std::string& filePath, double deflection) const = 0;
 };
 
-}  // namespace nc
+}  // namespace nc::domain

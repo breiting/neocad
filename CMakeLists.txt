@@ -3,6 +3,8 @@ project(neocad VERSION 0.1 LANGUAGES CXX)
 
 # Produce json file for neovim clangd completion
 set (CMAKE_EXPORT_COMPILE_COMMANDS 1)
+# Required for clang-uml to work properly on macOS
+set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -16,6 +18,14 @@ file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/generated/assets")
 
 # Dependencies via FetchContent
 include(FetchContent)
+
+# CLI11
+FetchContent_Declare(
+		CLI11
+		GIT_REPOSITORY https://github.com/CLIUtils/CLI11.git
+		GIT_TAG v2.4.2   # stable version
+)
+FetchContent_MakeAvailable(CLI11)
 
 # ----------------------------------------------------------
 # GLM
@@ -67,17 +77,49 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(eigen)
 
+# ----------------------------------------------------------
+# sol2 (lua)
+# ----------------------------------------------------------
+FetchContent_Declare(
+		sol2
+		GIT_REPOSITORY https://github.com/ThePhD/sol2.git
+		GIT_TAG v3.5.0
+)
+FetchContent_MakeAvailable(sol2)
+
+# ----------------------------------------------------------
+# Lua 5.4
+# ----------------------------------------------------------
+find_package(Lua 5.4 QUIET)
+if(NOT Lua_FOUND)
+	find_package(Lua 5.3 QUIET)
+endif()
+if(NOT Lua_FOUND)
+	message(FATAL_ERROR "Lua 5.3+ not found. Install lua (e.g., apt install liblua5.4-dev) or set Lua_DIR.")
+endif()
+message(STATUS "Lua include: ${LUA_INCLUDE_DIR}")
+message(STATUS "Lua libs: ${LUA_LIBRARIES}")
+
 # -------------------------
 # Shaders (embed to headers)
 # -------------------------
 set(SHADER_SRC_DIR "${CMAKE_SOURCE_DIR}/assets")
 set(GEN_INC_DIR    "${CMAKE_BINARY_DIR}/generated")
 
-# embed_text_to_header("${SHADER_SRC_DIR}/shader.vert"  "${GEN_INC_DIR}/assets/shader_vert.h"  shader_vert_glsl)
-# embed_text_to_header("${SHADER_SRC_DIR}/shader.frag"  "${GEN_INC_DIR}/assets/shader_frag.h"  shader_frag_glsl)
+embed_text_to_header("${SHADER_SRC_DIR}/flat.vert" "${GEN_INC_DIR}/assets/flat_vert.h" flat_vert_glsl)
+embed_text_to_header("${SHADER_SRC_DIR}/flat.frag" "${GEN_INC_DIR}/assets/flat_frag.h" flat_frag_glsl)
+embed_text_to_header("${SHADER_SRC_DIR}/grid.vert" "${GEN_INC_DIR}/assets/grid_vert.h" grid_vert_glsl)
+embed_text_to_header("${SHADER_SRC_DIR}/grid.frag" "${GEN_INC_DIR}/assets/grid_frag.h" grid_frag_glsl)
+embed_text_to_header("${SHADER_SRC_DIR}/lineset.vert" "${GEN_INC_DIR}/assets/lineset_vert.h" lineset_vert_glsl)
+embed_text_to_header("${SHADER_SRC_DIR}/lineset.frag" "${GEN_INC_DIR}/assets/lineset_frag.h" lineset_frag_glsl)
+embed_text_to_header("${SHADER_SRC_DIR}/pointset.vert" "${GEN_INC_DIR}/assets/pointset_vert.h" pointset_vert_glsl)
+embed_text_to_header("${SHADER_SRC_DIR}/pointset.frag" "${GEN_INC_DIR}/assets/pointset_frag.h" pointset_frag_glsl)
+embed_text_to_header("${SHADER_SRC_DIR}/unlit.vert" "${GEN_INC_DIR}/assets/unlit_vert.h" unlit_vert_glsl)
+embed_text_to_header("${SHADER_SRC_DIR}/unlit.frag" "${GEN_INC_DIR}/assets/unlit_frag.h" unlit_frag_glsl)
 
 add_subdirectory(libs)
 add_subdirectory(apps/headless)
+add_subdirectory(apps/neocad)
 
 enable_testing()
 add_subdirectory(tests)

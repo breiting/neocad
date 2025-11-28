@@ -4,7 +4,7 @@
 #include <neocad/domain/Registry.hpp>
 #include <neocad/domain/Types.hpp>
 
-namespace nc {
+namespace nc::domain {
 
 /// High-level domain service responsible for:
 /// - Extracting geometry from ECS (points, faces)
@@ -34,4 +34,4 @@ class GeometrySystem {
     bool BuildPolygonFromFace(Entity faceEntity, Polygon& outPolygon) const;
 };
 
-}  // namespace nc
+}  // namespace nc::domain

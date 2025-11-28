@@ -8,11 +8,14 @@
 #include <neocad/occt/OCCTBackend.hpp>
 
 using namespace nc;
+using namespace nc::domain;
+using namespace nc::occt;
+using namespace nc::cmd;
 
 int main() {
-    LOG(INFO) << "================================";
-    LOG(INFO) << "neoCAD headless testing";
-    LOG(INFO) << "================================";
+    LOG(Info) << "================================";
+    LOG(Info) << "neoCAD headless testing";
+    LOG(Info) << "================================";
 
     Registry registry;
     OCCTBackend backend;
@@ -34,13 +37,14 @@ int main() {
     Entity l3 = registry.CreateEntity();
     Entity l4 = registry.CreateEntity();
 
-    registry.AddComponent<LineComponent>(l1, {p1, p2});
-    registry.AddComponent<LineComponent>(l2, {p2, p3});
-    registry.AddComponent<LineComponent>(l3, {p3, p4});
-    registry.AddComponent<LineComponent>(l4, {p4, p1});
+    registry.AddComponent<EdgeComponent>(l1, {p1, p2});
+    registry.AddComponent<EdgeComponent>(l2, {p2, p3});
+    registry.AddComponent<EdgeComponent>(l3, {p3, p4});
+    registry.AddComponent<EdgeComponent>(l4, {p4, p1});
 
     Entity f = registry.CreateEntity();
-    FaceComponent face{{l1, l2, l3, l4}};
+    FaceComponent face;
+    face.edges = {l1, l2, l3, l4};
     registry.AddComponent<FaceComponent>(f, face);
 
     // Use command pattern to extrude
@@ -51,23 +55,23 @@ int main() {
     Entity bodyEntity = INVALID_ENTITY;
     auto res = HasComponentQuery<BodyComponent>().Execute(registry);
     if (res.empty()) {
-        LOG(ERROR) << "Cannot find created body.";
+        LOG(Error) << "Cannot find created body.";
         return 1;
     }
     bodyEntity = res.front();
-    LOG(INFO) << "Found body entity: " << bodyEntity;
+    LOG(Info) << "Found body entity: " << bodyEntity;
 
     // Export
     if (!geom.ExportSTEP(bodyEntity, "test_body.step")) {
-        LOG(ERROR) << "Failed to export STEP.\n";
+        LOG(Error) << "Failed to export STEP.\n";
     } else {
-        LOG(INFO) << "Exported STEP: test_body.step\n";
+        LOG(Info) << "Exported STEP: test_body.step\n";
     }
 
     if (!geom.ExportSTL(bodyEntity, "test_body.stl", 0.5)) {
-        LOG(ERROR) << "Failed to export STL.\n";
+        LOG(Error) << "Failed to export STL.\n";
     } else {
-        LOG(INFO) << "Exported STL: test_body.stl\n";
+        LOG(Info) << "Exported STL: test_body.stl\n";
     }
 
     return 0;

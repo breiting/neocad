@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace nc {
+namespace nc::domain {
 
 /// Name/tag
 struct NameComponent {
@@ -17,15 +17,16 @@ struct PositionComponent {
     vec3 position;
 };
 
-/// Line between two point entities
-struct LineComponent {
+/// Connection (edge) between two point entities
+struct EdgeComponent {
     Entity p0{INVALID_ENTITY};
     Entity p1{INVALID_ENTITY};
 };
 
-/// Planar face defined by a sequence of line entities forming a closed loop.
+/// Planar face defined by a sequence of edge entities forming a closed loop.
 struct FaceComponent {
-    std::vector<Entity> edges;  ///< entities referring to LineComponent
+    std::vector<Entity> vertices;  ///< entities referring to PositionComponent
+    std::vector<Entity> edges;     ///< entities referring to EdgeComponent
 };
 
 /// Opaque handle to a backend shape (OCCT or other).
@@ -34,18 +35,25 @@ using BackendShapeHandle = std::uint64_t;
 /// 3D body (solid) referencing a backend shape.
 struct BodyComponent {
     BackendShapeHandle handle{0};
-    Entity sourceFace{INVALID_ENTITY};  ///< originating face entity (optional)
 };
 
 /// Component for defining a circle
 struct RadiusComponent {
-    double radius;
+    double radius = 1.0;
 };
 
 /// 3D Mesh component for rendering
 struct MeshComponent {
-    std::vector<glm::vec3> positions;
-    std::vector<uint32_t> indices;
+    Mesh mesh;
 };
 
-}  // namespace nc
+/// SketchPlane component which acts as a proxy for 2D sketching
+struct SketchPlaneComponent {
+    vec3 origin{0, 0, 0};
+    vec3 normal{0, 0, 1};  // Z = Up
+    vec3 xdir{1, 0, 0};
+    vec3 ydir{0, 1, 0};
+    bool active = false;
+};
+
+}  // namespace nc::domain

@@ -4,80 +4,116 @@
 #include <fstream>
 #include <iostream>
 #include <mutex>
+#include <sstream>
+#include <string>
 
-/** Logging macro; to overcome multi macro definitions for levels
- * To create a Logentry which should be put out in two ore more cases use the follwing syntax:
- * Log((uint16_t)LoggerLevels::WARN_|(uint16_t)LoggerLevels::ERROR_)) << "LogMessage";
+namespace nc::core {
+
+/**
+ * @brief Log levels for the application.
+ * Used as a bitmask.
  */
-#define LOG(X) nc::Log((uint16_t)LoggerLevels::X##_) << " " << #X << " "
-
-/** Definition of LogLevels
- * Loglevels are used as binary bitmask format an can be used together by using binary or
- * The set loglevel is binary and compared to the level required for the output
- */
-enum class LoggerLevels : uint16_t { NONE_ = 0x00, INFO_ = 0x01, DEBUG_ = 0x02, WARN_ = 0x04, ERROR_ = 0x08 };
-
-namespace nc {
-class LogSettings {
-   public:
-    /// Creates a global available instance (even creation is thread safe)
-    static LogSettings *getInstance();
-
-    /// Sets global Loglevel (there is a default definition of WARN_ and ERROR_)
-    void setLogLevel(uint16_t logLevel);
-
-    /// Can be used to pipe logging to a logfile (has to be called explicitly)
-    void setLogFile(std::string logfilePath);
-
-    /// Returns the configured loglevel (the one from the class which defines what messages shall be created)
-    uint16_t logLevel() const;
-
-    /// Returns the current stream (might be "cout" or a file-stream if a logfile was specified before
-    std::ostream &stream();
-
-    /// Returns the current LogTime (current time according to the given format)
-    const std::string getLogTime(const std::string &dateTimeFormat) const;
-
-    /// Explicitly define assignment operator as deleted, so prohibit copying
-    LogSettings &operator=(const LogSettings &) = delete;
-
-   private:
-    LogSettings();
-
-    /// Explicitly define copy ctor as deleted, so prohibit copying
-    LogSettings(const LogSettings &) = delete;
-    ~LogSettings();
-
-    uint16_t m_logSetting;
-    std::ofstream fout;
+enum class LogLevel : uint16_t {
+    None = 0x00,
+    Info = 0x01,
+    Debug = 0x02,
+    Warn = 0x04,
+    Error = 0x08,
+    All = 0xFF
 };
 
-class Log {
-   public:
-    // this is the signature for the std::endl function
-    using EndLine =
-        std::basic_ostream<char, std::char_traits<char> > &(*)(std::basic_ostream<char, std::char_traits<char> > &);
+// Overload bitwise operators for convenient masking
+inline LogLevel operator|(LogLevel lhs, LogLevel rhs) {
+    return static_cast<LogLevel>(static_cast<uint16_t>(lhs) | static_cast<uint16_t>(rhs));
+}
 
-    Log(uint16_t level = 0);
-    virtual ~Log();
+inline LogLevel operator&(LogLevel lhs, LogLevel rhs) {
+    return static_cast<LogLevel>(static_cast<uint16_t>(lhs) & static_cast<uint16_t>(rhs));
+}
 
-    // default output
+inline LogLevel& operator|=(LogLevel& lhs, LogLevel rhs) {
+    lhs = lhs | rhs;
+    return lhs;
+}
+
+/**
+ * @brief Singleton class managing logging configuration and output stream.
+ */
+class Logger {
+public:
+    /**
+     * @brief Access the singleton instance.
+     * @return Reference to the Logger instance.
+     */
+    static Logger& getInstance();
+
+    /**
+     * @brief Set the active log levels.
+     * @param level Bitmask of LogLevel values.
+     */
+    void setLogLevel(LogLevel level);
+
+    /**
+     * @brief Get the current active log levels.
+     * @return Current LogLevel bitmask.
+     */
+    LogLevel getLogLevel() const;
+
+    /**
+     * @brief Redirect log output to a file.
+     * @param logFilePath Path to the log file.
+     */
+    void setLogFile(const std::string& logFilePath);
+
+    /**
+     * @brief Thread-safe writing to the output stream.
+     * @param message The fully formatted message to write.
+     */
+    void write(const std::string& message);
+
+    // Prevent copying
+    Logger(const Logger&) = delete;
+    Logger& operator=(const Logger&) = delete;
+
+private:
+    Logger();
+    ~Logger();
+
+    LogLevel m_logLevel;
+    std::ofstream m_fout;
+    std::mutex m_writeMutex;
+};
+
+/**
+ * @brief Temporary object to construct a log message.
+ * Buffers output and writes to the Logger singleton on destruction.
+ */
+class LogMessage {
+public:
+    LogMessage(LogLevel level, const char* levelName);
+    ~LogMessage();
+
     template <typename T>
-    Log &operator<<(const T &x) {
-        if (m_output) {
-            m_endlLast = false;
-            std::lock_guard<std::mutex> lock(m_acquisitionLock);
-            LogSettings::getInstance()->stream() << x;
+    LogMessage& operator<<(const T& msg) {
+        if (m_enabled) {
+            m_buffer << msg;
         }
         return *this;
     }
 
-    // define an operator<< to take in std::endl
-    Log &operator<<(EndLine endlFunc);
+    // Handle manipulators like std::endl
+    LogMessage& operator<<(std::ostream& (*manip)(std::ostream&));
 
-   private:
-    bool m_output;
-    bool m_endlLast;
-    std::mutex m_acquisitionLock;
+private:
+    bool m_enabled;
+    std::ostringstream m_buffer;
 };
-}  // namespace nc
+
+}  // namespace nc::core
+
+/**
+ * @brief Macro to start logging.
+ * Usage: LOG(Info) << "Message";
+ */
+#define LOG(Level) \
+    nc::core::LogMessage(nc::core::LogLevel::Level, #Level)

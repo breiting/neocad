@@ -4,4 +4,8 @@ BasedOnStyle: Google
 Language: Cpp
 IndentWidth: 4
 ColumnLimit: 120
-AllowShortFunctionsOnASingleLine: None
+AllowShortLambdasOnASingleLine: false
+AllowShortFunctionsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AllowShortEnumsOnASingleLine: false
