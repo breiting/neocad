@@ -18,16 +18,11 @@ namespace nc::occt {
 
 OCCTBackend::OCCTBackend() = default;
 
-OCCTBackend::~OCCTBackend() {
-    for (auto& [id, shape] : m_Shapes) {
-        delete shape;
-    }
-    m_Shapes.clear();
-}
+OCCTBackend::~OCCTBackend() = default; // Unique_ptr handles cleanup
 
 BackendShapeHandle OCCTBackend::StoreShape(const TopoDS_Shape& shape) {
     BackendShapeHandle handle = m_NextHandle++;
-    m_Shapes[handle] = new TopoDS_Shape(shape);
+    m_Shapes[handle] = std::make_unique<TopoDS_Shape>(shape);
     return handle;
 }
 
@@ -35,7 +30,7 @@ TopoDS_Shape* OCCTBackend::GetShape(BackendShapeHandle handle) const {
     auto it = m_Shapes.find(handle);
     if (it == m_Shapes.end())
         return nullptr;
-    return it->second;
+    return it->second.get();
 }
 
 BackendShapeHandle OCCTBackend::CreateExtrudedBody(const Polygon& profile, double height) {

@@ -1,5 +1,6 @@
 #pragma once
 #include <neocad/domain/IGeometryBackend.hpp>
+#include <memory>
 #include <unordered_map>
 
 // Forward declare OCCT types
@@ -22,7 +23,7 @@ class OCCTBackend : public domain::IGeometryBackend {
 
    private:
     domain::BackendShapeHandle m_NextHandle{1};  // start with 1
-    std::unordered_map<domain::BackendShapeHandle, TopoDS_Shape*> m_Shapes;
+    std::unordered_map<domain::BackendShapeHandle, std::unique_ptr<TopoDS_Shape>> m_Shapes;
 
     TopoDS_Shape* GetShape(domain::BackendShapeHandle handle) const;
     domain::BackendShapeHandle StoreShape(const TopoDS_Shape& shape);

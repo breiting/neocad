@@ -27,6 +27,7 @@ namespace nc::occt {
 
 using namespace nc::domain;
 
+namespace {
 void FixNormals(domain::MeshComponent& mc) {
     auto& verts = mc.mesh.vertices;
     auto& idx = mc.mesh.indices;
@@ -54,6 +55,7 @@ void FixNormals(domain::MeshComponent& mc) {
         verts[i].SetNormal(glm::normalize(normals[i]));
     }
 }
+} // namespace
 
 Entity STEPImporter::Load(const std::string& filename, Registry& registry) {
     LOG(Info) << "STEPImporter: loading file: " << filename;

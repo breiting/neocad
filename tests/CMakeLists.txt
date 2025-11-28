@@ -2,6 +2,7 @@ add_executable(test_neocad
 	core/TestLogger.cpp
 	domain/TestGeometrySystem.cpp
     domain/TestRegistry.cpp
+    occt/TestOCCTBackend.cpp
 	lua/TestLuaBasic.cpp
 	editor/TestEditor.cpp
     command/TestCommandStack.cpp
