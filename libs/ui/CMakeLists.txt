@@ -21,6 +21,7 @@ PUBLIC
 	glm::glm
 	neocad_core
 	neocad_domain
+	neocad_command
 	imgui
 	imnodes
 )

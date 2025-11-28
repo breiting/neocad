@@ -4,9 +4,8 @@
 
 namespace nc::cmd {
 
-InsertBoxCommand::InsertBoxCommand(double width, double length, double height)
-    : m_Width(width), m_Length(length), m_Height(height) {
-}
+InsertBoxCommand::InsertBoxCommand(double width, double length, double height, domain::vec2 uiPosition)
+    : m_Width(width), m_Length(length), m_Height(height), m_UIPosition(uiPosition) {}
 
 void InsertBoxCommand::Execute(domain::Registry& registry, domain::GeometrySystem& geometrySystem) {
     (void)geometrySystem;  // Unused
@@ -46,6 +45,7 @@ void InsertBoxCommand::Execute(domain::Registry& registry, domain::GeometrySyste
     registry.AddComponent(m_BoxEntityId, domain::BoxComponent{wId, lId, hId});
     registry.AddComponent(m_BoxEntityId, domain::BodyComponent{});  // Empty handle, will be filled by System
     registry.AddComponent(m_BoxEntityId, domain::NameComponent{"Box"});
+    registry.AddComponent(m_BoxEntityId, domain::UINodeComponent{static_cast<float>(m_UIPosition.x), static_cast<float>(m_UIPosition.y)});
 }
 
 void InsertBoxCommand::Undo(domain::Registry& registry, domain::GeometrySystem& geometrySystem) {
@@ -55,6 +55,7 @@ void InsertBoxCommand::Undo(domain::Registry& registry, domain::GeometrySystem& 
         registry.RemoveComponent<domain::BoxComponent>(m_BoxEntityId);
         registry.RemoveComponent<domain::BodyComponent>(m_BoxEntityId);
         registry.RemoveComponent<domain::NameComponent>(m_BoxEntityId);
+        registry.RemoveComponent<domain::UINodeComponent>(m_BoxEntityId);
         // TODO: Actually remove the entity itself or mark it dead.
         // Current registry has no DestroyEntity. Removing components effectively hides it from systems.
         m_BoxEntityId = domain::INVALID_ENTITY;

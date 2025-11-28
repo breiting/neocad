@@ -14,62 +14,13 @@ namespace nc::editor {
  * \param ctx A reference to the ToolContext, providing access to core services.
  */
 Editor::Editor(ToolContext& ctx) : m_Ctx(ctx) {
-    m_Ctx.SetEditor(this);  // Set this Editor instance into the ToolContext
-
+    m_Ctx.SetEditor(this); // Set this Editor instance into the ToolContext
+    
     // Initialize ImNodes
     ImNodes::CreateContext();
     ImNodes::StyleColorsDark();
-
-    m_GraphEditorSystem = std::make_unique<ui::GraphEditorSystem>(ctx.GetRegistry());
-
-    // Setup Demo Data TODO: REMOVE !!!!
-    auto& reg = ctx.GetRegistry();
-
-    // Global Parameter: Width
-    auto paramWidth = reg.CreateEntity();
-    reg.AddComponent(paramWidth, domain::GlobalParameterComponent{"Width", 10.0, 1});
-    reg.AddComponent(paramWidth, domain::UINodeComponent{50, 50});  // Position for UI node
-
-    // Global Parameter: Height
-    auto paramHeight = reg.CreateEntity();
-    reg.AddComponent(paramHeight, domain::GlobalParameterComponent{"Height", 20.0, 1});
-    reg.AddComponent(paramHeight, domain::UINodeComponent{50, 150});  // Position for UI node
-
-    // Box Feature Setup
-    // Create expressions for box dimensions
-    domain::EntityID boxWExprId = reg.CreateEntity();
-    reg.AddComponent(boxWExprId,
-                     domain::ExpressionComponent{10.0, 1, domain::ExpressionComponent::SourceType::STATIC_VALUE, 10.0});
-
-    domain::EntityID boxLExprId = reg.CreateEntity();
-    reg.AddComponent(boxLExprId,
-                     domain::ExpressionComponent{10.0, 1, domain::ExpressionComponent::SourceType::STATIC_VALUE, 10.0});
-
-    domain::EntityID boxHExprId = reg.CreateEntity();
-    reg.AddComponent(boxHExprId,
-                     domain::ExpressionComponent{10.0, 1, domain::ExpressionComponent::SourceType::STATIC_VALUE, 10.0});
-
-    auto boxEntityId = reg.CreateEntity();
-    reg.AddComponent(boxEntityId, domain::NameComponent{"MyBox"});
-    reg.AddComponent(boxEntityId, domain::BoxComponent{boxWExprId, boxLExprId, boxHExprId});
-    reg.AddComponent(boxEntityId, domain::BodyComponent{});
-    reg.AddComponent(boxEntityId, domain::UINodeComponent{250, 50});  // Position for UI node
-
-    // Cylinder Feature Setup
-    // Create expressions for cylinder dimensions
-    domain::EntityID cylRExprId = reg.CreateEntity();
-    reg.AddComponent(cylRExprId,
-                     domain::ExpressionComponent{5.0, 1, domain::ExpressionComponent::SourceType::STATIC_VALUE, 5.0});
-
-    domain::EntityID cylHExprId = reg.CreateEntity();
-    reg.AddComponent(cylHExprId,
-                     domain::ExpressionComponent{15.0, 1, domain::ExpressionComponent::SourceType::STATIC_VALUE, 15.0});
-
-    auto cylEntityId = reg.CreateEntity();
-    reg.AddComponent(cylEntityId, domain::NameComponent{"MyCylinder"});
-    reg.AddComponent(cylEntityId, domain::CylinderComponent{cylRExprId, cylHExprId});
-    reg.AddComponent(cylEntityId, domain::BodyComponent{});
-    reg.AddComponent(cylEntityId, domain::UINodeComponent{450, 50});  // Position for UI node
+    
+    m_GraphEditorSystem = std::make_unique<ui::GraphEditorSystem>(ctx.GetRegistry(), ctx.GetCommandStack());
 }
 
 Editor::~Editor() {

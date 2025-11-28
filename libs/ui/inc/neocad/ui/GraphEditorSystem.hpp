@@ -2,10 +2,12 @@
 
 #include <string>
 
+#include "neocad/command/CommandStack.hpp"
 #include "neocad/domain/Registry.hpp"
 #include "neocad/domain/Types.hpp"
+#include <glm/vec2.hpp>
 
-// Vorwaertsdeklaration fuer den ImGui Context und ImNodes
+// Forward declaration for ImGui context and ImNodes
 namespace ImNodes {
 using Context = void;
 }
@@ -24,8 +26,9 @@ class GraphEditorSystem final {
     /**
      * \brief Constructs the GraphEditorSystem.
      * \param registry Reference to the ECS registry containing the model data.
+     * \param commandStack Reference to the command stack for executing commands.
      */
-    explicit GraphEditorSystem(domain::Registry& registry);
+    explicit GraphEditorSystem(domain::Registry& registry, nc::cmd::CommandStack& commandStack);
 
     /**
      * \brief Draws the main graph editor panel.
@@ -48,7 +51,11 @@ class GraphEditorSystem final {
 
    private:
     domain::Registry& m_Registry;
+    nc::cmd::CommandStack& m_CommandStack;
     bool m_IsVisible = true;
+
+    // Helper to store position of newly created nodes
+    glm::vec2 m_CurrentMouseGridPosition{0.0f, 0.0f};
 
     /**
      * \brief Draws a node representing a global parameter.
@@ -69,6 +76,19 @@ class GraphEditorSystem final {
      * \param isInput True if this is an input pin (left side), false for output (right side).
      */
     void DrawPinAndInput(domain::EntityID expressionId, const std::string& label, bool isInput);
+
+    /**
+     * \brief Retrieves a robust title for a node given its EntityID.
+     * \param entityId The EntityID of the node.
+     * \return The name of the node, or a fallback if NameComponent is missing.
+     */
+    std::string GetNodeTitle(domain::EntityID entityId);
+
+    /**
+     * \brief Updates and returns the current mouse position in grid space.
+     * \return The mouse position in the ImNodes grid coordinate system.
+     */
+    glm::vec2 GetCurrentMouseGridPosition();
 };
 
 }  // namespace nc::ui
