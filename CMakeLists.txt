@@ -93,16 +93,19 @@ FetchContent_MakeAvailable(sol2)
 FetchContent_Declare(
 		imnodes
 		GIT_REPOSITORY https://github.com/Nelarius/imnodes.git
-		GIT_TAG v0.5
+		GIT_TAG master
 )
-FetchContent_MakeAvailable(imnodes)
-
-add_library(imnodes STATIC
-    ${imnodes_SOURCE_DIR}/imnodes.cpp
-)
-target_include_directories(imnodes PUBLIC ${imnodes_SOURCE_DIR})
-target_link_libraries(imnodes PUBLIC imgui)
-target_compile_definitions(imnodes PUBLIC IMGUI_DEFINE_MATH_OPERATORS)
+FetchContent_GetProperties(imnodes)
+if(NOT imnodes_POPULATED)
+    cmake_policy(SET CMP0169 OLD) # Allow FetchContent_Populate
+    FetchContent_Populate(imnodes)
+    add_library(imnodes STATIC
+        ${imnodes_SOURCE_DIR}/imnodes.cpp
+    )
+    target_include_directories(imnodes PUBLIC ${imnodes_SOURCE_DIR})
+    target_link_libraries(imnodes PUBLIC imgui)
+    target_compile_definitions(imnodes PUBLIC IMGUI_DEFINE_MATH_OPERATORS)
+endif()
 
 # ----------------------------------------------------------
 # ImGui
@@ -110,7 +113,7 @@ target_compile_definitions(imnodes PUBLIC IMGUI_DEFINE_MATH_OPERATORS)
 FetchContent_Declare(
         imgui
         GIT_REPOSITORY https://github.com/ocornut/imgui.git
-        GIT_TAG v1.91.5
+        GIT_TAG docking
 )
 FetchContent_MakeAvailable(imgui)
 
