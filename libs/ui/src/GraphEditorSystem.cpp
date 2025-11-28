@@ -71,10 +71,24 @@ void GraphEditorSystem::DrawPanel() {
         }
 
         ImNodes::EndNodeEditor();
+
+        // Link Creation Logic
+        int start_attr, end_attr;
+        if (ImNodes::IsLinkCreated(&start_attr, &end_attr)) {
+            // start_attr is the Output Pin (GlobalParameter EntityID)
+            // end_attr is the Input Pin (ExpressionComponent EntityID)
+            // We want to link Expression -> GlobalParameter
+
+            auto* expr = m_Registry.GetComponent<domain::ExpressionComponent>(static_cast<domain::EntityID>(end_attr));
+            if (expr) {
+                expr->sourceType = domain::ExpressionComponent::SourceType::ENTITY_REFERENCE;
+                expr->sourceData = static_cast<domain::EntityID>(start_attr);
+                expr->version++;  // Trigger update
+            }
+        }
     }
     ImGui::End();
 }
-
 void GraphEditorSystem::DrawParameterNode(domain::EntityID parameterId) {
     auto* param = m_Registry.GetComponent<domain::GlobalParameterComponent>(parameterId);
     if (!param)
@@ -142,28 +156,46 @@ void GraphEditorSystem::DrawPinAndInput(domain::EntityID expressionId, const std
     if (isInput) {
         ImNodes::BeginInputAttribute(expressionId);
         ImGui::Text("%s", label.c_str());
+
+        // Draw value widget inside attribute to maintain layout
+        if (expr->sourceType == domain::ExpressionComponent::SourceType::STATIC_VALUE) {
+            ImGui::SameLine();
+            ImGui::PushItemWidth(60);
+            if (std::holds_alternative<double>(expr->sourceData)) {
+                double& val = std::get<double>(expr->sourceData);
+                if (ImGui::DragScalar(("##" + std::to_string(expressionId)).c_str(), ImGuiDataType_Double, &val,
+                                      0.1f)) {
+                    expr->evaluatedValue = val;
+                    expr->version++;
+                }
+            }
+            ImGui::PopItemWidth();
+        } else {
+            ImGui::SameLine();
+            ImGui::TextColored(ImVec4(0, 1, 0, 1), "[Ref]");
+        }
+
         ImNodes::EndInputAttribute();
     } else {
         ImNodes::BeginOutputAttribute(expressionId);
         ImGui::Text("%s", label.c_str());
-        ImNodes::EndOutputAttribute();
-    }
 
-    // Show value or reference info
-    if (expr->sourceType == domain::ExpressionComponent::SourceType::STATIC_VALUE) {
-        ImGui::SameLine();
-        ImGui::PushItemWidth(60);
-        if (std::holds_alternative<double>(expr->sourceData)) {
-            double& val = std::get<double>(expr->sourceData);
-            if (ImGui::DragScalar(("##" + std::to_string(expressionId)).c_str(), ImGuiDataType_Double, &val, 0.1f)) {
-                expr->evaluatedValue = val;
-                expr->version++;
+        // If output has a static value (like GlobalParam), show it
+        if (expr->sourceType == domain::ExpressionComponent::SourceType::STATIC_VALUE) {
+            ImGui::SameLine();
+            ImGui::PushItemWidth(60);
+            if (std::holds_alternative<double>(expr->sourceData)) {
+                double& val = std::get<double>(expr->sourceData);
+                if (ImGui::DragScalar(("##" + std::to_string(expressionId)).c_str(), ImGuiDataType_Double, &val,
+                                      0.1f)) {
+                    expr->evaluatedValue = val;
+                    expr->version++;
+                }
             }
+            ImGui::PopItemWidth();
         }
-        ImGui::PopItemWidth();
-    } else {
-        ImGui::SameLine();
-        ImGui::TextColored(ImVec4(0, 1, 0, 1), "[Ref]");
+
+        ImNodes::EndOutputAttribute();
     }
 }
 

@@ -53,6 +53,9 @@ static KeyEvent MakeKeyEventFromGLFW(int key, int /*action*/, int mods) {
         case GLFW_KEY_KP_ENTER:
             ev.code = KeyCode::Enter;
             break;
+        case GLFW_KEY_SPACE:
+            ev.code = KeyCode::Space;
+            break;
         default:
             ev.code = KeyCode::Unknown;
             break;

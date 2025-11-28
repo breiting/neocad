@@ -5,6 +5,8 @@
 #include <neocad/editor/Editor.hpp>
 #include <neocad/ui/GraphEditorSystem.hpp>
 
+using namespace nc::domain;
+
 namespace nc::editor {
 
 /**
@@ -20,21 +22,54 @@ Editor::Editor(ToolContext& ctx) : m_Ctx(ctx) {
 
     m_GraphEditorSystem = std::make_unique<ui::GraphEditorSystem>(ctx.GetRegistry());
 
-    // Setup Demo Data
+    // Setup Demo Data TODO: REMOVE !!!!
     auto& reg = ctx.GetRegistry();
-    auto param = reg.CreateEntity();
-    reg.AddComponent(param, domain::GlobalParameterComponent{"Width", 10.0, 1});
-    reg.AddComponent(param, domain::UINodeComponent{50, 50});
 
-    auto box = reg.CreateEntity();
-    reg.AddComponent(box, domain::NameComponent{"MyBox"});
-    reg.AddComponent(box, domain::BoxComponent{});
-    reg.AddComponent(box, domain::UINodeComponent{250, 50});
+    // Global Parameter: Width
+    auto paramWidth = reg.CreateEntity();
+    reg.AddComponent(paramWidth, domain::GlobalParameterComponent{"Width", 10.0, 1});
+    reg.AddComponent(paramWidth, domain::UINodeComponent{50, 50});  // Position for UI node
 
-    auto cyl = reg.CreateEntity();
-    reg.AddComponent(cyl, domain::NameComponent{"MyCylinder"});
-    reg.AddComponent(cyl, domain::CylinderComponent{});
-    reg.AddComponent(cyl, domain::UINodeComponent{450, 50});
+    // Global Parameter: Height
+    auto paramHeight = reg.CreateEntity();
+    reg.AddComponent(paramHeight, domain::GlobalParameterComponent{"Height", 20.0, 1});
+    reg.AddComponent(paramHeight, domain::UINodeComponent{50, 150});  // Position for UI node
+
+    // Box Feature Setup
+    // Create expressions for box dimensions
+    domain::EntityID boxWExprId = reg.CreateEntity();
+    reg.AddComponent(boxWExprId,
+                     domain::ExpressionComponent{10.0, 1, domain::ExpressionComponent::SourceType::STATIC_VALUE, 10.0});
+
+    domain::EntityID boxLExprId = reg.CreateEntity();
+    reg.AddComponent(boxLExprId,
+                     domain::ExpressionComponent{10.0, 1, domain::ExpressionComponent::SourceType::STATIC_VALUE, 10.0});
+
+    domain::EntityID boxHExprId = reg.CreateEntity();
+    reg.AddComponent(boxHExprId,
+                     domain::ExpressionComponent{10.0, 1, domain::ExpressionComponent::SourceType::STATIC_VALUE, 10.0});
+
+    auto boxEntityId = reg.CreateEntity();
+    reg.AddComponent(boxEntityId, domain::NameComponent{"MyBox"});
+    reg.AddComponent(boxEntityId, domain::BoxComponent{boxWExprId, boxLExprId, boxHExprId});
+    reg.AddComponent(boxEntityId, domain::BodyComponent{});
+    reg.AddComponent(boxEntityId, domain::UINodeComponent{250, 50});  // Position for UI node
+
+    // Cylinder Feature Setup
+    // Create expressions for cylinder dimensions
+    domain::EntityID cylRExprId = reg.CreateEntity();
+    reg.AddComponent(cylRExprId,
+                     domain::ExpressionComponent{5.0, 1, domain::ExpressionComponent::SourceType::STATIC_VALUE, 5.0});
+
+    domain::EntityID cylHExprId = reg.CreateEntity();
+    reg.AddComponent(cylHExprId,
+                     domain::ExpressionComponent{15.0, 1, domain::ExpressionComponent::SourceType::STATIC_VALUE, 15.0});
+
+    auto cylEntityId = reg.CreateEntity();
+    reg.AddComponent(cylEntityId, domain::NameComponent{"MyCylinder"});
+    reg.AddComponent(cylEntityId, domain::CylinderComponent{cylRExprId, cylHExprId});
+    reg.AddComponent(cylEntityId, domain::BodyComponent{});
+    reg.AddComponent(cylEntityId, domain::UINodeComponent{450, 50});  // Position for UI node
 }
 
 Editor::~Editor() {
@@ -194,8 +229,8 @@ void Editor::HandleKey(const KeyEvent& key) {
     }
 
     // 'g' to toggle graph editor
-    if (key.text == 'g' && m_GraphEditorSystem) {
-        LOG(Info) << "Editor: 'g' pressed, toggling graph editor...";
+    if (key.code == KeyCode::Space && m_GraphEditorSystem) {
+        LOG(Info) << "Editor: Space pressed, toggling graph editor...";
         m_GraphEditorSystem->ToggleVisibility();
     }
 

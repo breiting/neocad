@@ -31,6 +31,7 @@ enum class KeyCode {
     Unknown,    ///< An unknown or unhandled key code.
     Escape,     ///< The Escape key.
     Enter,      ///< The Enter/Return key.
+    Space,      ///< The Space key.
     // Add more key codes as needed
 };
 
