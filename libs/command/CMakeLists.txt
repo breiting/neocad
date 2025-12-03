@@ -1,10 +1,4 @@
 add_library(ontoflow_command STATIC
-	src/ExtrudeCommand.cpp
-	src/InsertBoxCommand.cpp
-	src/InsertCylinderCommand.cpp
-	src/InsertGlobalParameterCommand.cpp
-	src/ConnectExpressionCommand.cpp
-	src/UpdateParameterCommand.cpp
 )
 
 target_include_directories(ontoflow_command PUBLIC
