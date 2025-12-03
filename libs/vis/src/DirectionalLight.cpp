@@ -1,6 +1,6 @@
-#include <neocad/vis/DirectionalLight.hpp>
+#include <ontoflow/vis/DirectionalLight.hpp>
 
-namespace nc::vis {
+namespace of::vis {
 
 /**
  * \brief Returns the color of the light.
@@ -42,4 +42,4 @@ void DirectionalLight::SetColor(const glm::vec3 &color) {
 void DirectionalLight::SetDirection(const glm::vec3 &dir) {
     m_Direction = dir;
 }
-}  // namespace nc::vis
+}  // namespace of::vis

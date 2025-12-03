@@ -2,12 +2,12 @@
 #include <glad.h>
 // clang-format on
 #include <glm/gtc/constants.hpp>
-#include <neocad/vis/BaseGeometry.hpp>
-#include <neocad/vis/Mesh.hpp>
+#include <ontoflow/vis/BaseGeometry.hpp>
+#include <ontoflow/vis/Mesh.hpp>
 
-using namespace nc::domain;
+using namespace of::domain;
 
-namespace nc::vis {
+namespace of::vis {
 
 /**
  * \brief Constructs an empty Mesh object.
@@ -155,4 +155,4 @@ void Mesh::RecalculateNormals() {
     }
     m_Dirty = true;
 }
-}  // namespace nc::vis
+}  // namespace of::vis

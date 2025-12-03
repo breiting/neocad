@@ -1,9 +1,9 @@
 #include <fstream>
-#include <neocad/core/Logger.hpp>
-#include <neocad/vis/Shader.hpp>
+#include <ontoflow/core/Logger.hpp>
+#include <ontoflow/vis/Shader.hpp>
 #include <sstream>
 
-namespace nc::vis {
+namespace of::vis {
 
 Shader::Shader(const std::string& vertexSource, const std::string& fragmentSource) {
     compileShader(vertexSource, fragmentSource);
@@ -100,4 +100,4 @@ void Shader::SetBool(const std::string& name, bool value) {
 int Shader::GetUniformLocation(const std::string& name) const {
     return glGetUniformLocation(m_ID, name.c_str());
 }
-}  // namespace nc::vis
+}  // namespace of::vis

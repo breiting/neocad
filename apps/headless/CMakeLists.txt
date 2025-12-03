@@ -5,8 +5,8 @@ add_executable(headless
 target_link_libraries(headless
 PRIVATE
 	glm::glm
-	neocad_core
-	neocad_domain
-	neocad_occt
-	neocad_command
+	ontoflow_core
+	ontoflow_domain
+	ontoflow_occt
+	ontoflow_command
 )

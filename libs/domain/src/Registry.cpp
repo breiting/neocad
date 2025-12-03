@@ -1,9 +1,9 @@
 #include <algorithm>
-#include <neocad/core/Logger.hpp>
-#include <neocad/domain/Components.hpp>
-#include <neocad/domain/Registry.hpp>
+#include <ontoflow/core/Logger.hpp>
+#include <ontoflow/domain/Components.hpp>
+#include <ontoflow/domain/Registry.hpp>
 
-namespace nc::domain {
+namespace of::domain {
 
 std::vector<Entity> Registry::Entities() const {
     std::vector<Entity> result;
@@ -72,4 +72,4 @@ void Registry::Dump() const {
     LOG(Info) << "=== END REGISTRY ===\n";
 }
 
-}  // namespace nc::domain
+}  // namespace of::domain

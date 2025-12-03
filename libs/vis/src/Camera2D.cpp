@@ -1,7 +1,7 @@
 #include <algorithm>
-#include <neocad/vis/Camera2D.hpp>
+#include <ontoflow/vis/Camera2D.hpp>
 
-namespace nc::vis {
+namespace of::vis {
 
 /**
  * \brief Constructs a default 2D camera.
@@ -105,4 +105,4 @@ glm::vec3 Camera2D::ScreenToWorld(double x, double y) const {
     return worldPos;
 }
 
-}  // namespace nc::vis
+}  // namespace of::vis

@@ -1,11 +1,11 @@
-#include <neocad/domain/Components.hpp>
-#include <neocad/domain/GeometrySystem.hpp>
-#include <neocad/domain/Registry.hpp>
-#include <neocad/lua/CadAPI.hpp>
+#include <ontoflow/domain/Components.hpp>
+#include <ontoflow/domain/GeometrySystem.hpp>
+#include <ontoflow/domain/Registry.hpp>
+#include <ontoflow/lua/CadAPI.hpp>
 
-using namespace nc::domain;
+using namespace of::domain;
 
-namespace nc::lua {
+namespace of::lua {
 
 CadAPI::CadAPI(Registry& reg, GeometrySystem& geom) : m_Registry(reg), m_GeometrySystem(geom) {
 }
@@ -39,4 +39,4 @@ bool CadAPI::ExportSTL(Entity body, const std::string& path, double deflection) 
     return m_GeometrySystem.ExportSTL(body, path, deflection);
 }
 
-}  // namespace nc::lua
+}  // namespace of::lua

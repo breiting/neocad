@@ -1,4 +1,4 @@
-add_library(neocad_ui STATIC
+add_library(ontoflow_ui STATIC
 	src/Window.cpp
 	src/GraphEditorSystem.cpp
 	${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
@@ -6,7 +6,7 @@ add_library(neocad_ui STATIC
 )
 
 
-target_include_directories(neocad_ui
+target_include_directories(ontoflow_ui
 PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/inc
 	${imnodes_SOURCE_DIR}
@@ -14,14 +14,14 @@ PUBLIC
 	${imgui_SOURCE_DIR}/backends
 )
 
-target_link_libraries(neocad_ui
+target_link_libraries(ontoflow_ui
 PUBLIC
 	glfw
 	glad
 	glm::glm
-	neocad_core
-	neocad_domain
-	neocad_command
+	ontoflow_core
+	ontoflow_domain
+	ontoflow_command
 	imgui
 	imnodes
 )

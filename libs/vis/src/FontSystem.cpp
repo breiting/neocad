@@ -1,10 +1,10 @@
 #include <filesystem>
-#include <neocad/core/Logger.hpp> // Include Logger
-#include <neocad/vis/FontSystem.hpp>
+#include <ontoflow/core/Logger.hpp> // Include Logger
+#include <ontoflow/vis/FontSystem.hpp>
 
 #include "roboto_regular.h"
 
-namespace nc::vis {
+namespace of::vis {
 
 /**
  * \brief Loads font data from a memory buffer and builds its glyph atlas.
@@ -72,4 +72,4 @@ bool FontSystem::LoadDefaultFont() {
     return LoadFromMemory(g_RobotoRegular, PIXEL_HEIGHT);
 }
 
-}  // namespace nc::vis
+}  // namespace of::vis

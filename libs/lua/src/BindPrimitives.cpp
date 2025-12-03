@@ -1,10 +1,10 @@
-#include <neocad/domain/Entity.hpp>
-#include <neocad/lua/Bindings.hpp>
+#include <ontoflow/domain/Entity.hpp>
+#include <ontoflow/lua/Bindings.hpp>
 #include <vector>
 
-using namespace nc::domain;
+using namespace of::domain;
 
-namespace nc::lua {
+namespace of::lua {
 
 void BindPrimitives(sol::table &cad, CadAPI &api) {
     cad.set_function("point", [&api](double x, double y, double z) {
@@ -18,4 +18,4 @@ void BindPrimitives(sol::table &cad, CadAPI &api) {
     });
 }
 
-}  // namespace nc::lua
+}  // namespace of::lua

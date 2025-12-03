@@ -1,4 +1,4 @@
-add_library(neocad_editor STATIC
+add_library(ontoflow_editor STATIC
 	src/Editor.cpp
 	src/InsertCircleTool.cpp
 	src/InsertPointTool.cpp
@@ -6,15 +6,15 @@ add_library(neocad_editor STATIC
 	src/ViewController.cpp
 )
 
-target_include_directories(neocad_editor PUBLIC
+target_include_directories(ontoflow_editor PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/inc
 )
 
-target_link_libraries(neocad_editor
+target_link_libraries(ontoflow_editor
 PUBLIC
 	project_settings
-	neocad_core
-	neocad_domain
-	neocad_command
-	neocad_ui
+	ontoflow_core
+	ontoflow_domain
+	ontoflow_command
+	ontoflow_ui
 )

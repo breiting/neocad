@@ -1,23 +1,23 @@
 #include <gtest/gtest.h>
 
 #include <cstddef>
-#include <neocad/domain/Components.hpp>
-#include <neocad/domain/GeometrySystem.hpp>
-#include <neocad/domain/IGeometryBackend.hpp>
-#include <neocad/domain/Registry.hpp>
-#include <neocad/editor/Editor.hpp>
-#include <neocad/editor/InsertPointTool.hpp>
-#include <neocad/editor/SketchCurveTool.hpp>
-#include <neocad/command/CommandStack.hpp>
-#include <neocad/vis/Camera2D.hpp>
-#include <neocad/vis/Camera3D.hpp>
+#include <ontoflow/command/CommandStack.hpp>
+#include <ontoflow/domain/Components.hpp>
+#include <ontoflow/domain/GeometrySystem.hpp>
+#include <ontoflow/domain/IGeometryBackend.hpp>
+#include <ontoflow/domain/Registry.hpp>
+#include <ontoflow/editor/Editor.hpp>
+#include <ontoflow/editor/InsertPointTool.hpp>
+#include <ontoflow/editor/SketchCurveTool.hpp>
+#include <ontoflow/vis/Camera2D.hpp>
+#include <ontoflow/vis/Camera3D.hpp>
 
-#include "neocad/editor/InputEvent.hpp"
+#include "ontoflow/editor/InputEvent.hpp"
 
-using namespace nc::editor;
-using namespace nc::domain;
-using namespace nc::cmd;
-using namespace nc::vis; // for Camera2D
+using namespace of::editor;
+using namespace of::domain;
+using namespace of::cmd;
+using namespace of::vis;  // for Camera2D
 
 // --- Minimal mock backend for GeometrySystem --------------------------------
 class DummyBackend : public IGeometryBackend {
@@ -91,7 +91,9 @@ class TestTool : public ITool {
         ++inputCount;
         return false;
     }
-    std::string GetName() const override { return "TestTool"; }
+    std::string GetName() const override {
+        return "TestTool";
+    }
 };
 
 TEST(EditorBasics, ModeSwitchCallsEnterExit) {
@@ -110,7 +112,7 @@ TEST(EditorBasics, ModeSwitchCallsEnterExit) {
     auto toolInsert = std::make_unique<TestTool>();
     auto* ptrInsert = toolInsert.get();
     editor.RegisterTool(EditorMode::InsertPoint, std::move(toolInsert));
-    
+
     // Explicitly start in Normal mode to activate the tool
     editor.SetMode(EditorMode::Normal);
     EXPECT_EQ(ptrNormal->enterCount, 1);
@@ -120,7 +122,7 @@ TEST(EditorBasics, ModeSwitchCallsEnterExit) {
     EXPECT_EQ(ptrNormal->exitCount, 1);
     EXPECT_EQ(ptrInsert->enterCount, 1);
     EXPECT_EQ(ptrInsert->exitCount, 0);
-    
+
     // Switch back to Normal
     editor.SetMode(EditorMode::Normal);
     EXPECT_EQ(ptrInsert->exitCount, 1);
@@ -151,7 +153,7 @@ TEST(InsertPointToolTests, CreatesPointOnClick) {
     ToolContext ctx(reg, geom, cmdStack);
 
     Editor editor(ctx);
-    
+
     // Fix: Set camera so tool doesn't crash
     auto cam = std::make_shared<Camera3D>();
     cam->SetViewport(100, 100);
@@ -163,9 +165,9 @@ TEST(InsertPointToolTests, CreatesPointOnClick) {
 
     MouseButtonEvent e{MouseButton::Left, true, {10, 20}};
     InputEvent evt({InputEventType::MouseButton, e});
-    
+
     editor.OnInput(evt);
-    
+
     EXPECT_EQ(CountPoints(reg), 1u);
 }
 
@@ -175,7 +177,7 @@ TEST(SketchCurveTool, FaceCreation) {
     GeometrySystem geom(reg, backend);
     CommandStack cmdStack(reg, geom);
     ToolContext ctx{reg, geom, cmdStack};
-    
+
     // We need an editor attached to context because SketchCurveTool calls GetEditor()->SetMode
     Editor editor(ctx);
     // Setup camera

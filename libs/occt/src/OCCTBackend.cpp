@@ -12,12 +12,12 @@
 #include <TopoDS_Shape.hxx>
 #include <gp_Pnt.hxx>
 #include <gp_Vec.hxx>
-#include <neocad/core/Logger.hpp>
-#include <neocad/occt/OCCTBackend.hpp>
+#include <ontoflow/core/Logger.hpp>
+#include <ontoflow/occt/OCCTBackend.hpp>
 
-using namespace nc::domain;
+using namespace of::domain;
 
-namespace nc::occt {
+namespace of::occt {
 
 OCCTBackend::OCCTBackend() = default;
 
@@ -144,4 +144,4 @@ bool OCCTBackend::ExportShapeToSTL(BackendShapeHandle handle, const std::string&
     return true;
 }
 
-}  // namespace nc::occt
+}  // namespace of::occt

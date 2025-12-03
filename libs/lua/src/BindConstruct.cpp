@@ -1,9 +1,9 @@
-#include <neocad/domain/Entity.hpp>
-#include <neocad/lua/Bindings.hpp>
+#include <ontoflow/domain/Entity.hpp>
+#include <ontoflow/lua/Bindings.hpp>
 
-using namespace nc::domain;
+using namespace of::domain;
 
-namespace nc::lua {
+namespace of::lua {
 
 void BindConstruct(sol::table &cad, CadAPI &api) {
     cad.set_function("extrude", [&api](Entity f, double h) {
@@ -11,4 +11,4 @@ void BindConstruct(sol::table &cad, CadAPI &api) {
     });
 }
 
-}  // namespace nc::lua
+}  // namespace of::lua

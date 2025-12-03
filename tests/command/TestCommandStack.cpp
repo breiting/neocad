@@ -1,13 +1,13 @@
 #include <gtest/gtest.h>
 
-#include <neocad/command/CommandStack.hpp>
-#include <neocad/command/ICommand.hpp>
-#include <neocad/domain/GeometrySystem.hpp>
-#include <neocad/domain/IGeometryBackend.hpp>
-#include <neocad/domain/Registry.hpp>
+#include <ontoflow/command/CommandStack.hpp>
+#include <ontoflow/command/ICommand.hpp>
+#include <ontoflow/domain/GeometrySystem.hpp>
+#include <ontoflow/domain/IGeometryBackend.hpp>
+#include <ontoflow/domain/Registry.hpp>
 
-using namespace nc::cmd;
-using namespace nc::domain;
+using namespace of::cmd;
+using namespace of::domain;
 
 // --- Mocks ---
 

@@ -1,8 +1,8 @@
-#include <neocad/command/InsertBoxCommand.hpp>
-#include <neocad/domain/Components.hpp>
-#include <neocad/domain/Registry.hpp>
+#include <ontoflow/command/InsertBoxCommand.hpp>
+#include <ontoflow/domain/Components.hpp>
+#include <ontoflow/domain/Registry.hpp>
 
-namespace nc::cmd {
+namespace of::cmd {
 
 InsertBoxCommand::InsertBoxCommand(double width, double length, double height, domain::vec2 uiPosition)
     : m_Width(width), m_Length(length), m_Height(height), m_UIPosition(uiPosition) {}
@@ -67,4 +67,4 @@ void InsertBoxCommand::Undo(domain::Registry& registry, domain::GeometrySystem& 
     m_ExpressionIds.clear();
 }
 
-}  // namespace nc::cmd
+}  // namespace of::cmd

@@ -1,15 +1,15 @@
 #include <gtest/gtest.h>
 
-#include <neocad/domain/Components.hpp>
-#include <neocad/domain/GeometrySystem.hpp>
-#include <neocad/domain/Registry.hpp>
-#include <neocad/lua/CadAPI.hpp>
-#include <neocad/lua/LuaEngine.hpp>
-#include <neocad/occt/OCCTBackend.hpp>
+#include <ontoflow/domain/Components.hpp>
+#include <ontoflow/domain/GeometrySystem.hpp>
+#include <ontoflow/domain/Registry.hpp>
+#include <ontoflow/lua/CadAPI.hpp>
+#include <ontoflow/lua/LuaEngine.hpp>
+#include <ontoflow/occt/OCCTBackend.hpp>
 
-using namespace nc::domain;
-using namespace nc::occt;
-using namespace nc::lua;
+using namespace of::domain;
+using namespace of::occt;
+using namespace of::lua;
 
 TEST(LuaBasic, Simple) {
     Registry reg;

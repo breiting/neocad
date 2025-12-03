@@ -3,14 +3,14 @@
 #include <cstdint>
 #include <fstream>
 #include <limits>
-#include <neocad/core/Logger.hpp> // Include Logger
-#include <neocad/vis/StlReader.hpp>
+#include <ontoflow/core/Logger.hpp> // Include Logger
+#include <ontoflow/vis/StlReader.hpp>
 #include <sstream>
 #include <string>
 
-using namespace nc::domain;
+using namespace of::domain;
 
-namespace nc::vis {
+namespace of::vis {
 
 namespace {
 
@@ -230,4 +230,4 @@ enum class StlFormat {
     }
 }
 
-}  // namespace nc::vis
+}  // namespace of::vis

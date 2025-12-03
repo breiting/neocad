@@ -1,8 +1,8 @@
-#include <neocad/command/InsertGlobalParameterCommand.hpp>
-#include <neocad/domain/Components.hpp>
-#include <neocad/domain/Registry.hpp>
+#include <ontoflow/command/InsertGlobalParameterCommand.hpp>
+#include <ontoflow/domain/Components.hpp>
+#include <ontoflow/domain/Registry.hpp>
 
-namespace nc::cmd {
+namespace of::cmd {
 
 InsertGlobalParameterCommand::InsertGlobalParameterCommand(std::string name, double initialValue, domain::vec2 uiPosition)
     : m_Name(std::move(name)), m_InitialValue(initialValue), m_UIPosition(uiPosition) {}
@@ -25,4 +25,4 @@ void InsertGlobalParameterCommand::Undo(domain::Registry& registry, domain::Geom
     }
 }
 
-} // namespace nc::cmd
+} // namespace of::cmd

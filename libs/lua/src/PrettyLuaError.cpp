@@ -1,6 +1,6 @@
 #include <fstream>
-#include <neocad/core/Logger.hpp>
-#include <neocad/lua/PrettyLuaError.hpp>
+#include <ontoflow/core/Logger.hpp>
+#include <ontoflow/lua/PrettyLuaError.hpp>
 #include <regex>
 #include <sstream>
 
@@ -69,7 +69,7 @@ std::string makeContext(const std::string& file, int line, int pad = 2) {
 
 }  // namespace
 
-namespace nc::lua {
+namespace of::lua {
 
 LuaErrorPretty FormatLuaError(lua_State* L, const sol::error& e) {
     (void)L;  // optional: luaL_traceback
@@ -123,4 +123,4 @@ void PrintLuaErrorPretty(const LuaErrorPretty& pe) {
     LOG(Error) << oss.str();
 }
 
-}  // namespace nc::lua
+}  // namespace of::lua

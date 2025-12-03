@@ -1,8 +1,8 @@
 #include <algorithm>
-#include <neocad/domain/Components.hpp>
-#include <neocad/domain/FeatureEvaluationSystem.hpp>
+#include <ontoflow/domain/Components.hpp>
+#include <ontoflow/domain/FeatureEvaluationSystem.hpp>
 
-namespace nc::domain {
+namespace of::domain {
 
 FeatureEvaluationSystem::FeatureEvaluationSystem(Registry& registry, IGeometryBackend& backend)
     : m_registry(registry), m_backend(backend) {
@@ -79,4 +79,4 @@ uint64_t FeatureEvaluationSystem::GetHighestExpressionVersion(std::initializer_l
     return maxVer;
 }
 
-}  // namespace nc::domain
+}  // namespace of::domain

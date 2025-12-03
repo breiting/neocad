@@ -2,18 +2,18 @@
 #include <imnodes.h>
 
 #include <algorithm>
-#include <neocad/command/ConnectExpressionCommand.hpp>
-#include <neocad/command/InsertBoxCommand.hpp>
-#include <neocad/command/InsertCylinderCommand.hpp>
-#include <neocad/command/InsertGlobalParameterCommand.hpp>
-#include <neocad/command/UpdateParameterCommand.hpp>
-#include <neocad/domain/Components.hpp>
-#include <neocad/ui/GraphEditorSystem.hpp>
+#include <ontoflow/command/ConnectExpressionCommand.hpp>
+#include <ontoflow/command/InsertBoxCommand.hpp>
+#include <ontoflow/command/InsertCylinderCommand.hpp>
+#include <ontoflow/command/InsertGlobalParameterCommand.hpp>
+#include <ontoflow/command/UpdateParameterCommand.hpp>
+#include <ontoflow/domain/Components.hpp>
+#include <ontoflow/ui/GraphEditorSystem.hpp>
 #include <string>
 
-namespace nc::ui {
+namespace of::ui {
 
-GraphEditorSystem::GraphEditorSystem(domain::Registry& registry, nc::cmd::CommandStack& commandStack)
+GraphEditorSystem::GraphEditorSystem(domain::Registry& registry, of::cmd::CommandStack& commandStack)
     : m_Registry(registry), m_CommandStack(commandStack) {
 }
 
@@ -77,20 +77,20 @@ void GraphEditorSystem::DrawPanel() {
             // LOG(Info) << "NodeEditorContextMenu IS ACTIVE AND DRAWING!"; // Added log
             if (ImGui::MenuItem("Add Global Parameter")) {
                 // LOG(Info) << "Adding Global Parameter";
-                m_CommandStack.Push(std::make_unique<nc::cmd::InsertGlobalParameterCommand>(
+                m_CommandStack.Push(std::make_unique<of::cmd::InsertGlobalParameterCommand>(
                     "New Parameter", 1.0, m_CurrentMouseGridPosition));
                 ImGui::CloseCurrentPopup();
             }
             if (ImGui::MenuItem("Add Box Feature")) {
                 // LOG(Info) << "Adding Box Feature";
                 m_CommandStack.Push(
-                    std::make_unique<nc::cmd::InsertBoxCommand>(10.0, 10.0, 10.0, m_CurrentMouseGridPosition));
+                    std::make_unique<of::cmd::InsertBoxCommand>(10.0, 10.0, 10.0, m_CurrentMouseGridPosition));
                 ImGui::CloseCurrentPopup();
             }
             if (ImGui::MenuItem("Add Cylinder Feature")) {
                 // LOG(Info) << "Adding Cylinder Feature";
                 m_CommandStack.Push(
-                    std::make_unique<nc::cmd::InsertCylinderCommand>(5.0, 10.0, m_CurrentMouseGridPosition));
+                    std::make_unique<of::cmd::InsertCylinderCommand>(5.0, 10.0, m_CurrentMouseGridPosition));
                 ImGui::CloseCurrentPopup();
             }
             ImGui::EndPopup();
@@ -124,7 +124,7 @@ void GraphEditorSystem::DrawParameterNode(domain::EntityID parameterId) {
     // Use UpdateParameterCommand when value changes
     double val = param->value;
     if (ImGui::DragScalar("##value", ImGuiDataType_Double, &val, 0.1f)) {
-        m_CommandStack.Push(std::make_unique<nc::cmd::UpdateParameterCommand>(parameterId, val));
+        m_CommandStack.Push(std::make_unique<of::cmd::UpdateParameterCommand>(parameterId, val));
     }
     ImGui::PopItemWidth();
     ImNodes::EndOutputAttribute();
@@ -202,7 +202,7 @@ void GraphEditorSystem::DrawPinAndInput(domain::EntityID expressionId, const std
                 // Da wir nur die value-Variable haben, fuehren wir es der Einfachheit halber aus:
                 // In einem echten System muesste hier ein UpdateStaticExpressionValueCommand verwendet werden.
                 // Fuer den Prototyp nehmen wir an, dass UpdateParameterCommand beide faelle abdeckt.
-                m_CommandStack.Push(std::make_unique<nc::cmd::UpdateParameterCommand>(expressionId, val));
+                m_CommandStack.Push(std::make_unique<of::cmd::UpdateParameterCommand>(expressionId, val));
             }
             ImGui::PopItemWidth();
         } else {
@@ -240,4 +240,4 @@ glm::vec2 GraphEditorSystem::GetCurrentMouseGridPosition() {
     return {mouse_pos_editor_space.x, mouse_pos_editor_space.y};
 }
 
-}  // namespace nc::ui
+}  // namespace of::ui

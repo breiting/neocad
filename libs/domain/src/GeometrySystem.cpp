@@ -1,10 +1,10 @@
-#include <neocad/domain/GeometrySystem.hpp>
+#include <ontoflow/domain/GeometrySystem.hpp>
 
-#include <neocad/core/Logger.hpp>
-#include "neocad/domain/Components.hpp"
-#include "neocad/domain/Entity.hpp"
+#include <ontoflow/core/Logger.hpp>
+#include "ontoflow/domain/Components.hpp"
+#include "ontoflow/domain/Entity.hpp"
 
-namespace nc::domain {
+namespace of::domain {
 
 GeometrySystem::GeometrySystem(Registry& reg, IGeometryBackend& backend) : m_Registry(reg), m_Backend(backend) {
 }
@@ -105,4 +105,4 @@ bool GeometrySystem::BuildPolygonFromFace(Entity face, Polygon& outPoly) const {
     return true;
 }
 
-}  // namespace nc::domain
+}  // namespace of::domain

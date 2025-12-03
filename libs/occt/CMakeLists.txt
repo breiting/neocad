@@ -1,9 +1,9 @@
-add_library(neocad_occt STATIC
+add_library(ontoflow_occt STATIC
 	src/OCCTBackend.cpp
 	src/STEPImporter.cpp
 )
 
-target_include_directories(neocad_occt PUBLIC
+target_include_directories(ontoflow_occt PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/inc
 	${CMAKE_CURRENT_SOURCE_DIR}/../domain/inc
 )
@@ -35,11 +35,11 @@ endif()
 
 message(STATUS "OpenCASCADE: USING ${OpenCASCADE_VERSION}")
 
-target_link_libraries(neocad_occt PRIVATE ${OCCT_LIBS})
-target_include_directories(neocad_occt PUBLIC ${OpenCASCADE_INCLUDE_DIR})
+target_link_libraries(ontoflow_occt PRIVATE ${OCCT_LIBS})
+target_include_directories(ontoflow_occt PUBLIC ${OpenCASCADE_INCLUDE_DIR})
 
-target_link_libraries(neocad_occt
+target_link_libraries(ontoflow_occt
 PUBLIC
-	neocad_core
-	neocad_domain
+	ontoflow_core
+	ontoflow_domain
 )

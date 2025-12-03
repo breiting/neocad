@@ -1,11 +1,11 @@
 #include <fstream>
-#include <neocad/core/Logger.hpp> // Include Logger
-#include <neocad/vis/FontLoaderSTB.hpp>
+#include <ontoflow/core/Logger.hpp> // Include Logger
+#include <ontoflow/vis/FontLoaderSTB.hpp>
 #include <vector>
 
 #include "stb_truetype.h"
 
-namespace nc::vis {
+namespace of::vis {
 
 /**
  * \brief Internal helper to load font data using stb_truetype.
@@ -126,4 +126,4 @@ const FontGlyph* FontLoaderSTB::GetGlyph(char c) const {
     return (it != m_Glyphs.end()) ? &it->second : nullptr;
 }
 
-}  // namespace nc::vis
+}  // namespace of::vis

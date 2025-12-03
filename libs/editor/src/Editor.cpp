@@ -1,13 +1,13 @@
 #include <imnodes.h>
 
 #include <cctype>
-#include <neocad/core/Logger.hpp>
-#include <neocad/editor/Editor.hpp>
-#include <neocad/ui/GraphEditorSystem.hpp>
+#include <ontoflow/core/Logger.hpp>
+#include <ontoflow/editor/Editor.hpp>
+#include <ontoflow/ui/GraphEditorSystem.hpp>
 
-using namespace nc::domain;
+using namespace of::domain;
 
-namespace nc::editor {
+namespace of::editor {
 
 /**
  * \brief Constructs an Editor instance.
@@ -231,4 +231,4 @@ void Editor::ProcessCommandBuffer() {
     m_CommandBuffer.clear();
 }
 
-}  // namespace nc::editor
+}  // namespace of::editor

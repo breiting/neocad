@@ -1,10 +1,10 @@
 #include <iostream>
-#include <neocad/core/Logger.hpp>
-#include <neocad/lua/Bindings.hpp>
-#include <neocad/lua/LuaEngine.hpp>
-#include <neocad/lua/PrettyLuaError.hpp>
+#include <ontoflow/core/Logger.hpp>
+#include <ontoflow/lua/Bindings.hpp>
+#include <ontoflow/lua/LuaEngine.hpp>
+#include <ontoflow/lua/PrettyLuaError.hpp>
 
-namespace nc::lua {
+namespace of::lua {
 
 LuaEngine::LuaEngine(CadAPI& api) : m_API(api) {
 }
@@ -129,4 +129,4 @@ void LuaEngine::Reset() {
     }
 }
 
-}  // namespace nc::lua
+}  // namespace of::lua

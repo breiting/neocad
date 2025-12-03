@@ -1,7 +1,7 @@
-#include <neocad/domain/Components.hpp>
-#include <neocad/domain/ExpressionSystem.hpp>
+#include <ontoflow/domain/Components.hpp>
+#include <ontoflow/domain/ExpressionSystem.hpp>
 
-namespace nc::domain {
+namespace of::domain {
 
 ExpressionSystem::ExpressionSystem(Registry& registry) : m_registry(registry) {
 }
@@ -36,4 +36,4 @@ void ExpressionSystem::EvaluateExpression(EntityID expressionId) {
     }
 }
 
-}  // namespace nc::domain
+}  // namespace of::domain

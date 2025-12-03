@@ -1,4 +1,4 @@
-add_library(neocad_command STATIC
+add_library(ontoflow_command STATIC
 	src/ExtrudeCommand.cpp
 	src/InsertBoxCommand.cpp
 	src/InsertCylinderCommand.cpp
@@ -7,13 +7,13 @@ add_library(neocad_command STATIC
 	src/UpdateParameterCommand.cpp
 )
 
-target_include_directories(neocad_command PUBLIC
+target_include_directories(ontoflow_command PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/inc
 )
 
-target_link_libraries(neocad_command
+target_link_libraries(ontoflow_command
 PUBLIC
 	glm::glm
-	neocad_core
-	neocad_domain
+	ontoflow_core
+	ontoflow_domain
 )

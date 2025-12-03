@@ -1,9 +1,9 @@
-#include <neocad/domain/Entity.hpp>
-#include <neocad/lua/Bindings.hpp>
+#include <ontoflow/domain/Entity.hpp>
+#include <ontoflow/lua/Bindings.hpp>
 
-using namespace nc::domain;
+using namespace of::domain;
 
-namespace nc::lua {
+namespace of::lua {
 
 void BindIO(sol::table& cad, CadAPI& api) {
     cad.set_function("save_step", [&api](Entity b, const std::string& path) {
@@ -13,4 +13,4 @@ void BindIO(sol::table& cad, CadAPI& api) {
         return api.ExportSTL(b, path);
     });
 }
-}  // namespace nc::lua
+}  // namespace of::lua

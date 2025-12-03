@@ -1,8 +1,8 @@
-#include <neocad/command/ConnectExpressionCommand.hpp>
-#include <neocad/domain/Components.hpp>
-#include <neocad/domain/Registry.hpp>
+#include <ontoflow/command/ConnectExpressionCommand.hpp>
+#include <ontoflow/domain/Components.hpp>
+#include <ontoflow/domain/Registry.hpp>
 
-namespace nc::cmd {
+namespace of::cmd {
 
 ConnectExpressionCommand::ConnectExpressionCommand(domain::EntityID targetExpressionEntityId, domain::EntityID sourceParameterEntityId)
     : m_TargetExpressionEntityId(targetExpressionEntityId), m_SourceParameterEntityId(sourceParameterEntityId) {}
@@ -36,4 +36,4 @@ void ConnectExpressionCommand::Undo(domain::Registry& registry, domain::Geometry
     expr->version = m_OriginalVersion;
 }
 
-} // namespace nc::cmd
+} // namespace of::cmd

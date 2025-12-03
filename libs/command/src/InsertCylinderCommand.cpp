@@ -1,8 +1,8 @@
-#include <neocad/command/InsertCylinderCommand.hpp>
-#include <neocad/domain/Components.hpp>
-#include <neocad/domain/Registry.hpp>
+#include <ontoflow/command/InsertCylinderCommand.hpp>
+#include <ontoflow/domain/Components.hpp>
+#include <ontoflow/domain/Registry.hpp>
 
-namespace nc::cmd {
+namespace of::cmd {
 
 InsertCylinderCommand::InsertCylinderCommand(double radius, double height, domain::vec2 uiPosition)
 
@@ -100,4 +100,4 @@ void InsertCylinderCommand::Undo(domain::Registry& registry, domain::GeometrySys
     m_ExpressionIds.clear();
 }
 
-}  // namespace nc::cmd
+}  // namespace of::cmd

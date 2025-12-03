@@ -1,11 +1,11 @@
-#include <neocad/vis/Light.hpp>
-#include <neocad/vis/PointSetMaterial.hpp>
-#include <neocad/vis/Shader.hpp>
+#include <ontoflow/vis/Light.hpp>
+#include <ontoflow/vis/PointSetMaterial.hpp>
+#include <ontoflow/vis/Shader.hpp>
 
 #include "assets/pointset_frag.h"
 #include "assets/pointset_vert.h"
 
-namespace nc::vis {
+namespace of::vis {
 
 /**
  * \brief Constructs a PointSetMaterial.
@@ -34,4 +34,4 @@ void PointSetMaterial::Apply(const glm::mat4& model, const glm::mat4& view, cons
     m_Shader->SetVec4("u_Color", m_Color);
 }
 
-}  // namespace nc::vis
+}  // namespace of::vis

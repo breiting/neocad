@@ -1,46 +1,46 @@
 #include <CLI/CLI.hpp>
 #include <memory>
-#include <neocad/command/ExtrudeCommand.hpp>
-#include <neocad/core/Logger.hpp>
-#include <neocad/domain/Components.hpp>
-#include <neocad/domain/Entity.hpp>
-#include <neocad/domain/ExpressionSystem.hpp>         // Added
-#include <neocad/domain/FeatureEvaluationSystem.hpp>  // Added
-#include <neocad/domain/GeometrySystem.hpp>
-#include <neocad/domain/IGeometryBackend.hpp>
-#include <neocad/domain/PrimitiveFactory.hpp>
-#include <neocad/domain/Query.hpp>
-#include <neocad/domain/Registry.hpp>
-#include <neocad/editor/Editor.hpp>
-#include <neocad/editor/InsertCircleTool.hpp>
-#include <neocad/editor/InsertPointTool.hpp>
-#include <neocad/editor/SketchCurveTool.hpp>
-#include <neocad/editor/ToolContext.hpp>
-#include <neocad/occt/OCCTBackend.hpp>
-#include <neocad/occt/STEPImporter.hpp>
-#include <neocad/ui/Window.hpp>
-#include <neocad/vis/Camera2D.hpp>
-#include <neocad/vis/Camera3D.hpp>
-#include <neocad/vis/Mesh.hpp>
-#include <neocad/vis/OpenGLRenderer.hpp>
-#include <neocad/vis/RenderingSystem.hpp>
-#include <neocad/vis/StlReader.hpp>
+#include <ontoflow/command/ExtrudeCommand.hpp>
+#include <ontoflow/core/Logger.hpp>
+#include <ontoflow/domain/Components.hpp>
+#include <ontoflow/domain/Entity.hpp>
+#include <ontoflow/domain/ExpressionSystem.hpp>         // Added
+#include <ontoflow/domain/FeatureEvaluationSystem.hpp>  // Added
+#include <ontoflow/domain/GeometrySystem.hpp>
+#include <ontoflow/domain/IGeometryBackend.hpp>
+#include <ontoflow/domain/PrimitiveFactory.hpp>
+#include <ontoflow/domain/Query.hpp>
+#include <ontoflow/domain/Registry.hpp>
+#include <ontoflow/editor/Editor.hpp>
+#include <ontoflow/editor/InsertCircleTool.hpp>
+#include <ontoflow/editor/InsertPointTool.hpp>
+#include <ontoflow/editor/SketchCurveTool.hpp>
+#include <ontoflow/editor/ToolContext.hpp>
+#include <ontoflow/occt/OCCTBackend.hpp>
+#include <ontoflow/occt/STEPImporter.hpp>
+#include <ontoflow/ui/Window.hpp>
+#include <ontoflow/vis/Camera2D.hpp>
+#include <ontoflow/vis/Camera3D.hpp>
+#include <ontoflow/vis/Mesh.hpp>
+#include <ontoflow/vis/OpenGLRenderer.hpp>
+#include <ontoflow/vis/RenderingSystem.hpp>
+#include <ontoflow/vis/StlReader.hpp>
 
 #include "CLI/CLI.hpp"
 
-using namespace nc::domain;
-using namespace nc::occt;
-using namespace nc::cmd;
-using namespace nc::editor;
-using namespace nc::ui;
-using namespace nc::vis;
+using namespace of::domain;
+using namespace of::occt;
+using namespace of::cmd;
+using namespace of::editor;
+using namespace of::ui;
+using namespace of::vis;
 
 constexpr int WINDOW_WIDTH = 1280;
 constexpr int WINDOW_HEIGHT = 800;
-constexpr const char* APP_NAME = "neocad";
+constexpr const char* APP_NAME = "ontoflow";
 
 static KeyEvent MakeKeyEventFromGLFW(int key, int /*action*/, int mods) {
-    using namespace nc;
+    using namespace of;
     KeyEvent ev{};
     ev.pressed = true;
     ev.ctrl = (mods & GLFW_MOD_CONTROL) != 0;
@@ -76,7 +76,7 @@ static KeyEvent MakeKeyEventFromGLFW(int key, int /*action*/, int mods) {
 }
 
 Entity LoadSTLtoECS(const std::string& file, Registry& ecs) {
-    nc::domain::Mesh mesh;
+    of::domain::Mesh mesh;
     StlReader reader;
 
     if (!reader.LoadFromFile(file, mesh)) {
@@ -93,7 +93,7 @@ Entity LoadSTLtoECS(const std::string& file, Registry& ecs) {
 }
 
 Entity CreateTestFace5(Registry& ecs) {
-    using namespace nc::domain;
+    using namespace of::domain;
 
     // --- 1) 5 POSITIONEN (VERTICES) ---
     std::vector<glm::vec3> pts = {

@@ -1,16 +1,16 @@
-add_executable(neocad
+add_executable(ontoflow
 	src/main.cpp
 )
 
-target_link_libraries(neocad
+target_link_libraries(ontoflow
 PRIVATE
 	glm::glm
-	neocad_core
-	neocad_domain
-	neocad_occt
-	neocad_command
-	neocad_editor
-	neocad_ui
-	neocad_vis
+	ontoflow_core
+	ontoflow_domain
+	ontoflow_occt
+	ontoflow_command
+	ontoflow_editor
+	ontoflow_ui
+	ontoflow_vis
 	CLI11::CLI11
 )

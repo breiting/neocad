@@ -1,5 +1,5 @@
-#include <neocad/core/Logger.hpp>
-#include <neocad/ui/Window.hpp>
+#include <ontoflow/core/Logger.hpp>
+#include <ontoflow/ui/Window.hpp>
 
 #include "GLFW/glfw3.h"
 #include "imgui.h"
@@ -37,7 +37,7 @@ static void DestroyDefaultTexture() {
     }
 }
 
-namespace nc::ui {
+namespace of::ui {
 
 /**
  * rief Creates and initializes a GLFW window and its OpenGL context.
@@ -302,4 +302,4 @@ void Window::SetScrollCallback(std::function<void(double dx, double dy)> cb) {
 void Window::SetWindowSizeCallback(std::function<void(int w, int h)> cb) {
     m_WindowSizeCallback = std::move(cb);
 }
-}  // namespace nc::ui
+}  // namespace of::ui

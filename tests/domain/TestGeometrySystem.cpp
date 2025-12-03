@@ -1,13 +1,13 @@
 #include <gtest/gtest.h>
 
-#include <neocad/domain/Components.hpp>
-#include <neocad/domain/GeometrySystem.hpp>
-#include <neocad/domain/IGeometryBackend.hpp>
-#include <neocad/domain/Registry.hpp>
+#include <ontoflow/domain/Components.hpp>
+#include <ontoflow/domain/GeometrySystem.hpp>
+#include <ontoflow/domain/IGeometryBackend.hpp>
+#include <ontoflow/domain/Registry.hpp>
 
-#include "neocad/domain/Entity.hpp"
+#include "ontoflow/domain/Entity.hpp"
 
-using namespace nc::domain;
+using namespace of::domain;
 
 /// Simple fake backend for testing without OCCT.
 class FakeBackend : public IGeometryBackend {

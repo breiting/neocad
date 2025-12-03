@@ -1,11 +1,11 @@
 // clang-format off
 #include <glad.h>
 // clang-format on
-#include <neocad/vis/BaseGeometry.hpp>
+#include <ontoflow/vis/BaseGeometry.hpp>
 
-using namespace nc::domain;
+using namespace of::domain;
 
-namespace nc::vis {
+namespace of::vis {
 
 /**
  * \brief Constructs a BaseGeometry object.
@@ -49,4 +49,4 @@ size_t BaseGeometry::VertexCount() const {
 const std::vector<Vertex>& BaseGeometry::GetVertices() const {
     return m_Vertices;
 }
-}  // namespace nc::vis
+}  // namespace of::vis

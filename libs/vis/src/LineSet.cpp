@@ -2,11 +2,11 @@
 #include <glad.h>
 // clang-format on
 #include <glm/gtc/constants.hpp>
-#include <neocad/vis/LineSet.hpp>
+#include <ontoflow/vis/LineSet.hpp>
 
-using namespace nc::domain;
+using namespace of::domain;
 
-namespace nc::vis {
+namespace of::vis {
 
 /**
  * \brief Constructs an empty LineSet object.
@@ -76,4 +76,4 @@ void LineSet::deleteBuffers() {
         m_Vbo = 0; // Reset to 0 after deletion
     }
 }
-}  // namespace nc::vis
+}  // namespace of::vis

@@ -1,15 +1,16 @@
 #include <gtest/gtest.h>
-#include <neocad/domain/Registry.hpp>
-#include <neocad/domain/Components.hpp>
-#include <neocad/domain/ExpressionSystem.hpp>
-#include <neocad/domain/FeatureEvaluationSystem.hpp>
-#include <neocad/occt/OCCTBackend.hpp>
 
-using namespace nc::domain;
+#include <ontoflow/domain/Components.hpp>
+#include <ontoflow/domain/ExpressionSystem.hpp>
+#include <ontoflow/domain/FeatureEvaluationSystem.hpp>
+#include <ontoflow/domain/Registry.hpp>
+#include <ontoflow/occt/OCCTBackend.hpp>
+
+using namespace of::domain;
 
 TEST(TestCylinder, CylinderParametricLoop) {
     Registry registry;
-    nc::occt::OCCTBackend backend;
+    of::occt::OCCTBackend backend;
     ExpressionSystem expressionSystem(registry);
     FeatureEvaluationSystem featureSystem(registry, backend);
 
@@ -19,7 +20,7 @@ TEST(TestCylinder, CylinderParametricLoop) {
 
     // 2. Create Cylinder Entity
     EntityID cylinderId = registry.CreateEntity();
-    registry.AddComponent(cylinderId, BodyComponent{}); 
+    registry.AddComponent(cylinderId, BodyComponent{});
 
     // 3. Create ExpressionComponents
     // Radius: REF to RADIUS
@@ -58,11 +59,11 @@ TEST(TestCylinder, CylinderParametricLoop) {
     // 6. Change RADIUS
     auto* radiusParam = registry.GetComponent<GlobalParameterComponent>(radiusParamId);
     radiusParam->value = 8.0;
-    radiusParam->version++; 
+    radiusParam->version++;
 
     // 7. Update again
     expressionSystem.UpdateExpressions();
-    
+
     EXPECT_DOUBLE_EQ(registry.GetComponent<ExpressionComponent>(rExprId)->evaluatedValue, 8.0);
     EXPECT_EQ(registry.GetComponent<ExpressionComponent>(rExprId)->version, radiusParam->version);
 
@@ -71,5 +72,5 @@ TEST(TestCylinder, CylinderParametricLoop) {
     // 8. Check BodyComponent updated
     EXPECT_GT(body->lastRebuildVersion, firstVersion);
     EXPECT_EQ(body->lastRebuildVersion, radiusParam->version);
-    EXPECT_NE(body->handle, 0); 
+    EXPECT_NE(body->handle, 0);
 }

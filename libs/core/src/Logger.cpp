@@ -1,10 +1,10 @@
-#include "neocad/core/Logger.hpp"
+#include "ontoflow/core/Logger.hpp"
 
 #include <chrono>
 #include <ctime>
 #include <iomanip>
 
-namespace nc::core {
+namespace of::core {
 
 Logger& Logger::getInstance() {
     static Logger instance;
@@ -86,4 +86,4 @@ LogMessage& LogMessage::operator<<(std::ostream& (*manip)(std::ostream&)) {
     return *this;
 }
 
-}  // namespace nc::core
+}  // namespace of::core

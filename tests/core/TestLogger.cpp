@@ -1,13 +1,14 @@
 #include <gtest/gtest.h>
-#include <neocad/core/Logger.hpp>
-#include <neocad/core/Colors.hpp>
+
 #include <fstream>
+#include <ontoflow/core/Colors.hpp>
+#include <ontoflow/core/Logger.hpp>
 #include <string>
 
-using namespace nc::core;
+using namespace of::core;
 
 class TestLogger : public ::testing::Test {
-protected:
+   protected:
     void SetUp() override {
         // Reset logger to default state before each test
         Logger::getInstance().setLogFile("");
@@ -24,7 +25,7 @@ TEST_F(TestLogger, SingletonInstance) {
 TEST_F(TestLogger, LogLevelBitmask) {
     Logger::getInstance().setLogLevel(LogLevel::Info | LogLevel::Error);
     LogLevel level = Logger::getInstance().getLogLevel();
-    
+
     EXPECT_TRUE((level & LogLevel::Info) != LogLevel::None);
     EXPECT_TRUE((level & LogLevel::Error) != LogLevel::None);
     EXPECT_FALSE((level & LogLevel::Debug) != LogLevel::None);
@@ -34,26 +35,28 @@ TEST_F(TestLogger, LogLevelBitmask) {
 TEST_F(TestLogger, FileLogging) {
     std::string filename = "test_log.txt";
     Logger::getInstance().setLogFile(filename);
-    
+
     LOG(Info) << "Test Message 1";
     LOG(Error) << "Test Message 2";
-    
+
     // Verify file content
     std::ifstream infile(filename);
     ASSERT_TRUE(infile.is_open());
-    
+
     std::string line;
     bool found1 = false;
     bool found2 = false;
-    
+
     while (std::getline(infile, line)) {
-        if (line.find("Test Message 1") != std::string::npos && line.find("[Info]") != std::string::npos) found1 = true;
-        if (line.find("Test Message 2") != std::string::npos && line.find("[Error]") != std::string::npos) found2 = true;
+        if (line.find("Test Message 1") != std::string::npos && line.find("[Info]") != std::string::npos)
+            found1 = true;
+        if (line.find("Test Message 2") != std::string::npos && line.find("[Error]") != std::string::npos)
+            found2 = true;
     }
-    
+
     infile.close();
     std::remove(filename.c_str());
-    
+
     EXPECT_TRUE(found1);
     EXPECT_TRUE(found2);
 }

@@ -1,14 +1,14 @@
 #include <glm/glm.hpp>
-#include <neocad/core/Logger.hpp>
-#include <neocad/domain/Components.hpp>
-#include <neocad/domain/Registry.hpp>
-#include <neocad/editor/InputEvent.hpp>
-#include <neocad/editor/InsertCircleTool.hpp>
-#include <neocad/editor/ToolContext.hpp>
+#include <ontoflow/core/Logger.hpp>
+#include <ontoflow/domain/Components.hpp>
+#include <ontoflow/domain/Registry.hpp>
+#include <ontoflow/editor/InputEvent.hpp>
+#include <ontoflow/editor/InsertCircleTool.hpp>
+#include <ontoflow/editor/ToolContext.hpp>
 
-using namespace nc::domain;
+using namespace of::domain;
 
-namespace nc::editor {
+namespace of::editor {
 
 /**
  * \brief Called when the tool becomes active.
@@ -109,4 +109,4 @@ bool InsertCircleTool::OnInput(const InputEvent& ev, ToolContext& ctx) {
     return false; // Event not handled by this tool, no mode change
 }
 
-}  // namespace nc::editor
+}  // namespace of::editor

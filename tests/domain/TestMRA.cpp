@@ -1,16 +1,16 @@
 #include <gtest/gtest.h>
 
-#include <neocad/domain/Components.hpp>
-#include <neocad/domain/ExpressionSystem.hpp>
-#include <neocad/domain/FeatureEvaluationSystem.hpp>
-#include <neocad/domain/Registry.hpp>
-#include <neocad/occt/OCCTBackend.hpp>
+#include <ontoflow/domain/Components.hpp>
+#include <ontoflow/domain/ExpressionSystem.hpp>
+#include <ontoflow/domain/FeatureEvaluationSystem.hpp>
+#include <ontoflow/domain/Registry.hpp>
+#include <ontoflow/occt/OCCTBackend.hpp>
 
-using namespace nc::domain;
+using namespace of::domain;
 
 TEST(TestMRA, BoxParametricLoop) {
     Registry registry;
-    nc::occt::OCCTBackend backend;
+    of::occt::OCCTBackend backend;
     ExpressionSystem expressionSystem(registry);
     FeatureEvaluationSystem featureSystem(registry, backend);
 

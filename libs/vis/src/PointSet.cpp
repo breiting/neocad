@@ -2,12 +2,12 @@
 #include <glad.h>
 // clang-format on
 #include <glm/gtc/constants.hpp>
-#include <neocad/vis/PointSet.hpp>
-#include <neocad/vis/Shader.hpp>
+#include <ontoflow/vis/PointSet.hpp>
+#include <ontoflow/vis/Shader.hpp>
 
-using namespace nc::domain;
+using namespace of::domain;
 
-namespace nc::vis {
+namespace of::vis {
 
 /**
  * \brief Constructs an empty PointSet object.
@@ -98,4 +98,4 @@ void PointSet::Render() const {
     glBindVertexArray(0);
 }
 
-}  // namespace nc::vis
+}  // namespace of::vis

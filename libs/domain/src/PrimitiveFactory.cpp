@@ -1,8 +1,8 @@
 #include <glm/ext/scalar_constants.hpp>
 #include <glm/glm.hpp>
-#include <neocad/domain/PrimitiveFactory.hpp>
+#include <ontoflow/domain/PrimitiveFactory.hpp>
 
-namespace nc::domain {
+namespace of::domain {
 
 namespace {
 
@@ -108,4 +108,4 @@ Entity PrimitiveFactory::MakeBox(Registry& ecs, const glm::vec3& size, const std
     return e;
 }
 
-}  // namespace nc::domain
+}  // namespace of::domain

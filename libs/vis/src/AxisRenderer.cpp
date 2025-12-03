@@ -1,11 +1,11 @@
-#include <neocad/vis/AxisRenderer.hpp>
-#include <neocad/vis/Shader.hpp>
+#include <ontoflow/vis/AxisRenderer.hpp>
+#include <ontoflow/vis/Shader.hpp>
 #include <vector>
 
 #include "assets/unlit_frag.h"
 #include "assets/unlit_vert.h"
 
-namespace nc::vis {
+namespace of::vis {
 
 /**
  * \brief Destructor. Calls Shutdown() to release OpenGL resources.
@@ -126,4 +126,4 @@ void AxisRenderer::Render(const glm::mat4& model, const glm::mat4& view, const g
     glDrawArrays(GL_LINES, 0, m_VertexCount);
 }
 
-}  // namespace nc::vis
+}  // namespace of::vis

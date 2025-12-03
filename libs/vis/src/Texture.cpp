@@ -3,11 +3,11 @@
 // clang-format on
 #include <stb_image.h>
 
-#include <neocad/core/Logger.hpp> // Include Logger
-#include <neocad/vis/Texture.hpp>
+#include <ontoflow/core/Logger.hpp> // Include Logger
+#include <ontoflow/vis/Texture.hpp>
 #include <string>
 
-namespace nc::vis {
+namespace of::vis {
 
 Texture::Texture(const std::string& path) {
     stbi_set_flip_vertically_on_load(true);
@@ -43,4 +43,4 @@ void Texture::Bind(unsigned int texLoc) const {
 void Texture::Unbind() const {
     glBindTexture(GL_TEXTURE_2D, 0);
 }
-}  // namespace nc::vis
+}  // namespace of::vis

@@ -1,11 +1,11 @@
-#include <neocad/command/ExtrudeCommand.hpp>
-#include <neocad/core/Logger.hpp>
-#include <neocad/domain/Entity.hpp>
-#include <neocad/domain/Components.hpp> // Required for BodyComponent/NameComponent in Undo
+#include <ontoflow/command/ExtrudeCommand.hpp>
+#include <ontoflow/core/Logger.hpp>
+#include <ontoflow/domain/Entity.hpp>
+#include <ontoflow/domain/Components.hpp> // Required for BodyComponent/NameComponent in Undo
 
-using namespace nc::domain;
+using namespace of::domain;
 
-namespace nc::cmd {
+namespace of::cmd {
 
 ExtrudeCommand::ExtrudeCommand(Entity face, double height) : m_Face(face), m_Height(height) {
 }
@@ -36,4 +36,4 @@ void ExtrudeCommand::Undo(domain::Registry& registry, domain::GeometrySystem& ge
     }
 }
 
-}  // namespace nc::cmd
+}  // namespace of::cmd

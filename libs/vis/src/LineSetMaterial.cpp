@@ -1,10 +1,10 @@
-#include <neocad/vis/LineSetMaterial.hpp>
-#include <neocad/vis/Shader.hpp>
+#include <ontoflow/vis/LineSetMaterial.hpp>
+#include <ontoflow/vis/Shader.hpp>
 
 #include "assets/lineset_frag.h"
 #include "assets/lineset_vert.h"
 
-namespace nc::vis {
+namespace of::vis {
 
 /**
  * \brief Constructs a LineSetMaterial.
@@ -37,4 +37,4 @@ void LineSetMaterial::Apply(const glm::mat4& model, const glm::mat4& view, const
 std::shared_ptr<Shader> LineSetMaterial::GetShader() const {
     return m_Shader;
 }
-}  // namespace nc::vis
+}  // namespace of::vis

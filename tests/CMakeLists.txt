@@ -1,33 +1,33 @@
-add_executable(test_neocad
+add_executable(test_ontoflow
 	core/TestLogger.cpp
 	domain/TestGeometrySystem.cpp
-    domain/TestRegistry.cpp
-    domain/TestMRA.cpp
-    domain/TestCylinder.cpp
-    occt/TestOCCTBackend.cpp
+	domain/TestRegistry.cpp
+	domain/TestMRA.cpp
+	domain/TestCylinder.cpp
+	occt/TestOCCTBackend.cpp
 	lua/TestLuaBasic.cpp
 	editor/TestEditor.cpp
-    command/TestCommandStack.cpp
+	command/TestCommandStack.cpp
 )
 
-target_include_directories(test_neocad PUBLIC
+target_include_directories(test_ontoflow PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/../inc
 )
 
-target_link_libraries(test_neocad PRIVATE
+target_link_libraries(test_ontoflow PRIVATE
 	GTest::gtest_main
 	project_settings
-	neocad_core
-	neocad_domain
-	neocad_lua
-	neocad_occt
-	neocad_editor
-    neocad_command
-    neocad_vis
+	ontoflow_core
+	ontoflow_domain
+	ontoflow_lua
+	ontoflow_occt
+	ontoflow_editor
+	ontoflow_command
+	ontoflow_vis
 )
 
 add_test(
-	NAME test_neocad
-	COMMAND $<TARGET_FILE:test_neocad>
+	NAME test_ontoflow
+	COMMAND $<TARGET_FILE:test_ontoflow>
 )
 

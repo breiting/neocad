@@ -2,12 +2,12 @@
 
 #include <glm/mat4x4.hpp>
 #include <memory>
-#include <neocad/core/Colors.hpp>
-#include <neocad/core/Logger.hpp>
-#include <neocad/vis/BaseGeometry.hpp>
-#include <neocad/vis/OpenGLRenderer.hpp>
+#include <ontoflow/core/Colors.hpp>
+#include <ontoflow/core/Logger.hpp>
+#include <ontoflow/vis/BaseGeometry.hpp>
+#include <ontoflow/vis/OpenGLRenderer.hpp>
 
-namespace nc::vis {
+namespace of::vis {
 
 OpenGLRenderer::OpenGLRenderer() : m_Wireframe(false) {
     glEnable(GL_DEPTH_TEST);
@@ -65,4 +65,4 @@ void OpenGLRenderer::DrawPoints(const std::shared_ptr<BaseGeometry> points, std:
 void OpenGLRenderer::EndFrame() {
 }
 
-}  // namespace nc::vis
+}  // namespace of::vis

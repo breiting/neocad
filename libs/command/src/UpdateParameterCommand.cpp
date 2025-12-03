@@ -1,9 +1,9 @@
-#include <neocad/command/UpdateParameterCommand.hpp>
-#include <neocad/domain/Components.hpp>
-#include <neocad/domain/Registry.hpp>
-#include <neocad/core/Logger.hpp>
+#include <ontoflow/command/UpdateParameterCommand.hpp>
+#include <ontoflow/domain/Components.hpp>
+#include <ontoflow/domain/Registry.hpp>
+#include <ontoflow/core/Logger.hpp>
 
-namespace nc::cmd {
+namespace of::cmd {
 
 UpdateParameterCommand::UpdateParameterCommand(domain::EntityID targetEntityId, double newValue)
     : m_TargetEntityId(targetEntityId), m_NewValue(newValue) {}
@@ -60,4 +60,4 @@ void UpdateParameterCommand::Undo(domain::Registry& registry, domain::GeometrySy
     }
 }
 
-} // namespace nc::cmd
+} // namespace of::cmd

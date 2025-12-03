@@ -1,7 +1,7 @@
-#include <neocad/core/Logger.hpp>
-#include <neocad/editor/ViewController.hpp>
+#include <ontoflow/core/Logger.hpp>
+#include <ontoflow/editor/ViewController.hpp>
 
-namespace nc::editor {
+namespace of::editor {
 
 /**
  * \brief Constructs a ViewController.
@@ -135,4 +135,4 @@ void ViewController::Update(double dt) {
         cam->Update(static_cast<float>(dt));
 }
 
-}  // namespace nc::editor
+}  // namespace of::editor

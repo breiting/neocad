@@ -1,14 +1,14 @@
-#include <neocad/domain/Registry.hpp>
-#include <neocad/editor/SketchCurveTool.hpp>
-#include <neocad/editor/ToolContext.hpp>
-#include <neocad/editor/Editor.hpp> // Required for SetMode
-#include <neocad/command/BasicCommands.hpp>
-#include <neocad/core/Logger.hpp> // Include Logger
+#include <ontoflow/domain/Registry.hpp>
+#include <ontoflow/editor/SketchCurveTool.hpp>
+#include <ontoflow/editor/ToolContext.hpp>
+#include <ontoflow/editor/Editor.hpp> // Required for SetMode
+#include <ontoflow/command/BasicCommands.hpp>
+#include <ontoflow/core/Logger.hpp> // Include Logger
 
-using namespace nc::domain;
+using namespace of::domain;
 using Clock = std::chrono::steady_clock;
 
-namespace nc::editor {
+namespace of::editor {
 
 constexpr double DEBOUNCE_TIME = 0.05; // Time in seconds to debounce mouse clicks
 
@@ -246,4 +246,4 @@ void SketchCurveTool::FinalizeFace(ToolContext& ctx) {
     LOG(Info) << "SketchCurveTool: Finalized Face entity " << face << " with " << m_Points.size() << " vertices.";
 }
 
-}  // namespace nc::editor
+}  // namespace of::editor

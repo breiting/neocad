@@ -17,15 +17,15 @@
 #include <TopoDS_Vertex.hxx>
 #include <gp_Pnt.hxx>
 #include <gp_Trsf.hxx>
-#include <neocad/core/Logger.hpp>
-#include <neocad/domain/Components.hpp>
-#include <neocad/domain/Entity.hpp>
-#include <neocad/domain/Vertex.hpp>
-#include <neocad/occt/STEPImporter.hpp>
+#include <ontoflow/core/Logger.hpp>
+#include <ontoflow/domain/Components.hpp>
+#include <ontoflow/domain/Entity.hpp>
+#include <ontoflow/domain/Vertex.hpp>
+#include <ontoflow/occt/STEPImporter.hpp>
 
-namespace nc::occt {
+namespace of::occt {
 
-using namespace nc::domain;
+using namespace of::domain;
 
 namespace {
 void FixNormals(domain::MeshComponent& mc) {
@@ -320,4 +320,4 @@ void STEPImporter::TriangulateShape(const TopoDS_Shape& shape, MeshComponent& ou
     LOG(Info) << "STEPImporter: triangulation → " << mesh.vertices.size() << " vertices, " << mesh.indices.size() / 3
               << " triangles.";
 }
-}  // namespace nc::occt
+}  // namespace of::occt

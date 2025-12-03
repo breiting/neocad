@@ -1,4 +1,4 @@
-add_library(neocad_lua STATIC
+add_library(ontoflow_lua STATIC
 	src/BindConstruct.cpp
 	src/BindIO.cpp
 	src/BindPrimitives.cpp
@@ -7,16 +7,16 @@ add_library(neocad_lua STATIC
 	src/PrettyLuaError.cpp
 )
 
-target_include_directories(neocad_lua PUBLIC
+target_include_directories(ontoflow_lua PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/inc
 	${LUA_INCLUDE_DIR}
 	${sol2_SOURCE_DIR}/include
 )
 
-target_link_libraries(neocad_lua
+target_link_libraries(ontoflow_lua
 PUBLIC
-	neocad_core
-	neocad_domain
+	ontoflow_core
+	ontoflow_domain
 	glm::glm
 	${LUA_LIBRARIES}
 	sol2

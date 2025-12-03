@@ -1,8 +1,8 @@
 #include <glm/gtc/type_ptr.hpp>
-#include <neocad/core/Logger.hpp> // Include Logger
-#include <neocad/vis/TextRenderer2D.hpp>
+#include <ontoflow/core/Logger.hpp> // Include Logger
+#include <ontoflow/vis/TextRenderer2D.hpp>
 
-namespace nc::vis {
+namespace of::vis {
 
 static const char* kTextVS = R"(
 #version 410 core
@@ -278,4 +278,4 @@ void TextRenderer2D::DrawText(const std::string& text, float x, float y, float s
     Flush(proj);
 }
 
-}  // namespace nc::vis
+}  // namespace of::vis

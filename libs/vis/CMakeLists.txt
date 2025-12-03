@@ -1,4 +1,4 @@
-add_library(neocad_vis STATIC
+add_library(ontoflow_vis STATIC
 	src/AxisRenderer.cpp
 	src/BaseGeometry.cpp
 	src/Camera2D.cpp
@@ -21,7 +21,7 @@ add_library(neocad_vis STATIC
 	src/Texture.cpp
 )
 
-target_include_directories(neocad_vis
+target_include_directories(ontoflow_vis
 PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/inc
 	${CMAKE_CURRENT_SOURCE_DIR}/../../extern
@@ -29,12 +29,12 @@ PUBLIC
 	${GEN_INC_DIR}
 )
 
-target_link_libraries(neocad_vis
+target_link_libraries(ontoflow_vis
 PUBLIC
 	project_settings
 	glad
 	glm::glm
-	neocad_core
-	neocad_editor
-	neocad_domain
+	ontoflow_core
+	ontoflow_editor
+	ontoflow_domain
 )

@@ -1,7 +1,7 @@
-#include <neocad/vis/GlyphAtlas.hpp>
+#include <ontoflow/vis/GlyphAtlas.hpp>
 #include <vector>
 
-namespace nc::vis {
+namespace of::vis {
 
 /**
  * \brief Destructor. Deletes the OpenGL texture associated with the atlas.
@@ -110,4 +110,4 @@ const GlyphAtlas::GlyphUV* GlyphAtlas::GetGlyph(char c) const {
     return (it != m_Glyphs.end()) ? &it->second : nullptr;
 }
 
-}  // namespace nc::vis
+}  // namespace of::vis

@@ -1,22 +1,22 @@
 #include <memory>
-#include <neocad/core/Colors.hpp>
-#include <neocad/core/Logger.hpp>
-#include <neocad/domain/Components.hpp>
-#include <neocad/domain/Query.hpp>
-#include <neocad/editor/ViewController.hpp>
-#include <neocad/vis/DirectionalLight.hpp>
-#include <neocad/vis/FlatShadedMaterial.hpp>
-#include <neocad/vis/LineSetMaterial.hpp>
-#include <neocad/vis/PointSetMaterial.hpp>
-#include <neocad/vis/RenderingSystem.hpp>
+#include <ontoflow/core/Colors.hpp>
+#include <ontoflow/core/Logger.hpp>
+#include <ontoflow/domain/Components.hpp>
+#include <ontoflow/domain/Query.hpp>
+#include <ontoflow/editor/ViewController.hpp>
+#include <ontoflow/vis/DirectionalLight.hpp>
+#include <ontoflow/vis/FlatShadedMaterial.hpp>
+#include <ontoflow/vis/LineSetMaterial.hpp>
+#include <ontoflow/vis/PointSetMaterial.hpp>
+#include <ontoflow/vis/RenderingSystem.hpp>
 
-using namespace nc::domain;
-using namespace nc::editor;
+using namespace of::domain;
+using namespace of::editor;
 
 // Default color for the main light source (Sun)
 const glm::vec3 SUN_LIGHT = {1.0f, 0.95f, 0.9f};
 
-namespace nc::vis {
+namespace of::vis {
 
 /**
  * \brief Constructs a RenderingSystem.
@@ -277,4 +277,4 @@ void RenderingSystem::Render(ICamera* cam) {
     m_Renderer->EndFrame();
 }
 
-}  // namespace nc::vis
+}  // namespace of::vis

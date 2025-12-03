@@ -1,20 +1,19 @@
-#include <neocad/command/ExtrudeCommand.hpp>
-#include <neocad/core/Logger.hpp>
-#include <neocad/domain/Components.hpp>
-#include <neocad/domain/Entity.hpp>
-#include <neocad/domain/GeometrySystem.hpp>
-#include <neocad/domain/Query.hpp>
-#include <neocad/domain/Registry.hpp>
-#include <neocad/occt/OCCTBackend.hpp>
+#include <ontoflow/command/ExtrudeCommand.hpp>
+#include <ontoflow/core/Logger.hpp>
+#include <ontoflow/domain/Components.hpp>
+#include <ontoflow/domain/Entity.hpp>
+#include <ontoflow/domain/GeometrySystem.hpp>
+#include <ontoflow/domain/Query.hpp>
+#include <ontoflow/domain/Registry.hpp>
+#include <ontoflow/occt/OCCTBackend.hpp>
 
-using namespace nc;
-using namespace nc::domain;
-using namespace nc::occt;
-using namespace nc::cmd;
+using namespace of::domain;
+using namespace of::occt;
+using namespace of::cmd;
 
 int main() {
     LOG(Info) << "================================";
-    LOG(Info) << "neoCAD headless testing";
+    LOG(Info) << "ontoflow headless testing";
     LOG(Info) << "================================";
 
     Registry registry;
