@@ -2,7 +2,6 @@
 #include <vector>
 #include <memory>
 #include <ontoflow/command/ICommand.hpp>
-#include <ontoflow/core/Logger.hpp> // For debugging logs
 
 namespace of::cmd {
 
@@ -20,8 +19,7 @@ public:
      * \param reg Reference to the central ECS registry.
      * \param geom Reference to the geometry system.
      */
-    CommandStack(domain::Registry& reg, domain::GeometrySystem& geom) 
-        : m_Registry(reg), m_Geometry(geom) {}
+    CommandStack(domain::Registry& reg, domain::GeometrySystem& geom);
 
     /**
      * \brief Pushes a new command onto the stack and executes it.
@@ -30,37 +28,19 @@ public:
      * "redoable" commands are discarded.
      * \param cmd A unique pointer to the command to be executed and stored.
      */
-    void Push(std::unique_ptr<ICommand> cmd) {
-        // If we are not at the tip, discard redo history
-        if (m_Index < m_Stack.size()) {
-            m_Stack.resize(m_Index);
-        }
-
-        cmd->Execute(m_Registry, m_Geometry);
-        m_Stack.push_back(std::move(cmd));
-        m_Index++;
-    }
+    void Push(std::unique_ptr<ICommand> cmd);
 
     /**
      * \brief Undoes the last executed command on the stack.
      * Decrements the history index and calls `Undo()` on the command.
      */
-    void Undo() {
-        if (m_Index > 0) {
-            m_Stack[--m_Index]->Undo(m_Registry, m_Geometry);
-        }
-    }
+    void Undo();
 
     /**
      * \brief Redoes the next command in the history.
      * Increments the history index and calls `Execute()` on the command.
      */
-    void Redo() {
-        if (m_Index < m_Stack.size()) {
-            m_Stack[m_Index]->Execute(m_Registry, m_Geometry);
-            m_Index++;
-        }
-    }
+    void Redo();
     
     /**
      * \brief Returns the current index in the command history.
@@ -68,19 +48,14 @@ public:
      * Useful for marking a "transaction start" point for tools.
      * \return The current history index.
      */
-    size_t GetCurrentIndex() const { return m_Index; }
+    size_t GetCurrentIndex() const;
     
     /**
      * \brief Undoes commands until a specific target index in the history is reached.
      * This is useful for cancelling multi-step tool operations.
      * \param targetIndex The index to undo to. Commands at and before this index will remain executed.
      */
-    void UndoTo(size_t targetIndex) {
-        LOG(Info) << "UndoTo: target=" << targetIndex << ", current=" << m_Index;
-        while (m_Index > targetIndex) {
-            Undo();
-        }
-    }
+    void UndoTo(size_t targetIndex);
 
 private:
     domain::Registry& m_Registry; ///< Reference to the ECS registry.

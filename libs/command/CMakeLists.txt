@@ -1,4 +1,5 @@
 add_library(ontoflow_command STATIC
+	src/CommandStack.cpp
 )
 
 target_include_directories(ontoflow_command PUBLIC
