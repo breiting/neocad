@@ -32,36 +32,16 @@ void Registry::Dump() const {
             LOG(Info) << "  Name        = " << c->name;
         }
 
-        if (HasComponent<PositionComponent>(e)) {
-            auto* c = GetComponent<PositionComponent>(e);
-            LOG(Info) << "  Position    = (" << c->position.x << ", " << c->position.y << ", " << c->position.z
-                      << ")";
-        }
-
-        if (HasComponent<RadiusComponent>(e)) {
-            auto* c = GetComponent<RadiusComponent>(e);
-            LOG(Info) << "  Radius      = " << c->radius;
-        }
-
-        if (HasComponent<EdgeComponent>(e)) {
-            auto* c = GetComponent<EdgeComponent>(e);
-            LOG(Info) << "  Edge        = p0=" << c->p0 << ", p1=" << c->p1;
-        }
-
-        if (HasComponent<FaceComponent>(e)) {
-            auto* c = GetComponent<FaceComponent>(e);
-            LOG(Info) << "  Face        = vertices=" << c->vertices.size() << ", edges=" << c->edges.size();
+        if (HasComponent<NodeComponent>(e)) {
+            auto* c = GetComponent<NodeComponent>(e);
+            LOG(Info) << "  Node        = " << c->operationID 
+                      << " inputs=" << c->inputs.size() 
+                      << " outputs=" << c->outputs.size();
         }
 
         if (HasComponent<MeshComponent>(e)) {
             auto* c = GetComponent<MeshComponent>(e);
             LOG(Info) << "  Mesh        = vtx=" << c->mesh.vertices.size() << ", idx=" << c->mesh.indices.size();
-        }
-
-        if (HasComponent<SketchPlaneComponent>(e)) {
-            auto* c = GetComponent<SketchPlaneComponent>(e);
-            LOG(Info) << "  SketchPlane = origin=(" << c->origin.x << ", " << c->origin.y << ", " << c->origin.z << ")"
-                      << " normal=(" << c->normal.x << ", " << c->normal.y << ", " << c->normal.z << ")";
         }
 
         if (HasComponent<BodyComponent>(e)) {

@@ -1,42 +1,9 @@
-#include <ontoflow/domain/Components.hpp>
-#include <ontoflow/domain/GeometrySystem.hpp>
-#include <ontoflow/domain/Registry.hpp>
 #include <ontoflow/lua/CadAPI.hpp>
-
-using namespace of::domain;
 
 namespace of::lua {
 
-CadAPI::CadAPI(Registry& reg, GeometrySystem& geom) : m_Registry(reg), m_GeometrySystem(geom) {
-}
-
-Entity CadAPI::CreatePoint(double x, double y, double z) {
-    // Direct add is fine here as GeometrySystem::CreatePoint also directly adds.
-    Entity e = m_Registry.CreateEntity();
-    m_Registry.AddComponent<PositionComponent>(e, {glm::vec3(x, y, z)});
-    return e;
-}
-
-Entity CadAPI::CreateLine(Entity p1, Entity p2) {
-    // Delegate to GeometrySystem for proper validation and logic
-    return m_GeometrySystem.CreateLine(p1, p2);
-}
-
-Entity CadAPI::CreateFace(const std::vector<Entity>& edges) {
-    // Delegate to GeometrySystem for proper validation and logic
-    return m_GeometrySystem.CreateFace(edges);
-}
-
-Entity CadAPI::ExtrudeFace(Entity face, double height) {
-    return m_GeometrySystem.ExtrudeFace(face, height);
-}
-
-bool CadAPI::ExportSTEP(Entity body, const std::string& path) {
-    return m_GeometrySystem.ExportSTEP(body, path);
-}
-
-bool CadAPI::ExportSTL(Entity body, const std::string& path, double deflection) {
-    return m_GeometrySystem.ExportSTL(body, path, deflection);
+CadAPI::CadAPI(domain::Registry& reg, domain::GeometrySystem& geom) 
+    : m_Registry(reg), m_GeometrySystem(geom) {
 }
 
 }  // namespace of::lua

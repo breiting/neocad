@@ -2,9 +2,8 @@ add_executable(test_ontoflow
 	core/TestLogger.cpp
 	domain/TestRegistry.cpp
 	domain/DomainTests.cpp
+	domain/OntoFlowDomainTests.cpp
 	occt/TestOCCTBackend.cpp
-	lua/TestLuaBasic.cpp
-	editor/TestEditor.cpp
 	command/TestCommandStack.cpp
 )
 
@@ -28,4 +27,3 @@ add_test(
 	NAME test_ontoflow
 	COMMAND $<TARGET_FILE:test_ontoflow>
 )
-

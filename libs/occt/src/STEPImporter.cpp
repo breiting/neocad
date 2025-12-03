@@ -72,7 +72,7 @@ Entity STEPImporter::Load(const std::string& filename, Registry& registry) {
     TopoDS_Shape shape = reader.OneShape();
 
     // 1) Topologie → ECS (Points, Edges, Faces)
-    ExtractTopology(shape, registry);
+    // ExtractTopology(shape, registry); // DISABLED in OntoFlow Refactor
 
     // 2) Triangulation → MeshComponent
     MeshComponent meshComp;
@@ -92,148 +92,10 @@ Entity STEPImporter::Load(const std::string& filename, Registry& registry) {
 }
 
 void STEPImporter::ExtractTopology(const TopoDS_Shape& shape, Registry& registry) {
-    TopTools_IndexedMapOfShape vertexMap;
-    TopTools_IndexedMapOfShape edgeMap;
-    TopTools_IndexedMapOfShape faceMap;
-
-    TopExp::MapShapes(shape, TopAbs_VERTEX, vertexMap);
-    TopExp::MapShapes(shape, TopAbs_EDGE, edgeMap);
-    TopExp::MapShapes(shape, TopAbs_FACE, faceMap);
-
-    const int nbV = vertexMap.Extent();
-    const int nbE = edgeMap.Extent();
-    const int nbF = faceMap.Extent();
-
-    if (nbV == 0 && nbE == 0 && nbF == 0) {
-        LOG(Warn) << "STEPImporter: no topological data found.";
-        return;
-    }
-
-    // 1) Alle Vertices → PositionComponent-Entities
-    std::vector<Entity> vertexEntities(nbV + 1, INVALID_ENTITY);  // 1-based
-    for (int i = 1; i <= nbV; ++i) {
-        TopoDS_Vertex v = TopoDS::Vertex(vertexMap(i));
-        gp_Pnt p = BRep_Tool::Pnt(v);
-
-        PositionComponent pc;
-        pc.position = vec3(static_cast<float>(p.X()), static_cast<float>(p.Y()), static_cast<float>(p.Z()));
-
-        Entity e = registry.CreateEntity();
-        registry.AddComponent<PositionComponent>(e, pc);
-        vertexEntities[i] = e;
-    }
-
-    // 2) Alle Edges → EdgeComponent-Entities (p0/p1 verweisen auf Position-Entities)
-    std::vector<Entity> edgeEntities(nbE + 1, INVALID_ENTITY);
-    for (int i = 1; i <= nbE; ++i) {
-        TopoDS_Edge edge = TopoDS::Edge(edgeMap(i));
-
-        Standard_Real first, last;
-        Handle(Geom_Curve) geomCurve = BRep_Tool::Curve(edge, first, last);
-
-        // --- Circle?
-        if (!geomCurve.IsNull()) {
-            Handle(Geom_Circle) circle = Handle(Geom_Circle)::DownCast(geomCurve);
-            if (!circle.IsNull()) {
-                gp_Ax2 axis = circle->Position();
-                gp_Pnt center = axis.Location();
-                double r = circle->Radius();
-
-                Entity e = registry.CreateEntity();
-                RadiusComponent rc;
-                rc.radius = r;
-                registry.AddComponent<RadiusComponent>(e, rc);
-                PositionComponent pc;
-                pc.position = vec3(static_cast<float>(center.X()), static_cast<float>(center.Y()),
-                                   static_cast<float>(center.Z()));
-                registry.AddComponent<PositionComponent>(e, pc);
-
-                edgeEntities[i] = e;
-                continue;  // KEINE EdgeComponent notwendig!
-            }
-        }
-
-        // --- Edge hat 2 Eckpunkte → Line/EdgeComponent ---
-        TopoDS_Vertex v1, v2;
-        TopExp::Vertices(edge, v1, v2);
-        if (!v1.IsNull() && !v2.IsNull()) {
-            int idx1 = vertexMap.FindIndex(v1);
-            int idx2 = vertexMap.FindIndex(v2);
-            if (idx1 > 0 && idx2 > 0) {
-                Entity e = registry.CreateEntity();
-                registry.AddComponent<EdgeComponent>(e, {vertexEntities[idx1], vertexEntities[idx2]});
-                edgeEntities[i] = e;
-                continue;
-            }
-        }
-
-        // --- Unknown?
-        if (!geomCurve.IsNull()) {
-            LOG(Warn) << "Not supported curve found";
-        }
-    }
-
-    // 3) Faces → FaceComponent-Entities (mit Liste von Vertex & Edge-Entities)
-    for (int i = 1; i <= nbF; ++i) {
-        TopoDS_Face face = TopoDS::Face(faceMap(i));
-
-        std::vector<Entity> faceEdgeEntities;
-        std::vector<Entity> faceVertexEntities;
-
-        // Edges auf dem Face sammeln
-        for (TopExp_Explorer ex(face, TopAbs_EDGE); ex.More(); ex.Next()) {
-            TopoDS_Edge ed = TopoDS::Edge(ex.Current());
-            int eIdx = edgeMap.FindIndex(ed);
-            if (eIdx <= 0)
-                continue;
-
-            Entity edgeEnt = edgeEntities[eIdx];
-            if (edgeEnt == INVALID_ENTITY)
-                continue;
-
-            faceEdgeEntities.push_back(edgeEnt);
-
-            // Optional: Vertices pro Edge einsammeln
-            TopoDS_Vertex v1, v2;
-            TopExp::Vertices(ed, v1, v2);
-            if (!v1.IsNull()) {
-                int vi = vertexMap.FindIndex(v1);
-                if (vi > 0) {
-                    Entity vEnt = vertexEntities[vi];
-                    if (vEnt != INVALID_ENTITY)
-                        faceVertexEntities.push_back(vEnt);
-                }
-            }
-            if (!v2.IsNull()) {
-                int vi = vertexMap.FindIndex(v2);
-                if (vi > 0) {
-                    Entity vEnt = vertexEntities[vi];
-                    if (vEnt != INVALID_ENTITY)
-                        faceVertexEntities.push_back(vEnt);
-                }
-            }
-        }
-
-        // Duplikate bei Vertices rauswerfen
-        std::sort(faceVertexEntities.begin(), faceVertexEntities.end());
-        faceVertexEntities.erase(std::unique(faceVertexEntities.begin(), faceVertexEntities.end()),
-                                 faceVertexEntities.end());
-
-        // Wenn nichts drin → face skippen
-        if (faceEdgeEntities.empty() && faceVertexEntities.empty())
-            continue;
-
-        FaceComponent fc;
-        fc.edges = std::move(faceEdgeEntities);
-        fc.vertices = std::move(faceVertexEntities);
-
-        Entity fEnt = registry.CreateEntity();
-        registry.AddComponent<FaceComponent>(fEnt, fc);
-        // Optional Name/Tag:
-        // registry.AddComponent<NameComponent>(fEnt, NameComponent{"STEP_Face"});
-    }
-
-    LOG(Info) << "STEPImporter: topology extracted: " << nbV << " vertices, " << nbE << " edges, " << nbF << " faces.";
+    // Legacy topology extraction disabled.
+    // Logic for mapping TopoDS_Shape to ECS components (Position, Edge, Face) 
+    // removed as those components are deprecated in OntoFlow.
+    LOG(Warn) << "STEPImporter::ExtractTopology is disabled.";
 }
 
 void STEPImporter::TriangulateShape(const TopoDS_Shape& shape, MeshComponent& outMesh) {

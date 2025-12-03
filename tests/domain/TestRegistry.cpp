@@ -75,7 +75,7 @@ TEST_F(TestRegistry, GetAllEntities) {
     Entity e2 = registry.CreateEntity();
 
     registry.AddComponent<TestComponent>(e1, {1});
-    registry.AddComponent<PositionComponent>(e2, {{0, 0, 0}});
+    registry.AddComponent<NameComponent>(e2, {"E2"});
 
     auto entities = registry.Entities();
     EXPECT_EQ(entities.size(), 2);

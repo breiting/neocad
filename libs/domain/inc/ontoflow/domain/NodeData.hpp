@@ -8,29 +8,26 @@
 
 namespace of::domain {
 
-enum class PinType { FLOW, FLOAT, INT, BOOL, VEC3, GEOMETRY, ANY };
+enum class PinType { FLOAT, INT, BOOL, VEC3, GEOMETRY, ANY };
 
-struct GeometryHandle {
-    EntityID id{INVALID_ENTITY_ID};
-    
-    bool IsValid() const { return id != INVALID_ENTITY_ID; }
-};
+// Wrapper to safely store Geometry References
+struct GeometryHandle { EntityID id; };
 
-using PinValue = std::variant<double, int, bool, glm::vec3, GeometryHandle>;
+// The Data flowing through the graph
+using PinValue = std::variant<double, int, bool, glm::vec3, GeometryHandle, std::monostate>;
 
+// The Edge E = (TargetNode, TargetPin)
 struct Connection {
-    EntityID targetNodeID = INVALID_ENTITY_ID;
+    EntityID targetNodeID = INVALID_ENTITY_ID; // 0 is invalid
     size_t targetPinIdx = 0;
 };
 
+// The Pin (Input or Output slot)
 struct Pin {
     std::string name;
-    PinType type = PinType::ANY;
-    PinValue value;
-    
-    // Topology
-    EntityID connectedNodeID = INVALID_ENTITY_ID;
-    size_t connectedPinIdx = 0;
+    PinType type = PinType::FLOAT;
+    PinValue value;        // Static data or Cache
+    Connection connection; // Topology (Input only)
 };
 
 } // namespace of::domain

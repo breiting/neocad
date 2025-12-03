@@ -1,20 +1,20 @@
 #include <CLI/CLI.hpp>
 #include <memory>
-#include <ontoflow/command/ExtrudeCommand.hpp>
+// #include <ontoflow/command/ExtrudeCommand.hpp> // DELETED
 #include <ontoflow/core/Logger.hpp>
 #include <ontoflow/domain/Components.hpp>
 #include <ontoflow/domain/Entity.hpp>
-#include <ontoflow/domain/ExpressionSystem.hpp>         // Added
-#include <ontoflow/domain/FeatureEvaluationSystem.hpp>  // Added
+// #include <ontoflow/domain/ExpressionSystem.hpp>         // DELETED
+// #include <ontoflow/domain/FeatureEvaluationSystem.hpp>  // DELETED
 #include <ontoflow/domain/GeometrySystem.hpp>
 #include <ontoflow/domain/IGeometryBackend.hpp>
-#include <ontoflow/domain/PrimitiveFactory.hpp>
+// #include <ontoflow/domain/PrimitiveFactory.hpp> // DELETED
 #include <ontoflow/domain/Query.hpp>
 #include <ontoflow/domain/Registry.hpp>
 #include <ontoflow/editor/Editor.hpp>
-#include <ontoflow/editor/InsertCircleTool.hpp>
-#include <ontoflow/editor/InsertPointTool.hpp>
-#include <ontoflow/editor/SketchCurveTool.hpp>
+// #include <ontoflow/editor/InsertCircleTool.hpp> // LEGACY
+// #include <ontoflow/editor/InsertPointTool.hpp> // LEGACY
+// #include <ontoflow/editor/SketchCurveTool.hpp> // LEGACY
 #include <ontoflow/editor/ToolContext.hpp>
 #include <ontoflow/occt/OCCTBackend.hpp>
 #include <ontoflow/occt/STEPImporter.hpp>
@@ -92,44 +92,12 @@ Entity LoadSTLtoECS(const std::string& file, Registry& ecs) {
     return e;
 }
 
+/*
 Entity CreateTestFace5(Registry& ecs) {
-    using namespace of::domain;
-
-    // --- 1) 5 POSITIONEN (VERTICES) ---
-    std::vector<glm::vec3> pts = {
-        {0.0f, 0.0f, 0.0f}, {1.5f, 1.0f, 0.0f}, {2.0f, 2.2f, 0.0f}, {0.5f, 2.0f, 0.0f}, {-0.5f, 0.7f, 0.0f}};
-
-    std::vector<Entity> vertexEntities;
-    for (auto& p : pts) {
-        Entity v = ecs.CreateEntity();
-        ecs.AddComponent<PositionComponent>(v, {p});
-        ecs.AddComponent<NameComponent>(v, {"Vertex"});
-        vertexEntities.push_back(v);
-    }
-
-    // --- 2) EDGES ANLEGEN (jeweils v[i] → v[i+1]) ---
-    std::vector<Entity> edgeEntities;
-    for (size_t i = 0; i < vertexEntities.size(); ++i) {
-        Entity e = ecs.CreateEntity();
-        Entity v0 = vertexEntities[i];
-        Entity v1 = vertexEntities[(i + 1) % vertexEntities.size()];  // close loop!
-
-        ecs.AddComponent<EdgeComponent>(e, {v0, v1});
-        ecs.AddComponent<NameComponent>(e, {"Edge"});
-        edgeEntities.push_back(e);
-    }
-
-    // --- 3) FACEENTITY ANLEGEN ---
-    Entity face = ecs.CreateEntity();
-    FaceComponent fc;
-    fc.vertices = vertexEntities;
-    fc.edges = edgeEntities;
-
-    ecs.AddComponent<FaceComponent>(face, std::move(fc));
-    ecs.AddComponent<NameComponent>(face, {"TestFace5"});
-
-    return face;
+    // LEGACY FUNCTION REMOVED
+    return INVALID_ENTITY;
 }
+*/
 
 int main(int argc, char* argv[]) {
     CLI::App app{"Desc"};
@@ -154,57 +122,22 @@ int main(int argc, char* argv[]) {
     OCCTBackend backend;
     GeometrySystem geom(registry, backend);
     CommandStack cmdStack(registry, geom);
-    ExpressionSystem expressionSystem(registry);               // Instantiate ExpressionSystem
-    FeatureEvaluationSystem featureSystem(registry, backend);  // Instantiate FeatureEvaluationSystem
+    // ExpressionSystem expressionSystem(registry);               // DELETED
+    // FeatureEvaluationSystem featureSystem(registry, backend);  // DELETED
 
     // --- Demo Scene Setup for Graph Editor ---
-    // Create a Global Parameter for Width
-    Entity paramWidthId = registry.CreateEntity();
-    registry.AddComponent(paramWidthId, GlobalParameterComponent{"Width", 10.0, 1});
-    registry.AddComponent(paramWidthId, NameComponent{"GlobalWidth"});
-    registry.AddComponent(paramWidthId, UINodeComponent{50, 50});
-
-    // Create expressions for a Box
-    Entity boxWidthExprId = registry.CreateEntity();
-    registry.AddComponent(boxWidthExprId,
-                          ExpressionComponent{10.0, 0, ExpressionComponent::SourceType::STATIC_VALUE, 10.0});
-    registry.AddComponent(boxWidthExprId, NameComponent{"BoxWidthExpr"});  // For debug/display
-
-    Entity boxLengthExprId = registry.CreateEntity();
-    registry.AddComponent(boxLengthExprId,
-                          ExpressionComponent{15.0, 0, ExpressionComponent::SourceType::STATIC_VALUE, 15.0});
-    registry.AddComponent(boxLengthExprId, NameComponent{"BoxLengthExpr"});
-
-    Entity boxHeightExprId = registry.CreateEntity();
-    registry.AddComponent(boxHeightExprId,
-                          ExpressionComponent{20.0, 0, ExpressionComponent::SourceType::STATIC_VALUE, 20.0});
-    registry.AddComponent(boxHeightExprId, NameComponent{"BoxHeightExpr"});
-
-    // Connect BoxWidth to GlobalWidth parameter
-    // Simulate ConnectExpressionCommand effect
-    auto* bwExpr = registry.GetComponent<ExpressionComponent>(boxWidthExprId);
-    if (bwExpr) {
-        bwExpr->sourceType = ExpressionComponent::SourceType::ENTITY_REFERENCE;
-        bwExpr->sourceData = paramWidthId;
-        bwExpr->version++;  // Mark as modified
-    }
-
-    // Create the Box entity
-    Entity boxId = registry.CreateEntity();
-    registry.AddComponent(boxId, BoxComponent{boxWidthExprId, boxLengthExprId, boxHeightExprId});
-    registry.AddComponent(boxId, BodyComponent{});  // Will be filled by FeatureEvaluationSystem
-    registry.AddComponent(boxId, NameComponent{"MyDemoBox"});
-    registry.AddComponent(boxId, UINodeComponent{250, 50});
-
+    // (Removed Legacy Components Usage)
     // --- End Demo Scene Setup ---
 
     if (loadCube) {
-        Entity cube = PrimitiveFactory::MakeUnitCube(registry, "UnitCube");
-        LOG(Info) << "Loaded unit cube with ID: " << cube;
+        // Entity cube = PrimitiveFactory::MakeUnitCube(registry, "UnitCube");
+        // LOG(Info) << "Loaded unit cube with ID: " << cube;
+        LOG(Warn) << "Unit Cube loading disabled during refactor.";
     }
     if (loadFace) {
-        Entity face = CreateTestFace5(registry);
-        LOG(Info) << "Loaded face with ID: " << face;
+        // Entity face = CreateTestFace5(registry);
+        // LOG(Info) << "Loaded face with ID: " << face;
+        LOG(Warn) << "Test Face loading disabled during refactor.";
     }
 
     if (!stlFile.empty()) {
@@ -227,11 +160,11 @@ int main(int argc, char* argv[]) {
     // Editor
     ToolContext ctx(registry, geom, cmdStack);
     Editor editor(ctx);
-    editor.RegisterTool(EditorMode::InsertPoint, std::make_unique<InsertPointTool>());
-    editor.RegisterTool(EditorMode::InsertLine,
-                        std::make_unique<SketchCurveTool>(SketchCurveTool::CurveMode::Polyline));
-    editor.RegisterTool(EditorMode::InsertSketch, std::make_unique<SketchCurveTool>(SketchCurveTool::CurveMode::Face));
-    editor.RegisterTool(EditorMode::InsertCircle, std::make_unique<InsertCircleTool>());
+    // editor.RegisterTool(EditorMode::InsertPoint, std::make_unique<InsertPointTool>());
+    // editor.RegisterTool(EditorMode::InsertLine,
+    //                     std::make_unique<SketchCurveTool>(SketchCurveTool::CurveMode::Polyline));
+    // editor.RegisterTool(EditorMode::InsertSketch, std::make_unique<SketchCurveTool>(SketchCurveTool::CurveMode::Face));
+    // editor.RegisterTool(EditorMode::InsertCircle, std::make_unique<InsertCircleTool>());
 
     // Window
     Window window;
@@ -300,8 +233,8 @@ int main(int argc, char* argv[]) {
 
         // UPDATE
         editor.Update(dt);
-        expressionSystem.UpdateExpressions();  // Update expressions before features
-        featureSystem.EvaluateFeatures();      // Evaluate features based on updated expressions
+        // expressionSystem.UpdateExpressions();  // DELETED
+        // featureSystem.EvaluateFeatures();      // DELETED
         renderingSystem.Update(registry);
 
         // RENDER
