@@ -18,7 +18,9 @@ enum class PinType {
 
 // Wrapper to safely store Geometry References
 struct GeometryHandle {
-    EntityID id;
+    EntityID id{INVALID_ENTITY_ID};
+
+    bool IsValid() const { return id != INVALID_ENTITY_ID; }
 };
 
 // The Data flowing through the graph

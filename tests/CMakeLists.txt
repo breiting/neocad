@@ -5,6 +5,7 @@ add_executable(test_ontoflow
 	domain/OntoFlowDomainTests.cpp
 	occt/TestOCCTBackend.cpp
 	command/TestCommandStack.cpp
+	engine/EngineTests.cpp
 )
 
 target_include_directories(test_ontoflow PUBLIC
@@ -16,6 +17,7 @@ target_link_libraries(test_ontoflow PRIVATE
 	project_settings
 	ontoflow_core
 	ontoflow_domain
+	ontoflow_engine
 	ontoflow_lua
 	ontoflow_occt
 	ontoflow_editor

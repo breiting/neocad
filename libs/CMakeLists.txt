@@ -1,5 +1,6 @@
 add_subdirectory(core)
 add_subdirectory(domain)
+add_subdirectory(engine)
 add_subdirectory(command)
 add_subdirectory(occt)
 add_subdirectory(lua)
