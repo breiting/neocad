@@ -1,22 +1,22 @@
 #pragma once
 
-#include <string>
-#include <vector>
+#include <cstdint>
 #include <ontoflow/domain/NodeData.hpp>
 #include <ontoflow/domain/Types.hpp>
-#include <cstdint>
+#include <string>
+#include <vector>
 
 namespace of::domain {
 
 // The Vertex v_i
 struct NodeComponent final {
-    std::string operationID; // Maps to f_i (Function) e.g., "MATH_SIN", "GEO_BOX"
-    
+    std::string operationID;  // Maps to f_i (Function) e.g., "MATH_SIN", "GEO_BOX"
+
     std::vector<Pin> inputs;
     std::vector<Pin> outputs;
-    
+
     bool isDirty = true;
-    
+
     // UI Metadata
     float uiX = 0.0f;
     float uiY = 0.0f;
@@ -37,4 +37,4 @@ struct MeshComponent {
     Mesh mesh;
 };
 
-} // namespace of::domain
+}  // namespace of::domain

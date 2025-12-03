@@ -97,32 +97,32 @@ FetchContent_Declare(
 )
 FetchContent_GetProperties(imnodes)
 if(NOT imnodes_POPULATED)
-    cmake_policy(SET CMP0169 OLD) # Allow FetchContent_Populate
-    FetchContent_Populate(imnodes)
-    add_library(imnodes STATIC
-        ${imnodes_SOURCE_DIR}/imnodes.cpp
-    )
-    target_include_directories(imnodes PUBLIC ${imnodes_SOURCE_DIR})
-    target_link_libraries(imnodes PUBLIC imgui)
-    target_compile_definitions(imnodes PUBLIC IMGUI_DEFINE_MATH_OPERATORS)
+	cmake_policy(SET CMP0169 OLD) # Allow FetchContent_Populate
+	FetchContent_Populate(imnodes)
+	add_library(imnodes STATIC
+								${imnodes_SOURCE_DIR}/imnodes.cpp
+				)
+	target_include_directories(imnodes PUBLIC ${imnodes_SOURCE_DIR})
+	target_link_libraries(imnodes PUBLIC imgui)
+	target_compile_definitions(imnodes PUBLIC IMGUI_DEFINE_MATH_OPERATORS)
 endif()
 
 # ----------------------------------------------------------
 # ImGui
 # ----------------------------------------------------------
 FetchContent_Declare(
-        imgui
-        GIT_REPOSITORY https://github.com/ocornut/imgui.git
-        GIT_TAG docking
+								imgui
+								GIT_REPOSITORY https://github.com/ocornut/imgui.git
+								GIT_TAG docking
 )
 FetchContent_MakeAvailable(imgui)
 
 add_library(imgui STATIC
-    ${imgui_SOURCE_DIR}/imgui.cpp
-    ${imgui_SOURCE_DIR}/imgui_draw.cpp
-    ${imgui_SOURCE_DIR}/imgui_tables.cpp
-    ${imgui_SOURCE_DIR}/imgui_widgets.cpp
-    ${imgui_SOURCE_DIR}/imgui_demo.cpp
+				${imgui_SOURCE_DIR}/imgui.cpp
+				${imgui_SOURCE_DIR}/imgui_draw.cpp
+				${imgui_SOURCE_DIR}/imgui_tables.cpp
+				${imgui_SOURCE_DIR}/imgui_widgets.cpp
+				${imgui_SOURCE_DIR}/imgui_demo.cpp
 )
 target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR})
 
@@ -158,7 +158,7 @@ embed_text_to_header("${SHADER_SRC_DIR}/unlit.frag" "${GEN_INC_DIR}/assets/unlit
 
 add_subdirectory(libs)
 add_subdirectory(apps/headless)
-add_subdirectory(apps/neocad)
+add_subdirectory(apps/ontoflow)
 
 enable_testing()
 add_subdirectory(tests)
