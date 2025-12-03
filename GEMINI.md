@@ -1,95 +1,126 @@
-# 💎 neocad Architectural Design (GEMINI.md)
+# 🌌 OntoFlow: Architectural Design Log (GEMINI.md)
 
-## Context
+**Identity:** An Ontological Engine for Computational Emergence.
+**Philosophy:** Simplicity $\to$ Complexity. We build the machine that builds the model.
+**Status:** MVP Construction Phase (Headless Core).
 
-neocad is a new kind of CAD system — built from scratch with a radically simple philosophy:
+## ⚙️ Core Specifications
 
-### Core Principles
+| Parameter        | Specification      | Notes                                                                            |
+| :--------------- | :----------------- | :------------------------------------------------------------------------------- |
+| **Namespace**    | `of::`             | Represents **O**nto**F**low. Sub-namespaces: `of::domain`, `of::engine`, etc.    |
+| **Language**     | C++17              | Strict RAII, modern features (std::variant, std::optional).                      |
+| **Architecture** | **Dataflow ECS**   | Entities are Nodes. Components define Logic & State. Systems evaluate the Graph. |
+| **Geometry**     | OpenCascade (OCCT) | Encapsulated as a stateless service in `of::geometry`.                           |
+| **Scripting**    | Lua 5.4            | Used for Agent Behavior and Runtime Node Definition.                             |
+| **UI**           | ImGui + ImNodes    | Visualizes the Registry. The Graph is the primary interface.                     |
 
-- Simple & minimalistic – no clutter, no heavy UI, no hidden magic.
-- Fast and lightweight – focused on fundamentals, not complexity.
-- Inspired by Neovim – modal editing, keyboard-driven workflows, scriptable and customizable.
-- Designed for makers, hobbyists, designers, engineers – not corporate CAD departments.
-- Built for repeatability – everything can be parametric and regenerated.
-- Open-source
+## 🧱 The Ontology (Data Model)
 
-### How You Can Use neocad
+We abandoned specific component classes (like `BoxComponent`) in favor of a **Generic Node Model**.
 
-You can build your design in three different ways — or mix them:
+### The Node Structure (`of::domain`)
 
-- Script-based model.lua — DSL to define geometry parametrically
-- UI-based point-and-click, 2D/3D sketching tools
-- Hybrid both worlds: UI changes generate code, scripts modify UI
+Every functional unit in the system is an Entity with a **`NodeComponent`**.
 
-This means:
-👉 You can design visually,
-👉 you can automate with code,
-👉 or let both interact seamlessly.
+```cpp
+// inc/ontoflow/domain/NodeData.hpp & Components.hpp
 
-### What Makes neocad Different?
+enum class PinType { FLOW, FLOAT, INT, BOOL, VEC3, GEOMETRY, ANY };
 
-- Minimal, intuitive, fast
-- Node-graph / ECS-based geometry engine
-- Fully parametric — everything is reproducible
-- Live geometry updates
-- No “file format trap” — full control over your model
-- Merges CAD + programming naturally
-- Designed to be a tool — not a product
+struct Pin {
+    std::string name;
+    PinType type;
+    std::variant<double, int, bool, glm::vec3, GeometryHandle> value;
 
-### Target Users
+    // Topology
+    EntityID connectedNodeID = INVALID_ENTITY_ID;
+    size_t connectedPinIdx = 0;
+};
 
-neocad is for:
+struct NodeComponent {
+    std::string operationID; // E.g., "MATH_SIN", "GEO_BOX" (Keys into NodeRegistry)
+    std::vector<Pin> inputs;
+    std::vector<Pin> outputs;
+    bool isDirty = true;
 
-- Makers / 3D printing enthusiasts
-- Product designers
-- DIY creators
-- Robotics & hardware developers
-- Small engineering teams
-- Coders who love parametric control
-- Anyone who wants freedom, not bloated CAD software
+    // Meta
+    float uiX, uiY;
+};
+```
 
-### Long-Term Vision
+### Node Categories
 
-neocad should become:
+1.  **Source Nodes:** Provide data (Time, Static Value, Imported Mesh).
+2.  **Operator Nodes:** Transform data (Math, Logic).
+3.  **Generator Nodes:** Create Matter (Box, Cylinder, AgentSpawner).
+4.  **Sink Nodes:** Result/Export (RenderOutput, StepExport).
 
-“The Neovim of CAD.”
-A powerful, elegant, scriptable tool — where geometry becomes code,
-and CAD becomes creative and fun again.
+## 🏛️ System Architecture (The Engine)
 
-## Core Specifications & Environment
+### `of::domain` (The State)
 
-| Parameter             | Specification                     | Notes                                                          |
-| :-------------------- | :-------------------------------- | :------------------------------------------------------------- |
-| **Project Name**      | **neocad**                        | Next-Generation Parametric CAD                                 |
-| **Base Namespace**    | `nc::`                            | Sub-namespaces reflect modules (e.g., `nc::domain`, `nc::vis`) |
-| **Language**          | C++17                             | Clang / G++ (macOS & Linux)                                    |
-| **Coordinate System** | **Z-Up**                          | Standard for 3D modeling and rendering in neocad.              |
-| **Geometry Kernel**   | OpenCascade (OCCT 7.9.1)          | Fully abstracted behind `nc::domain::IGeometryBackend`.        |
-| **Modeling Type**     | Parametric, Script-Driven, Hybrid | Core logic relies on the ECS-based Feature Graph.              |
+- **`Registry`**: Pure Data. Stores Entities and Components.
+- **`NodeComponent`**: The universal container for logic inputs/outputs.
 
-## Architectural Principles & Modules
+### `of::engine` (The Logic)
 
-### 2.1 Entity Component System (ECS)
+- **`NodeRegistry` (The Factory):**
+  - Maps `operationID` (string) to `NodeDefinition`.
+  - `NodeDefinition` contains input/output templates and the **`evaluate` lambda**.
+  - _Role:_ Knows HOW to calculate a "Box" or a "Sine Wave".
+- **`GraphEvaluator` (The Runner):**
+  - Traverses the DAG (Directed Acyclic Graph).
+  - **Pull-Principle:** Starts at Sink Nodes -\> recursively solves dirty Inputs.
+  - Calls `NodeRegistry::evaluateNode(...)`.
 
-- **Source of Truth:** The ECS Registry (`nc::domain::Registry`) is the central source of all model data.
-- **Undo/Redo:** Strictly implemented using the **Command Design Pattern** via the **`nc::command::CommandStack`**. Tools must not modify the Registry directly; all state changes must be encapsulated in an `ICommand`.
-- **Dependency Inversion Principle (DIP):** The `nc::domain` module **must not** directly depend on OCCT types. All geometry manipulation logic relies on the abstract interface `nc::domain::IGeometryBackend`.
-- **Logger:** Only the `nc::core::Logger` is permitted to use the Singleton pattern.
+### `of::geometry` (The Service)
 
-### 2.2 Core Module Responsibilities
+- **`OCCTBackend`**: Stateless functions.
+  - Input: `double width, height, ...`
+  - Output: `TopoDS_Shape` (wrapped).
+- **`MeshGenerator`**: Converts TopoDS_Shape to Render-Mesh (Vertex Buffers).
 
-- **`core`:** Basic utilities which have no dependencies and can be used by every other package
-- **`domain`:** ECS primitives, core Components. Defines the mathematical/parametric model.
-- **`occt`:** Implements `IGeometryBackend`, wrapping all specific OCCT calls (B-Rep, meshing, importing).
-- **`command`:** Contains the `ICommand` interface and the `CommandStack` for history management.
-- **`vis`:** Handles all OpenGL, rendering, shading, and ray-casting logic.
-- **`editor`:** Independent of rendering and offers all the tools modifying the data.
-- **`lua`:** The script engine exposing a `CadAPI` to the Lua world
-- **`ui`:** The user interface layer offering the actual event source and windowing with GLFW
+### `of::ui` (The Interface)
 
-## ECS Component Catalog (Core Definitions)
+- **`GraphEditorSystem`**:
+  - Draws Nodes based on `NodeComponent` data via `ImNodes`.
+  - Handles "Wiring" by dispatching Commands.
+  - Does **not** execute logic.
 
-The ECS is the core of the system, and stores all information in the `Registry`
+---
+
+## 🔄 Execution Flow: The "Pulse"
+
+1.  **Mutation:** User changes a value or links a pin in UI.
+2.  **Command:** `SetPinValueCommand` or `ConnectNodeCommand` updates the Registry.
+3.  **Dirty Flag:** The modified Node is marked `isDirty = true`.
+4.  **Evaluation Loop (`GraphEvaluator::update`):**
+    - Finds active Output/Sink nodes.
+    - Recursively checks dependencies.
+    - If a dependency is dirty, re-runs its `evaluate` function from `NodeRegistry`.
+    - Updates `OutputPins`.
+5.  **Rendering:** `RenderingSystem` sees updated Geometry in the Sink Node and draws it.
+
+## 🗺️ Roadmap: The MVP "The Flow"
+
+**Goal:** A headless unit test proving the dataflow architecture.
+
+| Step  | Task                                                                              | Status     |
+| :---- | :-------------------------------------------------------------------------------- | :--------- |
+| **1** | **Refactor File Tree:** Clean up legacy `nc::` files. Establish `of::` structure. | ⏳ Pending |
+| **2** | **Domain Core:** Implement `NodeComponent` and `Pin` variant types.               | ⏳ Pending |
+| **3** | **Engine Core:** Implement `NodeRegistry` (Factory) and register "Box" & "Sine".  | ⏳ Pending |
+| **4** | **Evaluator:** Implement `GraphEvaluator` (The recursive pull-solver).            | ⏳ Pending |
+| **5** | **Proof:** Write `main_test.cpp` connecting `Time` -\> `Sine` -\> `Box`.          | ⏳ Pending |
+| **6** | **UI Integration:** Connect ImNodes to `NodeComponent`.                           | 🔮 Future  |
+
+### 📝 Coding Guidelines
+
+- **No specific component structs** (e.g., `BoxComponent` is banned). Use Generic `NodeComponent`.
+- **Simplicity:** Prefer Composition over Inheritance.
+- **Safety:** Use `std::variant` for Pin data. No `void*`.
+- **Naming:** `CamelCase` for methods, `m_CamelCase` for private members.
 
 ## Coding Requirements
 
@@ -147,7 +178,3 @@ AllowShortFunctionsOnASingleLine: None
 - Use design patterns whereever they make sense.
 - Always explain theoretical context
 - Use smart pointer (unique_ptr and shared_ptr) whenever possible and useful
-
-## Tool preferences
-
-- Use context7 MCP server for any time you need documentation for external services

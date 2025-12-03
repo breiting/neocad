@@ -1,118 +1,146 @@
-# neocad
+# 🌌 OntoFlow
 
-A radically simple CAD system for makers, hackers & designers.
+_An Ontological Engine for Computational Emergence and Parametric Design_
 
-## 🚀 What is neocad?
+## 🚀 Introduction
 
-neocad is a new kind of CAD system — built from scratch with one clear goal:
+OntoFlow is a new kind of computational design system. Not a CAD tool. Not a simulation engine. It is an **ontological machine** — a system that allows structures, geometry, and behavior to _emerge_ from the interaction of simple nodes, laws, and agents.
 
-_Make CAD simple, lightweight, scriptable, and fun again._
+Instead of drawing shapes or issuing commands, the user **defines a world**:
 
-Inspired by [Neovim](https://neovim.io), neocad blends UI interaction + scripting + parametric geometry into one coherent workflow — minimal, fast, and fully under your control.
+- _Matter_ — geometric primitives or imported topology
+- _Agents_ — active components with state and behavior
+- _Laws_ — constraints, functions, and transforms
+- _Concepts_ — abstract data, time, groups, signals
 
-## 🧠 Core Principles
+By connecting these building blocks inside a **Node Graph**, users construct _systems that generate form_, _systems that simulate_, _systems that evolve_. OntoFlow is inspired by cybernetics, complexity theory, and the elegance of functional flow-based programming.
 
-- Simple & minimalistic — no clutter, no hidden magic.
-- Fast & lightweight — focused on fundamentals.
-- Inspired by Neovim — modal, keyboard-driven, scriptable.
-- For makers, hobbyists, engineers — not corporate CAD departments.
-- Parametric & reproducible — everything is data, everything can regenerate.
-- Open-source.
+It brings together:
 
-## 🛠 How You Can Use neocad
+- the rigor of B-Rep geometry (OpenCascade)
+- the clarity of an ECS (Entity Component System)
+- the expressiveness of Lua scripting
+- the immediacy of visual nodes
 
-You can design in three different ways — or mix them together:
+All of this is wrapped in a minimal, fast, open-source C++17 codebase.
 
-| Mode            | Description                          |
-| --------------- | ------------------------------------ |
-| 🧠 Script-based | model.lua DSL → parametric geometry  |
-| 🖱 UI-based     | 2D/3D sketching tools                |
-| 🔁 Hybrid       | UI generates code, scripts modify UI |
+## 🎓 Research Abstract
 
-✔ Design visually
-✔ Automate with code
-✔ Or merge both worlds seamlessly
+OntoFlow is a data-oriented, ontological simulation environment designed to bridge the gap between deterministic B-Rep geometry and stochastic Agent-Based Modeling (ABM). Unlike traditional CAD systems, which rely on static history trees, OntoFlow implements a dynamic ECS architecture to model a “computational ontology.”
 
-## 🧬 What Makes neocad Different?
+The system abstracts the design space into four metaphysical categories:
 
-- Minimal & intuitive — no complexity paralysis
-- ECS / node-graph based geometry engine
-- Fully parametric — everything is repeatable
-- Real-time geometry updates
-- No file-format trap — your model is yours
-- CAD + programming → finally unified
-- Built as a tool, not a product
+- **Matter**: Topological manifolds or geometric primitives
+- **Agents**: Stateful automata with heuristic behaviors
+- **Laws**: Global or local constraints (logic, functions, equations)
+- **Concepts**: Abstract data structures
 
-## 🎯 Who Is neocad For?
+A flow-based programming interface allows users to build directed acyclic graphs (DAGs) where nodes represent transformations of state rather than explicit modeling commands.
 
-- 🚀 Makers & 3D printing enthusiasts
-- 📦 Product designers
-- 🛠 DIY & hobby engineers
-- 🤖 Robotics & hardware developers
-- 👨‍💻 Coders who love parametric control
-- 🔥 Small teams who want freedom
-- 👨‍🎨 Creative people who hate bloated software
+OntoFlow combines two runtimes:
 
-## 🌌 Long-Term Vision
+- **Passive Evaluation Engine** — parametric topology, pull-based DAG evaluation
+- **Active Simulation Loop** — agents, solvers, constraints, push-based dynamics
 
-neocad aims to be:
+This duality enables _inverse design_, where shapes emerge from interacting components rather than explicit modeling.
 
-“The Neovim of CAD.” A powerful, elegant, scriptable tool — where geometry becomes code, and CAD becomes creative & fun again.
+## 🧩 Philosophy
+
+OntoFlow follows the principle:
+
+> **From Simplicity to Complexity**  
+> Complex phenomena emerge from simple interactions.
+
+### Design Principles
+
+- **Minimalistic** — no bloat, no excessive UI, no corporate CAD complexity
+- **Modular** — everything is a component, everything is replaceable
+- **Composable** — build systems by wiring blocks
+- **Deterministic or Dynamic** — parametric modeling _and_ simulation
+- **Scriptable** — Lua for automation, behavior, meta-programming
+- **Open Source** — transparent, hackable, extensible
+
+OntoFlow is for:
+
+- makers, hardware hackers
+- computational designers
+- academic researchers
+- robotics & simulation developers
+- people who want clarity and control — not black boxes
+
+## 🧱 Architecture Overview
+
+```
+┌──────────────────────────────┐
+│          OntoFlow            │
+├──────────────────────────────┤
+│  C++17 Core (Data-Oriented)  │
+│  Entity-Component-System     │
+│  Node Graph & Evaluator      │
+│  OpenCascade Geometry Layer  │
+│  ImGui / ImNodes UI          │
+│  Lua Scripting Engine        │
+└──────────────────────────────┘
+```
+
+## Core Modules
+
+| Module              | Description                                          |
+| ------------------- | ---------------------------------------------------- |
+| **ECS**             | Bare-metal, data-oriented entity-component system    |
+| **Node Graph**      | Nodes, Pins, DAG evaluation                          |
+| **GraphEvaluator**  | Executes nodes, propagates values, triggers geometry |
+| **GeometryGateway** | Stateless interface to OpenCascade                   |
+| **Renderer**        | Minimal OpenGL renderer for preview                  |
+| **Lua Runtime**     | Behavior, rules, agents                              |
+| **UI Layer**        | ImGui + ImNodes for visual graph editing             |
 
 ## 📦 Dependencies
 
-### Core Dependencies
+OntoFlow requires and is based on:
 
-- C++17
-- CMake
-- OpenGL / GLAD / GLFW
-- GLM
-- OCCT 7.9+ (OpenCascade — geometry kernel)
-- Lua (scripting DSL)
+- **C++17**
+- **OpenCascade 7.9+**
+- **GLFW**
+- **ImGui + ImNodes**
+- **Lua 5.4**
+- **glm**
+- **CMake 3.31+**
 
-## 🧱 Build Instructions
+## 🔧 Build Instructions
 
-```
-git clone https://github.com/breiting/neocad.git
-cd neocad
-
+```bash
+git clone https://github.com/breiting/ontoflow.git
+cd ontoflow
 mkdir build && cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release
+cmake ..
 make -j
-./apps/neocad/neocad
 ```
 
-## 🧭 Roadmap
+## 🔭 Roadmap
 
-neocad just got started and will grow.
+OntoFlow just started as an idea and a concept in mind. It is currently under heavy development, and will get features along its development roadmap.
 
-- Basic architecture ✔
-- Fast viewer ✔
-- Basic sketching tools ✔
-- Lua parametric DSL ✔
-- OCCT-based STEP import/export ✔
-- Constraint system
-- 3D feature modeling (extrude / revolve / sweep)
+## 🤝 Contributing
 
-## 🤝 Contribution
-
-neocad is open-source — but it’s not a product. It’s a tool, and tools evolve with their users.
-
-- 💡 Ideas?
-- 🐛 Bugs?
-- 🌟 Feature requests?
-
-→ Open an issue or PR — let’s build this together.
-
-## 🧪 Experimental Philosophy
-
-Complex tools kill creativity. neocad is built for flow, speed, and clarity. Not for bureaucracy.
+OntoFlow is intentionally open, transparent, and modular.  
+Contributions are welcome — from research ideas to code to testing.
 
 ## 📜 License
 
-neocad is open-source and released under the **MIT License** —  
-you are free to use it for personal, educational and commercial projects.
+OntoFlow is released under the **MIT License**.  
+You are free to use, modify, and distribute it, both commercially and non-commercially.
+
+## ⭐ Philosophy Reminder
+
+> OntoFlow is not a product.  
+> It is a tool — a conceptual machine.  
+> A space for computational creativity.  
+> A playground for systems thinkers.  
+> A bridge between code and geometry, physics and design, logic and emergence.
 
 ## ⭐ Support the project
 
 If you like this idea — star ⭐ the repo — it helps big time! More stars → more contributors → more speed.
+
+Welcome to the new frontier of computational design.
