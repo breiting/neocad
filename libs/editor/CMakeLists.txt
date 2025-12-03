@@ -1,8 +1,5 @@
 add_library(ontoflow_editor STATIC
 	src/Editor.cpp
-	src/InsertCircleTool.cpp
-	src/InsertPointTool.cpp
-	src/SketchCurveTool.cpp
 	src/ViewController.cpp
 )
 

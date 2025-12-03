@@ -54,18 +54,6 @@ inline Query HasComponentQuery() {
     return q;
 }
 
-inline bool IsPoint(Entity e, const Registry& r) {
-    return r.HasComponent<PositionComponent>(e);
-}
-
-inline bool IsLine(Entity e, const Registry& r) {
-    return r.HasComponent<EdgeComponent>(e);
-}
-
-inline bool IsFace(Entity e, const Registry& r) {
-    return r.HasComponent<FaceComponent>(e);
-}
-
 inline bool IsBody(Entity e, const Registry& r) {
     return r.HasComponent<BodyComponent>(e);
 }

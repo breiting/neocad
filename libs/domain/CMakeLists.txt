@@ -1,9 +1,6 @@
 add_library(ontoflow_domain STATIC
 	src/GeometrySystem.cpp
 	src/Registry.cpp
-	src/PrimitiveFactory.cpp
-	src/ExpressionSystem.cpp
-	src/FeatureEvaluationSystem.cpp
 )
 
 target_include_directories(ontoflow_domain PUBLIC
