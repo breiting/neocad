@@ -12,6 +12,8 @@ class GeometrySystem {
    public:
     GeometrySystem(Registry& registry, IGeometryBackend& backend);
 
+    IGeometryBackend& GetBackend() { return m_Backend; }
+
     // Methods removed during refactor.
     // ...
 

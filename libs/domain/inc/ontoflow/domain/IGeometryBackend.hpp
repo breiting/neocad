@@ -27,6 +27,9 @@ class IGeometryBackend {
 
     /// Export as STL with a meshing tolerance.
     virtual bool ExportShapeToSTL(BackendShapeHandle handle, const std::string& filePath, double deflection) const = 0;
+
+    /// Tesselate a shape into a mesh.
+    virtual Mesh GetMeshFromShape(BackendShapeHandle handle) = 0;
 };
 
 }  // namespace of::domain

@@ -23,6 +23,8 @@ class OCCTBackend : public domain::IGeometryBackend {
     bool ExportShapeToSTL(domain::BackendShapeHandle handle, const std::string& filePath,
                           double deflection) const override;
 
+    domain::Mesh GetMeshFromShape(domain::BackendShapeHandle handle) override;
+
    private:
     domain::BackendShapeHandle m_NextHandle{1};  // start with 1
     std::unordered_map<domain::BackendShapeHandle, std::unique_ptr<TopoDS_Shape>> m_Shapes;

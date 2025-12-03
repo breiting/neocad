@@ -28,6 +28,9 @@ class MockBackend : public IGeometryBackend {
     bool ExportShapeToSTL(BackendShapeHandle, const std::string&, double) const override {
         return true;
     }
+    Mesh GetMeshFromShape(BackendShapeHandle) override {
+        return {};
+    }
 };
 
 // A simple command for testing: increments a counter in Execute, decrements in Undo

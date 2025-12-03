@@ -4,6 +4,8 @@
 #include <ontoflow/editor/InputEvent.hpp>
 #include <ontoflow/editor/Mode.hpp>
 #include <ontoflow/editor/ToolContext.hpp>
+#include <ontoflow/domain/Entity.hpp>
+#include <ontoflow/engine/GraphEvaluator.hpp>
 #include <string>
 #include <unordered_map>
 
@@ -35,6 +37,11 @@ class Editor {
      * \param dt Time delta since last frame.
      */
     void Update(double dt);
+
+    /**
+     * \brief Initializes the "Pulsating Box" demo graph.
+     */
+    void InitializeDemoGraph();
 
     /**
      * \brief Draws the UI panels.
@@ -124,6 +131,14 @@ class Editor {
     std::string m_CommandBuffer; ///< Buffer for Vim-like key sequences.
     
     std::unique_ptr<ui::GraphEditorSystem> m_GraphEditorSystem; ///< The graph editor system.
+
+    // --- Demo Graph State ---
+    std::unique_ptr<of::engine::GraphEvaluator> m_Evaluator;
+    domain::EntityID m_WidthNodeID{domain::INVALID_ENTITY_ID};
+    domain::EntityID m_BoxNodeID{domain::INVALID_ENTITY_ID};
+    bool m_NeedsEvaluation{false};
+
+    void SyncMeshes();
 
     /**
      * \brief Handles keyboard events, including global shortcuts and command buffer input.

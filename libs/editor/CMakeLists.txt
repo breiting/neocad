@@ -12,6 +12,7 @@ PUBLIC
 	project_settings
 	ontoflow_core
 	ontoflow_domain
+	ontoflow_engine
 	ontoflow_command
 	ontoflow_ui
 )

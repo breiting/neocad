@@ -160,11 +160,9 @@ int main(int argc, char* argv[]) {
     // Editor
     ToolContext ctx(registry, geom, cmdStack);
     Editor editor(ctx);
-    // editor.RegisterTool(EditorMode::InsertPoint, std::make_unique<InsertPointTool>());
-    // editor.RegisterTool(EditorMode::InsertLine,
-    //                     std::make_unique<SketchCurveTool>(SketchCurveTool::CurveMode::Polyline));
-    // editor.RegisterTool(EditorMode::InsertSketch, std::make_unique<SketchCurveTool>(SketchCurveTool::CurveMode::Face));
-    // editor.RegisterTool(EditorMode::InsertCircle, std::make_unique<InsertCircleTool>());
+
+    // Initialize Demo Graph
+    editor.InitializeDemoGraph();
 
     // Window
     Window window;
