@@ -22,10 +22,12 @@ void GraphEditorSystem::ToggleVisibility() {
 }
 
 void GraphEditorSystem::DrawPanel() {
+    LOG(Info) << "GraphEditorSystem::DrawPanel() called. m_IsVisible: " << m_IsVisible;
     if (!m_IsVisible)
         return;
 
     if (ImGui::Begin("NeoCAD Graph Editor", &m_IsVisible)) {
+        LOG(Info) << "ImGui::Begin succeeded for NeoCAD Graph Editor.";
         ImNodes::BeginNodeEditor();
 
         // --- Kontextmenü Korrektur ---
@@ -36,40 +38,57 @@ void GraphEditorSystem::DrawPanel() {
         //    Trigger the popup BEFORE ImNodes::EndNodeEditor()
         bool editorHovered = ImNodes::IsEditorHovered();
         bool mouseRightReleased = ImGui::IsMouseReleased(ImGuiMouseButton_Right);
-        bool mainWinHovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootWindow);
-        bool mainWinFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootWindow);
+        // bool mainWinHovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootWindow);
+        // bool mainWinFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootWindow);
 
-        LOG(Info) << "Editor Hovered: " << editorHovered
-                  << ", Mouse Right Released: " << mouseRightReleased
-                  << ", Main Window Hovered: " << mainWinHovered
-                  << ", Main Window Focused: " << mainWinFocused;
+        // LOG(Info) << "Editor Hovered: " << editorHovered
+        //           << ", Mouse Right Released: " << mouseRightReleased
+        //           << ", Main Window Hovered: " << mainWinHovered
+        //           << ", Main Window Focused: " << mainWinFocused;
 
         if (editorHovered && mouseRightReleased) {
-            LOG(Info) << "Opening NodeEditorContextMenu";
+            LOG(Info) << "Attempting to open NodeEditorContextMenu. editorHovered: " << editorHovered << ", mouseRightReleased: " << mouseRightReleased;
             ImGui::OpenPopup("NodeEditorContextMenu");
         }
 
-        // ... (Drawing Nodes/Links remains here) ...
+        // Draw existing nodes
+        for (auto entity : m_Registry.GetEntitiesWith<domain::GlobalParameterComponent>()) {
+            if (m_Registry.HasComponent<domain::UINodeComponent>(entity)) {
+                DrawParameterNode(entity);
+            }
+        }
+
+        for (auto entity : m_Registry.GetEntitiesWith<domain::BoxComponent>()) {
+            if (m_Registry.HasComponent<domain::UINodeComponent>(entity)) {
+                DrawFeatureNode(entity);
+            }
+        }
+
+        for (auto entity : m_Registry.GetEntitiesWith<domain::CylinderComponent>()) {
+            if (m_Registry.HasComponent<domain::UINodeComponent>(entity)) {
+                DrawFeatureNode(entity);
+            }
+        }
 
         ImNodes::EndNodeEditor();
 
         // --- Pop-up wird außerhalb von ImNodes::Begin/EndNodeEditor() gezeichnet ---
         if (ImGui::BeginPopup("NodeEditorContextMenu")) {
-            LOG(Info) << "NodeEditorContextMenu is open";
+            // LOG(Info) << "NodeEditorContextMenu IS ACTIVE AND DRAWING!"; // Added log
             if (ImGui::MenuItem("Add Global Parameter")) {
-                LOG(Info) << "Adding Global Parameter";
+                // LOG(Info) << "Adding Global Parameter";
                 m_CommandStack.Push(std::make_unique<nc::cmd::InsertGlobalParameterCommand>(
                     "New Parameter", 1.0, m_CurrentMouseGridPosition));
                 ImGui::CloseCurrentPopup();
             }
             if (ImGui::MenuItem("Add Box Feature")) {
-                LOG(Info) << "Adding Box Feature";
+                // LOG(Info) << "Adding Box Feature";
                 m_CommandStack.Push(
                     std::make_unique<nc::cmd::InsertBoxCommand>(10.0, 10.0, 10.0, m_CurrentMouseGridPosition));
                 ImGui::CloseCurrentPopup();
             }
             if (ImGui::MenuItem("Add Cylinder Feature")) {
-                LOG(Info) << "Adding Cylinder Feature";
+                // LOG(Info) << "Adding Cylinder Feature";
                 m_CommandStack.Push(
                     std::make_unique<nc::cmd::InsertCylinderCommand>(5.0, 10.0, m_CurrentMouseGridPosition));
                 ImGui::CloseCurrentPopup();
@@ -82,10 +101,13 @@ void GraphEditorSystem::DrawPanel() {
 }
 
 void GraphEditorSystem::DrawParameterNode(domain::EntityID parameterId) {
+    LOG(Info) << "DrawParameterNode called for EntityID: " << parameterId;
     auto* param = m_Registry.GetComponent<domain::GlobalParameterComponent>(parameterId);
     auto* uiNode = m_Registry.GetComponent<domain::UINodeComponent>(parameterId);
-    if (!param || !uiNode)
+    if (!param || !uiNode) {
+        LOG(Warn) << "DrawParameterNode: Missing GlobalParameterComponent or UINodeComponent for EntityID: " << parameterId;
         return;
+    }
 
     ImNodes::BeginNode(parameterId);
     ImNodes::SetNodeEditorSpacePos(parameterId, ImVec2(uiNode->positionX, uiNode->positionY));
@@ -118,9 +140,12 @@ void GraphEditorSystem::DrawParameterNode(domain::EntityID parameterId) {
 }
 
 void GraphEditorSystem::DrawFeatureNode(domain::EntityID featureId) {
+    LOG(Info) << "DrawFeatureNode called for EntityID: " << featureId;
     auto* uiNode = m_Registry.GetComponent<domain::UINodeComponent>(featureId);
-    if (!uiNode)
+    if (!uiNode) {
+        LOG(Warn) << "DrawFeatureNode: Missing UINodeComponent for EntityID: " << featureId;
         return;
+    }
 
     ImNodes::BeginNode(featureId);
     ImNodes::SetNodeEditorSpacePos(featureId, ImVec2(uiNode->positionX, uiNode->positionY));

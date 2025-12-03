@@ -98,7 +98,7 @@ bool Window::Create(const CreateInfo& ci) {
     }
 
     // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(m_Window, true);
+    ImGui_ImplGlfw_InitForOpenGL(m_Window, false);
     ImGui_ImplOpenGL3_Init("#version 410");
 
     // Get initial framebuffer size and set viewport
@@ -187,6 +187,12 @@ void Window::InitCallbacks() {
 
     // Key event callback
     glfwSetKeyCallback(m_Window, [](GLFWwindow* w, int key, int scancode, int action, int mods) {
+        ImGui_ImplGlfw_KeyCallback(w, key, scancode, action, mods); // Pass to ImGui first
+        ImGuiIO& io = ImGui::GetIO();
+        if (io.WantCaptureKeyboard) { // If ImGui consumed the keyboard event, don't pass it further
+            return;
+        }
+
         auto* self = static_cast<Window*>(glfwGetWindowUserPointer(w));
         if (!self || !self->m_KeyPressedCallback) // Check if callback is set
             return;
@@ -195,6 +201,12 @@ void Window::InitCallbacks() {
 
     // Mouse button event callback
     glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* w, int button, int action, int mods) {
+        ImGui_ImplGlfw_MouseButtonCallback(w, button, action, mods); // Pass to ImGui first
+        ImGuiIO& io = ImGui::GetIO();
+        if (io.WantCaptureMouse) { // If ImGui consumed the mouse event, don't pass it further
+            return;
+        }
+
         auto* self = static_cast<Window*>(glfwGetWindowUserPointer(w));
         if (!self || !self->m_MouseButtonCallback) // Check if callback is set
             return;
@@ -203,6 +215,12 @@ void Window::InitCallbacks() {
 
     // Scroll event callback
     glfwSetScrollCallback(m_Window, [](GLFWwindow* w, double xoff, double yoff) {
+        ImGui_ImplGlfw_ScrollCallback(w, xoff, yoff); // Pass to ImGui first
+        ImGuiIO& io = ImGui::GetIO();
+        if (io.WantCaptureMouse) { // If ImGui consumed the mouse event, don't pass it further
+            return;
+        }
+
         auto* self = static_cast<Window*>(glfwGetWindowUserPointer(w));
         if (!self || !self->m_ScrollCallback) // Check if callback is set
             return;

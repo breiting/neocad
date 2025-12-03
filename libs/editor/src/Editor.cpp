@@ -124,8 +124,10 @@ ICamera* Editor::GetActiveCamera() {
  * \param ev The input event.
  */
 void Editor::OnInput(const InputEvent& ev) {
+    LOG(Info) << "Editor::OnInput received event type: " << static_cast<int>(ev.type);
     // Global keyboard shortcuts
     if (auto* key = AsKey(ev)) {
+        LOG(Info) << "Editor::OnInput - KeyEvent received. KeyCode: " << static_cast<int>(key->code) << ", Pressed: " << key->pressed;
         HandleKey(*key);
         // If a key event was handled globally (e.g., ESC, 'p'),
         // we might not want to pass it to the tool/camera.
@@ -179,12 +181,12 @@ void Editor::HandleKey(const KeyEvent& key) {
         m_Ctx.GetRegistry().Dump();
     }
 
-    // 'g' to toggle graph editor
-    if (key.code == KeyCode::Space && m_GraphEditorSystem) {
-        LOG(Info) << "Editor: Space pressed, toggling graph editor...";
-        m_GraphEditorSystem->ToggleVisibility();
-    }
-
+            // 'g' to toggle graph editor
+            if (key.code == KeyCode::Space && m_GraphEditorSystem) {
+                LOG(Info) << "Editor: Space pressed, toggling graph editor. Current visibility: " << m_GraphEditorSystem->IsVisible();
+                m_GraphEditorSystem->ToggleVisibility();
+                LOG(Info) << "Editor: Graph editor visibility after toggle: " << m_GraphEditorSystem->IsVisible();
+            }
     char c = static_cast<char>(std::tolower(static_cast<unsigned char>(key.text)));
     m_CommandBuffer.push_back(c);
 

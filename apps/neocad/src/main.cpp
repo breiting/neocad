@@ -4,6 +4,8 @@
 #include <neocad/core/Logger.hpp>
 #include <neocad/domain/Components.hpp>
 #include <neocad/domain/Entity.hpp>
+#include <neocad/domain/ExpressionSystem.hpp>         // Added
+#include <neocad/domain/FeatureEvaluationSystem.hpp>  // Added
 #include <neocad/domain/GeometrySystem.hpp>
 #include <neocad/domain/IGeometryBackend.hpp>
 #include <neocad/domain/PrimitiveFactory.hpp>
@@ -147,10 +149,54 @@ int main(int argc, char* argv[]) {
     LOG(Info) << "================================";
 
     // ECS + Backend
+
     Registry registry;
     OCCTBackend backend;
     GeometrySystem geom(registry, backend);
     CommandStack cmdStack(registry, geom);
+    ExpressionSystem expressionSystem(registry);               // Instantiate ExpressionSystem
+    FeatureEvaluationSystem featureSystem(registry, backend);  // Instantiate FeatureEvaluationSystem
+
+    // --- Demo Scene Setup for Graph Editor ---
+    // Create a Global Parameter for Width
+    Entity paramWidthId = registry.CreateEntity();
+    registry.AddComponent(paramWidthId, GlobalParameterComponent{"Width", 10.0, 1});
+    registry.AddComponent(paramWidthId, NameComponent{"GlobalWidth"});
+    registry.AddComponent(paramWidthId, UINodeComponent{50, 50});
+
+    // Create expressions for a Box
+    Entity boxWidthExprId = registry.CreateEntity();
+    registry.AddComponent(boxWidthExprId,
+                          ExpressionComponent{10.0, 0, ExpressionComponent::SourceType::STATIC_VALUE, 10.0});
+    registry.AddComponent(boxWidthExprId, NameComponent{"BoxWidthExpr"});  // For debug/display
+
+    Entity boxLengthExprId = registry.CreateEntity();
+    registry.AddComponent(boxLengthExprId,
+                          ExpressionComponent{15.0, 0, ExpressionComponent::SourceType::STATIC_VALUE, 15.0});
+    registry.AddComponent(boxLengthExprId, NameComponent{"BoxLengthExpr"});
+
+    Entity boxHeightExprId = registry.CreateEntity();
+    registry.AddComponent(boxHeightExprId,
+                          ExpressionComponent{20.0, 0, ExpressionComponent::SourceType::STATIC_VALUE, 20.0});
+    registry.AddComponent(boxHeightExprId, NameComponent{"BoxHeightExpr"});
+
+    // Connect BoxWidth to GlobalWidth parameter
+    // Simulate ConnectExpressionCommand effect
+    auto* bwExpr = registry.GetComponent<ExpressionComponent>(boxWidthExprId);
+    if (bwExpr) {
+        bwExpr->sourceType = ExpressionComponent::SourceType::ENTITY_REFERENCE;
+        bwExpr->sourceData = paramWidthId;
+        bwExpr->version++;  // Mark as modified
+    }
+
+    // Create the Box entity
+    Entity boxId = registry.CreateEntity();
+    registry.AddComponent(boxId, BoxComponent{boxWidthExprId, boxLengthExprId, boxHeightExprId});
+    registry.AddComponent(boxId, BodyComponent{});  // Will be filled by FeatureEvaluationSystem
+    registry.AddComponent(boxId, NameComponent{"MyDemoBox"});
+    registry.AddComponent(boxId, UINodeComponent{250, 50});
+
+    // --- End Demo Scene Setup ---
 
     if (loadCube) {
         Entity cube = PrimitiveFactory::MakeUnitCube(registry, "UnitCube");
@@ -206,6 +252,7 @@ int main(int argc, char* argv[]) {
 
     // INPUT MAPPING
     window.SetKeyPressedCallback([&](int key, int /*scancode*/, int action, int /*mods*/) {
+        LOG(Info) << "GLFW Key Pressed Callback: Key=" << key << ", Action=" << action;
         InputEvent ev;
         ev.type = InputEventType::Key;
         ev.data = MakeKeyEventFromGLFW(key, action, 0);
@@ -253,6 +300,8 @@ int main(int argc, char* argv[]) {
 
         // UPDATE
         editor.Update(dt);
+        expressionSystem.UpdateExpressions();  // Update expressions before features
+        featureSystem.EvaluateFeatures();      // Evaluate features based on updated expressions
         renderingSystem.Update(registry);
 
         // RENDER
