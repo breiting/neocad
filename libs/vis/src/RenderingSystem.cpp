@@ -49,26 +49,24 @@ bool RenderingSystem::Init(Registry& registry) {
     m_Axis = std::make_unique<AxisRenderer>();
 
     // Register change callbacks for dirty flags and resource cleanup
-    registry.OnComponentAdded<PositionComponent>([&](Entity) {
-        m_PointsDirty = true;
-    });
-    registry.OnComponentModified<PositionComponent>([&](Entity) {
-        m_PointsDirty = true;
-    });
-    registry.OnComponentRemoved<PositionComponent>([&](Entity) {
-        m_PointsDirty = true;
-    });
+    // registry.OnComponentAdded<PositionComponent>([&](Entity) {
+    //    m_PointsDirty = true;
+    // });
+    // registry.OnComponentModified<PositionComponent>([&](Entity) {
+    //    m_PointsDirty = true;
+    // });
+    // registry.OnComponentRemoved<PositionComponent>([&](Entity) {
+    //    m_PointsDirty = true;
+    // });
 
-    registry.OnComponentRemoved<EdgeComponent>([&](Entity e) {
+    // registry.OnComponentRemoved<EdgeComponent>([&](Entity e) {
         // When an EdgeComponent is removed, remove its corresponding LineSet from rendering.
-        m_Lines.erase(e);
-        m_Material.erase(e); // Also remove its material
-    });
+    //    m_Lines.erase(e);
+    //    m_Material.erase(e); // Also remove its material
+    // });
     
     // TODO: Add callbacks for MeshComponent and FaceComponent removal for cleanup.
     // For MeshComponent: registry.OnComponentRemoved<MeshComponent>([&](Entity e) { m_Meshes.erase(e); m_Material.erase(e); });
-    // For FaceComponent: This creates LineSets, which are already handled by EdgeComponent removal if Face consists of edges.
-    // Need to consider if FaceComponents directly create unique renderable objects.
 
 
     return m_Axis->Init();
@@ -133,6 +131,7 @@ void RenderingSystem::Update(Registry& registry) {
     }
 
     // Process FaceComponents (rendered as LineSets)
+    /*
     {
         auto entities = HasComponentQuery<FaceComponent>().Execute(registry);
         for (Entity e : entities) {
@@ -165,8 +164,10 @@ void RenderingSystem::Update(Registry& registry) {
             // TODO: If comp->vertices data changes, update existing vis::LineSet.
         }
     }
+    */
 
     // Process EdgeComponents (rendered as LineSets)
+    /*
     {
         auto entities = HasComponentQuery<EdgeComponent>().Execute(registry);
         for (Entity e : entities) {
@@ -203,8 +204,10 @@ void RenderingSystem::Update(Registry& registry) {
             // TODO: If associated PositionComponents change, update existing vis::LineSet.
         }
     }
+    */
 
     // Process PositionComponents (rendered as a single PointSet)
+    /*
     {
         if (m_PointsDirty) {
             auto entities = HasComponentQuery<PositionComponent>().Execute(registry);
@@ -227,6 +230,7 @@ void RenderingSystem::Update(Registry& registry) {
             m_PointsDirty = false;
         }
     }
+    */
 }
 
 /**

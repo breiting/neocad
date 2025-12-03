@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.31.1)
-project(neocad VERSION 0.1 LANGUAGES CXX)
+project(OntoFlow VERSION 0.1 LANGUAGES CXX)
 
 # Produce json file for neovim clangd completion
 set (CMAKE_EXPORT_COMPILE_COMMANDS 1)

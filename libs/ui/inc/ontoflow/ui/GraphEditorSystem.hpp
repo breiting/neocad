@@ -58,33 +58,6 @@ class GraphEditorSystem final {
     glm::vec2 m_CurrentMouseGridPosition{0.0f, 0.0f};
 
     /**
-     * \brief Draws a node representing a global parameter.
-     * \param parameterId The EntityID of the global parameter.
-     */
-    void DrawParameterNode(domain::EntityID parameterId);
-
-    /**
-     * \brief Draws a node representing a geometric feature (Box, Cylinder, etc.).
-     * \param featureId The EntityID of the feature.
-     */
-    void DrawFeatureNode(domain::EntityID featureId);
-
-    /**
-     * \brief Helper to draw an input pin (for expressions) or output pin.
-     * \param expressionId The EntityID of the expression component (for inputs).
-     * \param label The label to display next to the pin.
-     * \param isInput True if this is an input pin (left side), false for output (right side).
-     */
-    void DrawPinAndInput(domain::EntityID expressionId, const std::string& label, bool isInput);
-
-    /**
-     * \brief Retrieves a robust title for a node given its EntityID.
-     * \param entityId The EntityID of the node.
-     * \return The name of the node, or a fallback if NameComponent is missing.
-     */
-    std::string GetNodeTitle(domain::EntityID entityId);
-
-    /**
      * \brief Updates and returns the current mouse position in grid space.
      * \return The mouse position in the ImNodes grid coordinate system.
      */

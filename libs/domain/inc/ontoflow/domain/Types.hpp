@@ -6,6 +6,7 @@
 namespace of::domain {
 
 using EntityID = Entity;
+constexpr EntityID INVALID_ENTITY_ID = INVALID_ENTITY;
 using vec3 = glm::dvec3;  // double precision for geometry
 using vec2 = glm::dvec2;
 
