@@ -20,7 +20,17 @@ enum class PinType {
 struct GeometryHandle {
     EntityID id{INVALID_ENTITY_ID};
 
-    bool IsValid() const { return id != INVALID_ENTITY_ID; }
+    bool IsValid() const {
+        return id != INVALID_ENTITY_ID;
+    }
+
+    bool operator==(const GeometryHandle& other) const {
+        return id == other.id;
+    }
+
+    bool operator!=(const GeometryHandle& other) const {
+        return !(*this == other);
+    }
 };
 
 // The Data flowing through the graph

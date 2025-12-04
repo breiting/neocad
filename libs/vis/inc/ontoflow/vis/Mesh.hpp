@@ -43,6 +43,12 @@ class Mesh : public BaseGeometry {
     void AddTriangle(unsigned int v1, unsigned int v2, unsigned int v3);
 
     /**
+     * \brief Clears all triangles (indices) from the mesh.
+     * Marks the mesh as dirty.
+     */
+    void ClearTriangles();
+
+    /**
      * \brief Uploads the mesh's vertex and index data to the GPU.
      * This method creates/updates VAO, VBO, and EBOs if the mesh is dirty.
      */

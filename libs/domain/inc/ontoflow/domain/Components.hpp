@@ -8,7 +8,6 @@
 
 namespace of::domain {
 
-// The Vertex v_i
 struct NodeComponent final {
     std::string operationID;  // Maps to f_i (Function) e.g., "MATH_SIN", "GEO_BOX"
 
@@ -35,6 +34,7 @@ struct BodyComponent {
 
 struct MeshComponent {
     Mesh mesh;
+    std::uint32_t version = 0;
 };
 
 }  // namespace of::domain

@@ -1,45 +1,60 @@
 #include <ontoflow/core/Logger.hpp>
-#include <ontoflow/domain/Components.hpp>
 #include <ontoflow/engine/GraphEvaluator.hpp>
 #include <ontoflow/engine/NodeRegistry.hpp>
 
+using namespace of::domain;
+
 namespace of::engine {
 
-GraphEvaluator::GraphEvaluator(domain::Registry& registry) : m_Registry(registry) {
+GraphEvaluator::GraphEvaluator(Registry& registry) : m_Registry(registry) {
 }
 
-void GraphEvaluator::Evaluate(domain::EntityID nodeID) {
-    if (!m_Registry.HasComponent<domain::NodeComponent>(nodeID)) {
+void GraphEvaluator::Evaluate(EntityID nodeID) {
+    if (!m_Registry.HasComponent<NodeComponent>(nodeID))
         return;
-    }
 
-    auto* node = m_Registry.GetComponent<domain::NodeComponent>(nodeID);
+    auto* node = m_Registry.GetComponent<NodeComponent>(nodeID);
 
-    // 1. Recursively Evaluate Inputs
-    for (auto& inputPin : node->inputs) {
-        if (inputPin.connection.targetNodeID != domain::INVALID_ENTITY_ID) {
-            // Recursion: Ensure dependency is up-to-date
-            Evaluate(inputPin.connection.targetNodeID);
+    bool inputsChanged = PullInputs(*node);
 
-            // Data Transfer (Pull)
-            auto* sourceNode = m_Registry.GetComponent<domain::NodeComponent>(inputPin.connection.targetNodeID);
-            if (sourceNode && inputPin.connection.targetPinIdx < sourceNode->outputs.size()) {
-                inputPin.value = sourceNode->outputs[inputPin.connection.targetPinIdx].value;
-            } else {
-                LOG(Warn) << "GraphEvaluator: Invalid connection on node " << nodeID;
-            }
-        }
-    }
-
-    // 2. Compute if Dirty (or always for now to keep it simple)
-    // In a real system we check isDirty. For this task, we just compute.
-    if (node->isDirty) {
+    if (inputsChanged || node->isDirty) {
         const auto* def = NodeRegistry::Instance().GetDefinition(node->operationID);
         if (def && def->compute) {
+            LOG(Info) << "Computing Node: " << node->operationID;  // Debug
             def->compute(*node, m_Registry);
         }
+
         node->isDirty = false;
     }
+}
+
+bool GraphEvaluator::PullInputs(NodeComponent& node) {
+    bool anyInputChanged = false;
+
+    for (auto& inputPin : node.inputs) {
+        if (inputPin.connection.targetNodeID == INVALID_ENTITY_ID)
+            continue;
+
+        Evaluate(inputPin.connection.targetNodeID);
+
+        auto* sourceNode = m_Registry.GetComponent<NodeComponent>(inputPin.connection.targetNodeID);
+        if (!sourceNode)
+            continue;
+
+        size_t outIdx = inputPin.connection.targetPinIdx;
+        if (outIdx >= sourceNode->outputs.size()) {
+            LOG(Error) << "GraphEvaluator: Invalid Output Pin Index on Source Node";
+            continue;
+        }
+
+        const auto& incomingValue = sourceNode->outputs[outIdx].value;
+        if (inputPin.value != incomingValue) {
+            inputPin.value = incomingValue;
+            anyInputChanged = true;
+        }
+    }
+
+    return anyInputChanged;
 }
 
 }  // namespace of::engine

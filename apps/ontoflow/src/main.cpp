@@ -1,20 +1,13 @@
 #include <CLI/CLI.hpp>
 #include <memory>
-// #include <ontoflow/command/ExtrudeCommand.hpp> // DELETED
 #include <ontoflow/core/Logger.hpp>
 #include <ontoflow/domain/Components.hpp>
 #include <ontoflow/domain/Entity.hpp>
-// #include <ontoflow/domain/ExpressionSystem.hpp>         // DELETED
-// #include <ontoflow/domain/FeatureEvaluationSystem.hpp>  // DELETED
 #include <ontoflow/domain/GeometrySystem.hpp>
 #include <ontoflow/domain/IGeometryBackend.hpp>
-// #include <ontoflow/domain/PrimitiveFactory.hpp> // DELETED
 #include <ontoflow/domain/Query.hpp>
 #include <ontoflow/domain/Registry.hpp>
 #include <ontoflow/editor/Editor.hpp>
-// #include <ontoflow/editor/InsertCircleTool.hpp> // LEGACY
-// #include <ontoflow/editor/InsertPointTool.hpp> // LEGACY
-// #include <ontoflow/editor/SketchCurveTool.hpp> // LEGACY
 #include <ontoflow/editor/ToolContext.hpp>
 #include <ontoflow/occt/OCCTBackend.hpp>
 #include <ontoflow/occt/STEPImporter.hpp>
@@ -122,23 +115,6 @@ int main(int argc, char* argv[]) {
     OCCTBackend backend;
     GeometrySystem geom(registry, backend);
     CommandStack cmdStack(registry, geom);
-    // ExpressionSystem expressionSystem(registry);               // DELETED
-    // FeatureEvaluationSystem featureSystem(registry, backend);  // DELETED
-
-    // --- Demo Scene Setup for Graph Editor ---
-    // (Removed Legacy Components Usage)
-    // --- End Demo Scene Setup ---
-
-    if (loadCube) {
-        // Entity cube = PrimitiveFactory::MakeUnitCube(registry, "UnitCube");
-        // LOG(Info) << "Loaded unit cube with ID: " << cube;
-        LOG(Warn) << "Unit Cube loading disabled during refactor.";
-    }
-    if (loadFace) {
-        // Entity face = CreateTestFace5(registry);
-        // LOG(Info) << "Loaded face with ID: " << face;
-        LOG(Warn) << "Test Face loading disabled during refactor.";
-    }
 
     if (!stlFile.empty()) {
         Entity stl = LoadSTLtoECS(stlFile, registry);
@@ -231,8 +207,6 @@ int main(int argc, char* argv[]) {
 
         // UPDATE
         editor.Update(dt);
-        // expressionSystem.UpdateExpressions();  // DELETED
-        // featureSystem.EvaluateFeatures();      // DELETED
         renderingSystem.Update(registry);
 
         // RENDER

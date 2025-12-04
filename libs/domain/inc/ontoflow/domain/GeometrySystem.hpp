@@ -14,6 +14,9 @@ class GeometrySystem {
 
     IGeometryBackend& GetBackend() { return m_Backend; }
 
+    /// \brief Scans all BodyComponents, generates Meshes via backend, and updates MeshComponents.
+    void TesselateShapes();
+
     // Methods removed during refactor.
     // ...
 

@@ -26,6 +26,7 @@ PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/inc
 	${CMAKE_CURRENT_SOURCE_DIR}/../../extern
 	${CMAKE_CURRENT_SOURCE_DIR}/../../extern/stb
+	${CMAKE_CURRENT_SOURCE_DIR}/../../extern/glad/include
 	${GEN_INC_DIR}
 )
 

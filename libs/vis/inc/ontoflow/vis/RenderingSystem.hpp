@@ -70,6 +70,7 @@ class RenderingSystem {
     
     // Maps to store renderable geometry and their materials, keyed by ECS Entity ID.
     std::unordered_map<domain::Entity, std::shared_ptr<Mesh>> m_Meshes;
+    std::unordered_map<domain::Entity, uint32_t> m_MeshVersions;
     std::unordered_map<domain::Entity, std::shared_ptr<LineSet>> m_Lines;
     std::unordered_map<domain::Entity, std::shared_ptr<Material>> m_Material;
 

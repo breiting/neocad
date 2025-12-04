@@ -3,10 +3,10 @@
 
 #include <cctype>
 #include <ontoflow/core/Logger.hpp>
-#include <ontoflow/editor/Editor.hpp>
-#include <ontoflow/ui/GraphEditorSystem.hpp>
 #include <ontoflow/domain/Components.hpp>
+#include <ontoflow/editor/Editor.hpp>
 #include <ontoflow/engine/NodeRegistry.hpp>
+#include <ontoflow/ui/GraphEditorSystem.hpp>
 #include <variant>
 
 using namespace of::domain;
@@ -19,12 +19,12 @@ namespace of::editor {
  * \param ctx A reference to the ToolContext, providing access to core services.
  */
 Editor::Editor(ToolContext& ctx) : m_Ctx(ctx) {
-    m_Ctx.SetEditor(this); // Set this Editor instance into the ToolContext
-    
+    m_Ctx.SetEditor(this);  // Set this Editor instance into the ToolContext
+
     // Initialize ImNodes
     ImNodes::CreateContext();
     ImNodes::StyleColorsDark();
-    
+
     m_GraphEditorSystem = std::make_unique<ui::GraphEditorSystem>(ctx.GetRegistry(), ctx.GetCommandStack());
     m_Evaluator = std::make_unique<GraphEvaluator>(ctx.GetRegistry());
 }
@@ -122,7 +122,7 @@ void Editor::SetCamera3D(std::shared_ptr<ICamera> cam) {
  * \brief Sets the viewport size for the ViewController's cameras.
  * \param w Width of the viewport.
  * \param h Height of the viewport.
-     */
+ */
 void Editor::SetViewportSize(int w, int h) {
     m_ViewController.SetViewportSize(w, h);
 }
@@ -166,16 +166,18 @@ void Editor::OnInput(const InputEvent& ev) {
 void Editor::HandleKey(const KeyEvent& key) {
     if (!key.pressed)
         return;
-    
+
+    float diff = 0.1;
+
     // Interaction Logic: Modify Graph
     if (key.text == 'k' && m_WidthNodeID != INVALID_ENTITY_ID) {
         auto* node = m_Ctx.GetRegistry().GetComponent<NodeComponent>(m_WidthNodeID);
         if (node && std::holds_alternative<double>(node->outputs[0].value)) {
             double val = std::get<double>(node->outputs[0].value);
-            node->outputs[0].value = val + 5.0;
-            LOG(Info) << "Editor: Width increased to " << val + 5.0;
+            node->outputs[0].value = val + diff;
+            LOG(Info) << "Editor: Width increased to " << val + diff;
             m_NeedsEvaluation = true;
-            return; // Consumed
+            return;  // Consumed
         }
     }
 
@@ -183,10 +185,10 @@ void Editor::HandleKey(const KeyEvent& key) {
         auto* node = m_Ctx.GetRegistry().GetComponent<NodeComponent>(m_WidthNodeID);
         if (node && std::holds_alternative<double>(node->outputs[0].value)) {
             double val = std::get<double>(node->outputs[0].value);
-            node->outputs[0].value = val - 5.0;
-            LOG(Info) << "Editor: Width decreased to " << val - 5.0;
+            node->outputs[0].value = val - diff;
+            LOG(Info) << "Editor: Width decreased to " << val - diff;
             m_NeedsEvaluation = true;
-            return; // Consumed
+            return;  // Consumed
         }
     }
 
@@ -219,7 +221,7 @@ void Editor::HandleKey(const KeyEvent& key) {
     if (key.code == KeyCode::Space && m_GraphEditorSystem) {
         m_GraphEditorSystem->ToggleVisibility();
     }
-    
+
     char c = static_cast<char>(std::tolower(static_cast<unsigned char>(key.text)));
     m_CommandBuffer.push_back(c);
 
@@ -267,7 +269,7 @@ void Editor::ProcessCommandBuffer() {
 void Editor::InitializeDemoGraph() {
     auto& reg = m_Ctx.GetRegistry();
     auto& nodeReg = NodeRegistry::Instance();
-    
+
     // Capture IGeometryBackend reference
     IGeometryBackend& backend = m_Ctx.GetGeometrySystem().GetBackend();
 
@@ -286,30 +288,33 @@ void Editor::InitializeDemoGraph() {
     boxDef.inputs.push_back(Pin{"Length", PinType::FLOAT});
     boxDef.inputs.push_back(Pin{"Height", PinType::FLOAT});
     boxDef.outputs.push_back(Pin{"Shape", PinType::GEOMETRY});
-    
+
     boxDef.compute = [&backend](NodeComponent& node, Registry& r) {
         double w = 10.0, l = 10.0, h = 10.0;
-        
-        if (std::holds_alternative<double>(node.inputs[0].value)) w = std::get<double>(node.inputs[0].value);
-        if (std::holds_alternative<double>(node.inputs[1].value)) l = std::get<double>(node.inputs[1].value);
-        if (std::holds_alternative<double>(node.inputs[2].value)) h = std::get<double>(node.inputs[2].value);
+
+        if (std::holds_alternative<double>(node.inputs[0].value))
+            w = std::get<double>(node.inputs[0].value);
+        if (std::holds_alternative<double>(node.inputs[1].value))
+            l = std::get<double>(node.inputs[1].value);
+        if (std::holds_alternative<double>(node.inputs[2].value))
+            h = std::get<double>(node.inputs[2].value);
 
         auto handle = backend.CreateBox(w, l, h);
 
         Entity bodyEnt;
         if (std::holds_alternative<GeometryHandle>(node.outputs[0].value)) {
-             // Reuse
-             bodyEnt = std::get<GeometryHandle>(node.outputs[0].value).id;
-             // Update Handle
-             if(r.HasComponent<BodyComponent>(bodyEnt)) {
-                 r.GetComponent<BodyComponent>(bodyEnt)->handle = handle;
-             }
+            // Reuse
+            bodyEnt = std::get<GeometryHandle>(node.outputs[0].value).id;
+            // Update Handle
+            if (r.HasComponent<BodyComponent>(bodyEnt)) {
+                r.GetComponent<BodyComponent>(bodyEnt)->handle = handle;
+            }
         } else {
-             // Create New
-             bodyEnt = r.CreateEntity();
-             r.AddComponent<BodyComponent>(bodyEnt, BodyComponent{handle});
-             r.AddComponent<NameComponent>(bodyEnt, NameComponent{"Box_Body"});
-             node.outputs[0].value = GeometryHandle{bodyEnt};
+            // Create New
+            bodyEnt = r.CreateEntity();
+            r.AddComponent<BodyComponent>(bodyEnt, BodyComponent{handle});
+            r.AddComponent<NameComponent>(bodyEnt, NameComponent{"Box_Body"});
+            node.outputs[0].value = GeometryHandle{bodyEnt};
         }
     };
     nodeReg.RegisterNode("GEO_BOX", boxDef);
@@ -321,9 +326,9 @@ void Editor::InitializeDemoGraph() {
     m_BoxNodeID = nodeReg.SpawnNode(reg, "GEO_BOX");
 
     // Init Values
-    reg.GetComponent<NodeComponent>(m_WidthNodeID)->outputs[0].value = 20.0;
-    reg.GetComponent<NodeComponent>(nLength)->outputs[0].value = 30.0;
-    reg.GetComponent<NodeComponent>(nHeight)->outputs[0].value = 40.0;
+    reg.GetComponent<NodeComponent>(m_WidthNodeID)->outputs[0].value = 2.0;
+    reg.GetComponent<NodeComponent>(nLength)->outputs[0].value = 3.0;
+    reg.GetComponent<NodeComponent>(nHeight)->outputs[0].value = 4.0;
 
     // Connect
     auto* boxNode = reg.GetComponent<NodeComponent>(m_BoxNodeID);
@@ -338,21 +343,22 @@ void Editor::InitializeDemoGraph() {
 void Editor::SyncMeshes() {
     auto& reg = m_Ctx.GetRegistry();
     IGeometryBackend& backend = m_Ctx.GetGeometrySystem().GetBackend();
-    
+
     // Naive Sync: Iterate all entities with BodyComponent
     // In a real system, we would track dirty flags or events.
     // Since we just updated the graph, we know things might have changed.
-    
-    auto entities = reg.Entities(); // Inefficient but works for MVP
-    for(Entity e : entities) {
-        if(reg.HasComponent<BodyComponent>(e)) {
+
+    auto entities = reg.Entities();  // Inefficient but works for MVP
+    for (Entity e : entities) {
+        if (reg.HasComponent<BodyComponent>(e)) {
             auto* body = reg.GetComponent<BodyComponent>(e);
-            if(body->handle > 0) {
+            if (body->handle > 0) {
                 // Tesselate
                 Mesh meshData = backend.GetMeshFromShape(body->handle);
-                
-                if(reg.HasComponent<MeshComponent>(e)) {
-                    reg.GetComponent<MeshComponent>(e)->mesh = std::move(meshData);
+                auto* meshComp = reg.GetComponent<MeshComponent>(e);
+                if (meshComp) {
+                    meshComp->version++;
+                    meshComp->mesh = std::move(meshData);
                 } else {
                     reg.AddComponent<MeshComponent>(e, MeshComponent{std::move(meshData)});
                 }
